@@ -23,7 +23,7 @@ abstract class BaseReducer<State> {
     constructor(protected state: State) {}
 }
 
-type IReducer<Reducer> = Record<keyof Reducer, (...args: any[]) => GetState<Reducer>>;
+export type IReducer<Reducer> = Record<keyof Reducer, (...args: any[]) => GetState<Reducer>>;
 
 type GetState<Reducer_> = Reducer_ extends BaseReducer<infer State> ? State & {} : never;
 

@@ -22,7 +22,7 @@ interface CounterState {
 
 /* Reducers */
 
-class CounterReducer extends Reducer<CounterState> {
+export class CounterReducer extends Reducer<CounterState> {
     add = (n: number) => ({ value: this.state.value + n });
     increment = () => this.add(1);
     reset = () => ({ value: 0 });
@@ -38,7 +38,7 @@ class AuthReducer extends Reducer<AuthState> {
     };
 }
 
-class AppReducer extends Reducer<AppState> {
+export class AppReducer extends Reducer<AppState> {
     static nested = {
         auth: AuthReducer,
         counter1: CounterReducer,
@@ -57,6 +57,6 @@ export const initialAppState: AppState = {
     counter2: { value: 2 },
 };
 
-console.log("reset", app.reset().update(initialAppState));
-console.log("counter1=3", app.counter1.add(2).update(initialAppState));
-console.log("session=user1", app.auth.session.login("user1").update(initialAppState));
+console.log("reset", app.reset());
+console.log("counter1=3", app.counter1.add(2));
+console.log("session=user1", app.auth.session.login("user1"));

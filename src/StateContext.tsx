@@ -1,10 +1,10 @@
 import React from "react";
 
-export function createStateContext<State>(): StateContext<State> {
+export function createContextState<State>(): StateContext<State> {
     return React.createContext<Store<State> | undefined>(undefined);
 }
 
-export function useStateProvider<State>(context: StateContext<State>, initialState: State) {
+export function useContextStateProvider<State>(context: StateContext<State>, initialState: State) {
     const initialStateMemoized = useFirst(initialState);
     const store = React.useMemo(() => new Store(initialStateMemoized), [initialStateMemoized]);
 
@@ -15,18 +15,18 @@ export function useStateProvider<State>(context: StateContext<State>, initialSta
     return ProviderComponent;
 }
 
-export function useStateSelector<State, SelectedState>(
+export function useContextState<State, SelectedState>(
     context: StateContext<State>,
     selector: (state: State) => SelectedState
-): [SelectedState, (updater: (prev: State) => State) => void] {
+): [SelectedState, Dispatcher<State>] {
     const store = React.useContext(context);
     if (!store) throw new Error("State context not initialized");
 
     const rerender = useRerender();
 
     const selection = React.useMemo(() => selector(store.state), [selector, store.state]);
-    const selectionRef = useLatest(selection);
-    const selectorRef = useLatest(selector);
+    const selectionRef = useLatestRef(selection);
+    const selectorRef = useLatestRef(selector);
 
     const stateTransition = React.useCallback<Listener<State>>(
         newState => {
@@ -41,16 +41,20 @@ export function useStateSelector<State, SelectedState>(
         return store.subscribe(stateTransition);
     }, [store, stateTransition]);
 
-    const setState = React.useCallback(
-        (updater: (prev: State) => State) => {
-            const newState = updater(store.state);
+    const dispatch = React.useCallback<Dispatcher<State>>(
+        action => {
+            const newState = action.update(store.state);
             store.setState(newState);
         },
         [store]
     );
 
-    return [selection, setState];
+    return [selection, dispatch];
 }
+
+type Action<State> = { update: (state: State) => State };
+
+type Dispatcher<State> = (action: Action<State>) => void;
 
 type StateContext<State> = React.Context<Store<State> | undefined>;
 
@@ -93,7 +97,7 @@ function useFirst<Value>(value: Value): Value {
     return ref.current;
 }
 
-function useLatest<Value>(value: Value): React.MutableRefObject<Value> {
+function useLatestRef<Value>(value: Value): React.MutableRefObject<Value> {
     const ref = React.useRef(value);
     React.useEffect(() => {
         ref.current = value;
@@ -102,6 +106,6 @@ function useLatest<Value>(value: Value): React.MutableRefObject<Value> {
 }
 
 function useRerender() {
-    const [_count, setState] = React.useState(0);
+    const setState = React.useState(0)[1];
     return React.useCallback(() => setState(n => n + 1), [setState]);
 }

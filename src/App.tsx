@@ -1,12 +1,12 @@
 import React from "react";
 import { AppState, initialAppState } from "./AppReducer";
 import { Counter } from "./Counter";
-import { createStateContext, useStateProvider } from "./StateContext";
+import { createContextState, useContextStateProvider } from "./StateContext";
 
-export const appContext = createStateContext<AppState>();
+export const appContext = createContextState<AppState>();
 
 const App = () => {
-    const AppStateProvider = useStateProvider(appContext, initialAppState);
+    const AppStateProvider = useContextStateProvider(appContext, initialAppState);
 
     return (
         <AppStateProvider>
