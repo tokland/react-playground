@@ -24,7 +24,9 @@ export function useContextState<State, SelectedState>(
 
     const rerender = useRerender();
 
-    const selection = React.useMemo(() => selector(store.state), [selector, store.state]);
+    const selection = React.useMemo(() => {
+        return selector(store.state);
+    }, [selector, store.state]);
     const selectionRef = useLatestRef(selection);
     const selectorRef = useLatestRef(selector);
 
@@ -54,7 +56,7 @@ export function useContextState<State, SelectedState>(
 
 type Action<State> = { update: (state: State) => State };
 
-type Dispatcher<State> = (action: Action<State>) => void;
+export type Dispatcher<State> = (action: Action<State>) => void;
 
 type StateContext<State> = React.Context<Store<State> | undefined>;
 
@@ -76,8 +78,8 @@ class Store<State> {
     }
 
     setState(newState: State): void {
-        this.listeners.forEach(listener => listener(newState));
         this._state = newState;
+        this.listeners.forEach(listener => listener(newState));
     }
 
     subscribe(listener: Listener<State>): Unsubscriber {

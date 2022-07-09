@@ -1,11 +1,12 @@
-import { Reducer, getActions } from "./StateReducer";
+import { getRandom } from "./Counter";
+import { Dispatcher } from "./StateContext";
+import { Reducer, getActions, IReducer } from "./StateReducer";
 
 /* State */
 
 export interface AppState {
     auth: AuthState;
-    counter1: CounterState;
-    counter2: CounterState;
+    counter: CounterState;
 }
 
 interface AuthState {
@@ -18,14 +19,31 @@ interface SessionState {
 
 interface CounterState {
     value: number;
+    updating: boolean;
 }
 
 /* Reducers */
 
+type ResP<State> = State | Promise<State>;
+type Res<State> = State | Async<State>;
+type Async<State> = (callback: (state: State) => void) => Canceller;
+type Canceller = () => void;
+
 export class CounterReducer extends Reducer<CounterState> {
-    add = (n: number) => ({ value: this.state.value + n });
+    // implements IReducer<CounterReducer> {
+    add = (n: number) => ({ ...this.state, value: this.state.value + n });
     increment = () => this.add(1);
-    reset = () => ({ value: 0 });
+    reset = () => ({ ...this.state, value: 0 });
+    startUpdate = () => ({ ...this.state, updating: true });
+    stopUpdate = () => ({ ...this.state, updating: false });
+
+    *addRandom() {
+        yield this.startUpdate();
+        yield getRandom({ min: 1, max: 10 })
+            .then(num => this.add(num))
+            .catch(() => "what?");
+        yield this.stopUpdate();
+    }
 }
 
 class SessionReducer extends Reducer<SessionState> {
@@ -41,8 +59,7 @@ class AuthReducer extends Reducer<AuthState> {
 export class AppReducer extends Reducer<AppState> {
     static nested = {
         auth: AuthReducer,
-        counter1: CounterReducer,
-        counter2: CounterReducer,
+        counter: CounterReducer,
     };
     reset = () => initialAppState;
 }
@@ -53,10 +70,11 @@ export const app = getActions(AppReducer);
 
 export const initialAppState: AppState = {
     auth: { session: null },
-    counter1: { value: 1 },
-    counter2: { value: 2 },
+    counter: { value: 1, updating: false },
 };
 
+/*
 console.log("reset", app.reset());
 console.log("counter1=3", app.counter1.add(2));
 console.log("session=user1", app.auth.session.login("user1"));
+*/

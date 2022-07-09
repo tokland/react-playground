@@ -10,10 +10,8 @@ const App = () => {
 
     return (
         <AppStateProvider>
-            <Counter counterId="counter1" />
-            <Counter counterId="counter2" />
+            <Counter />
         </AppStateProvider>
     );
 };
-
 export default App;

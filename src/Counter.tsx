@@ -1,34 +1,48 @@
 import React from "react";
 import { appContext } from "./App";
-import { app } from "./AppReducer";
-import { useContextState } from "./StateContext";
+import { app, AppState } from "./AppReducer";
+import { Dispatcher, useContextState } from "./StateContext";
 
-export const Counter: React.FC<{ counterId: "counter1" | "counter2" }> = React.memo(props => {
-    const { counterId } = props;
-    const [counter, dispatch] = useContextState(appContext, state => state[counterId]);
+function addRandomDispatcher(dispatch: Dispatcher<AppState>) {
+    dispatch(app.counter.startUpdate());
 
-    const increment = React.useCallback(() => {
-        dispatch(app[counterId].increment());
-    }, [counterId, dispatch]);
+    return getRandom().then(num => {
+        dispatch(app.counter.add(num));
+        dispatch(app.counter.stopUpdate());
+    });
+}
 
-    const decrement = React.useCallback(() => {
-        dispatch(app[counterId].add(-1));
-    }, [counterId, dispatch]);
+function CounterComponent() {
+    const [counter, dispatch] = useContextState(appContext, state => state.counter);
 
-    const resetAll = React.useCallback(() => {
-        dispatch(app.reset());
-    }, [dispatch]);
+    const addRandom = React.useCallback(() => addRandomDispatcher(dispatch), [dispatch]);
+    const decrement = React.useCallback(() => dispatch(app.counter.add(-1)), [dispatch]);
+    // const decrement = React.useCallback(() => setState(prev => new Reducer(prev).increment()), [setState]);
+    // const decrement2 = React.useCallback(() => setState(prev => new Reducer(prev).increment()), [setState]);
+    // const [counter, actions] = useMyState(state => state.counter)
+    // actions.increment
 
-    console.debug("Counter:render", props.counterId);
+    console.debug("Counter:render", counter);
 
     return (
         <div>
             <span>value = {counter.value}</span>
-            <button onClick={decrement}>-1</button>
-            <button onClick={increment}>+1</button>
-            <button onClick={resetAll}>RESET ALL</button>
+            <button onClick={decrement}>-ONE</button>
+            <button onClick={addRandom}>+RANDOM</button>
+            <span>{counter.updating ? `[updating]` : ""}</span>
         </div>
     );
-});
+}
 
-Counter.displayName = "Counter";
+export const Counter = React.memo(CounterComponent);
+
+export async function getRandom(
+    options: { min: number; max: number } = { min: 1, max: 10 }
+): Promise<number> {
+    const { min, max } = options;
+    const n = Math.floor(Math.random() * (max - min) + min);
+
+    return new Promise(resolve => {
+        window.setTimeout(() => resolve(n), 2_000);
+    });
+}
