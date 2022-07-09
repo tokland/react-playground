@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppStore } from "./AppContext";
+import { useAppStore } from "./AppStore";
 
 function CounterComponent() {
     const [counter, actions] = useAppStore(state => state.counter);

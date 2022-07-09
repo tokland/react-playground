@@ -44,13 +44,7 @@ export function useContextState<State, SelectedState>(
     return [selection, setState];
 }
 
-export function buildActions<State>() {
-    return function <Actions>(getActions: (setState: SetState<State>) => Actions) {
-        return getActions;
-    };
-}
-
-type SetState<State> = (updater: (state: State) => State) => void;
+export type SetState<State> = (updater: (state: State) => State) => void;
 
 /* State store */
 

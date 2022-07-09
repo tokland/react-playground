@@ -1,6 +1,6 @@
 import React from "react";
 import { AppStateReducer, AppState, initialAppState } from "./AppState";
-import { buildActions, getStore, Selector } from "./StateContext";
+import { getStore, Selector, SetState } from "./StoreState";
 
 export const useAppStoreWithSetState = getStore(initialAppState);
 
@@ -26,10 +26,16 @@ export function useAppStore<SelectedState>(selector: Selector<AppState, Selected
     const [selectedState, setState] = useAppStoreWithSetState(selector);
 
     const actions = React.useMemo(() => {
-        return appActions(setState); // Add any global object useful for the actions reducer
+        return appActions(setState); // Add other objects useful for the actions reducer
     }, [setState]);
 
     return [selectedState, actions] as const;
+}
+
+function buildActions<State>() {
+    return function <Actions>(getActions: (setState: SetState<State>) => Actions) {
+        return getActions;
+    };
 }
 
 /* 

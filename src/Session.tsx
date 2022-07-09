@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppStore } from "./AppContext";
+import { useAppStore } from "./AppStore";
 
 function SessionComponent() {
     const [session] = useAppStore(state => state.session);
