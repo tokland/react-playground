@@ -1,30 +1,20 @@
 import React from "react";
 
-export function createContextState<State>(): StateContext<State> {
-    return React.createContext<Store<State> | undefined>(undefined);
-}
-
-export function useContextStateProvider<State>(context: StateContext<State>, initialState: State) {
-    const initialStateMemoized = useFirst(initialState);
-    const store = React.useMemo(() => new Store(initialStateMemoized), [initialStateMemoized]);
-
-    const ProviderComponent = React.useCallback<React.FC>(
-        props => <context.Provider value={store}>{props.children}</context.Provider>,
-        [context, store]
-    );
-    return ProviderComponent;
-}
-
 export type Selector<State, SelectedState> = (state: State) => SelectedState;
 
+export function buildStateHook<State>(initialState: State) {
+    const store = new Store(initialState);
+
+    return function <SelectedState>(selector: Selector<State, SelectedState>) {
+        return useContextState(store, selector);
+    };
+}
+
 export function useContextState<State, SelectedState>(
-    context: StateContext<State>,
+    store: Store<State>,
     selector: Selector<State, SelectedState>
 ): [SelectedState, SetState<State>] {
-    const store = React.useContext(context);
     const rerender = useRerender();
-
-    if (!store) throw new Error("State context not initialized");
 
     const selection = React.useMemo(() => {
         return selector(store.state);
@@ -59,8 +49,6 @@ export function useContextState<State, SelectedState>(
 
 export type SetState<State> = (updater: (state: State) => State) => void;
 
-export type StateContext<State> = React.Context<Store<State> | undefined>;
-
 /* State store */
 
 type Listener<State> = (newState: State) => void;
@@ -94,11 +82,6 @@ class Store<State> {
 }
 
 /* Generic hooks */
-
-function useFirst<Value>(value: Value): Value {
-    const ref = React.useRef(value);
-    return ref.current;
-}
 
 function useLatestRef<Value>(value: Value): React.MutableRefObject<Value> {
     const ref = React.useRef(value);

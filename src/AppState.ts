@@ -22,13 +22,6 @@ export class AppStateReducer {
     add(n: number): AppState {
         return this.lens.counter.value.mod(prev => prev + n).get();
     }
-
-    /*
-    async addRandom(): Promise<AppState> {
-        const n = await getRandom();
-        return this.add(n);
-    }
-    */
 }
 
 export async function getRandom(options: { min?: number; max?: number } = {}): Promise<number> {
