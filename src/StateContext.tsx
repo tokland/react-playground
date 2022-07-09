@@ -18,15 +18,16 @@ export function useContextStateProvider<State>(context: StateContext<State>, ini
 export function useContextState<State, SelectedState>(
     context: StateContext<State>,
     selector: (state: State) => SelectedState
-): [SelectedState, Dispatcher<State>] {
+): [SelectedState, SetState<State>] {
     const store = React.useContext(context);
-    if (!store) throw new Error("State context not initialized");
-
     const rerender = useRerender();
+
+    if (!store) throw new Error("State context not initialized");
 
     const selection = React.useMemo(() => {
         return selector(store.state);
     }, [selector, store.state]);
+
     const selectionRef = useLatestRef(selection);
     const selectorRef = useLatestRef(selector);
 
@@ -43,20 +44,20 @@ export function useContextState<State, SelectedState>(
         return store.subscribe(stateTransition);
     }, [store, stateTransition]);
 
-    const dispatch = React.useCallback<Dispatcher<State>>(
+    const setState = React.useCallback(
         action => {
-            const newState = action.update(store.state);
+            const newState = action(store.state);
             store.setState(newState);
         },
         [store]
     );
 
-    return [selection, dispatch];
+    return [selection, setState];
 }
 
-type Action<State> = { update: (state: State) => State };
+type Updater<State> = (state: State) => State;
 
-export type Dispatcher<State> = (action: Action<State>) => void;
+export type SetState<State> = (updater: Updater<State>) => void;
 
 type StateContext<State> = React.Context<Store<State> | undefined>;
 

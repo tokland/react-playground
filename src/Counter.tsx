@@ -1,22 +1,16 @@
 import React from "react";
 import { appContext } from "./App";
-import { app, AppState } from "./AppReducer";
-import { Dispatcher, useContextState } from "./StateContext";
-
-function addRandomDispatcher(dispatch: Dispatcher<AppState>) {
-    dispatch(app.counter.startUpdate());
-
-    return getRandom().then(num => {
-        dispatch(app.counter.add(num));
-        dispatch(app.counter.stopUpdate());
-    });
-}
+import { useContextState } from "./StateContext";
 
 function CounterComponent() {
-    const [counter, dispatch] = useContextState(appContext, state => state.counter);
+    const [counter, setState] = useContextState(appContext, state => state.counter);
+    const increment = React.useCallback(
+        () => setState(prev => ({ ...prev, counter: { value: prev.counter.value + 1 } })),
+        [setState]
+    );
 
-    const addRandom = React.useCallback(() => addRandomDispatcher(dispatch), [dispatch]);
-    const decrement = React.useCallback(() => dispatch(app.counter.add(-1)), [dispatch]);
+    // const addRandom = React.useCallback(() => addRandomDispatcher(dispatch), [dispatch]);
+    // const decrement = React.useCallback(() => dispatch(app.counter.add(-1)), [dispatch]);
     // const decrement = React.useCallback(() => setState(prev => new Reducer(prev).increment()), [setState]);
     // const decrement2 = React.useCallback(() => setState(prev => new Reducer(prev).increment()), [setState]);
     // const [counter, actions] = useMyState(state => state.counter)
@@ -27,9 +21,8 @@ function CounterComponent() {
     return (
         <div>
             <span>value = {counter.value}</span>
-            <button onClick={decrement}>-ONE</button>
-            <button onClick={addRandom}>+RANDOM</button>
-            <span>{counter.updating ? `[updating]` : ""}</span>
+            <button onClick={increment}>-ONE</button>
+            <button onClick={increment}>+ONE</button>
         </div>
     );
 }
