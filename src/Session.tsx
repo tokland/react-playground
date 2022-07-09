@@ -1,10 +1,8 @@
 import React from "react";
-import { useAppContext } from "./AppContext";
+import { useAppState } from "./AppContext";
 
 function SessionComponent() {
-    const [session] = useAppContext(state => state.session);
-
-    console.debug("Session:render", session);
+    const [session] = useAppState(state => state.session);
 
     return (
         <div>

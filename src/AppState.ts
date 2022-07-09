@@ -22,4 +22,20 @@ export class AppStateReducer {
     add(n: number): AppState {
         return this.lens.counter.value.mod(prev => prev + n).get();
     }
+
+    /*
+    async addRandom(): Promise<AppState> {
+        const n = await getRandom();
+        return this.add(n);
+    }
+    */
+}
+
+export async function getRandom(options: { min?: number; max?: number } = {}): Promise<number> {
+    const { min = 1, max = 10 } = options;
+    const n = Math.floor(Math.random() * (max - min) + min);
+
+    return new Promise(resolve => {
+        window.setTimeout(() => resolve(n), 1e3);
+    });
 }
