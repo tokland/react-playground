@@ -1,9 +1,8 @@
 import React from "react";
-import { appContext } from "./App";
-import { useContextState } from "./StateContext";
+import { useAppContext } from "./AppContext";
 
 function CounterComponent() {
-    const [counter, setState] = useContextState(appContext, state => state.counter);
+    const [counter, setState] = useAppContext(state => state.counter);
 
     const decrement = React.useCallback(
         () => setState(prev => ({ ...prev, counter: { value: prev.counter.value - 1 } })),
