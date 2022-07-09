@@ -15,9 +15,11 @@ export function useContextStateProvider<State>(context: StateContext<State>, ini
     return ProviderComponent;
 }
 
+export type Selector<State, SelectedState> = (state: State) => SelectedState;
+
 export function useContextState<State, SelectedState>(
     context: StateContext<State>,
-    selector: (state: State) => SelectedState
+    selector: Selector<State, SelectedState>
 ): [SelectedState, SetState<State>] {
     const store = React.useContext(context);
     const rerender = useRerender();
@@ -55,11 +57,9 @@ export function useContextState<State, SelectedState>(
     return [selection, setState];
 }
 
-type Updater<State> = (state: State) => State;
+export type SetState<State> = (updater: (state: State) => State) => void;
 
-export type SetState<State> = (updater: Updater<State>) => void;
-
-type StateContext<State> = React.Context<Store<State> | undefined>;
+export type StateContext<State> = React.Context<Store<State> | undefined>;
 
 /* State store */
 

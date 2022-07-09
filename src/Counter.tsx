@@ -2,25 +2,15 @@ import React from "react";
 import { useAppContext } from "./AppContext";
 
 function CounterComponent() {
-    const [counter, setState] = useAppContext(state => state.counter);
-
-    const decrement = React.useCallback(
-        () => setState(prev => ({ ...prev, counter: { value: prev.counter.value - 1 } })),
-        [setState]
-    );
-
-    const increment = React.useCallback(
-        () => setState(prev => ({ ...prev, counter: { value: prev.counter.value + 1 } })),
-        [setState]
-    );
+    const [counter, actions] = useAppContext(state => state.counter);
 
     console.debug("Counter:render", counter);
 
     return (
         <div>
             <span>value = {counter.value}</span>
-            <button onClick={increment}>-ONE</button>
-            <button onClick={decrement}>+ONE</button>
+            <button onClick={actions.decrement}>-ONE</button>
+            <button onClick={actions.increment}>+ONE</button>
         </div>
     );
 }
