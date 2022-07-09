@@ -1,8 +1,8 @@
 import React from "react";
-import { AppStateReducer, AppState, getRandom, initialAppState } from "./AppState";
-import { buildActions, buildStateHook, Selector } from "./StateContext";
+import { AppStateReducer, AppState, initialAppState } from "./AppState";
+import { buildActions, getStore, Selector } from "./StateContext";
 
-export const useAppStateWithSetter = buildStateHook(initialAppState);
+export const useAppStoreWithSetState = getStore(initialAppState);
 
 const appActions = buildActions<AppState>()(setState => ({
     decrement: () => setState(state => new AppStateReducer(state).add(-1)),
@@ -13,8 +13,17 @@ const appActions = buildActions<AppState>()(setState => ({
     },
 }));
 
-export function useAppState<SelectedState>(selector: Selector<AppState, SelectedState>) {
-    const [selectedState, setState] = useAppStateWithSetter(selector);
+async function getRandom(options: { min?: number; max?: number } = {}): Promise<number> {
+    const { min = 1, max = 10 } = options;
+    const value = Math.floor(Math.random() * (max - min) + min);
+
+    return new Promise(resolve => {
+        window.setTimeout(() => resolve(value), 1e3);
+    });
+}
+
+export function useAppStore<SelectedState>(selector: Selector<AppState, SelectedState>) {
+    const [selectedState, setState] = useAppStoreWithSetState(selector);
 
     const actions = React.useMemo(() => {
         return appActions(setState); // Add any global object useful for the actions reducer

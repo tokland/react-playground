@@ -2,7 +2,7 @@ import React from "react";
 
 export type Selector<State, SelectedState> = (state: State) => SelectedState;
 
-export function buildStateHook<State>(initialState: State) {
+export function getStore<State>(initialState: State) {
     const store = new Store(initialState);
 
     return function <SelectedState>(selector: Selector<State, SelectedState>) {

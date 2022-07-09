@@ -1,4 +1,4 @@
-import { lens, ProxyLens } from "proxy-lens";
+import { ProxyLens, lens } from "proxy-lens";
 
 export type AppState = {
     counter: CounterState;
@@ -22,13 +22,4 @@ export class AppStateReducer {
     add(n: number): AppState {
         return this.lens.counter.value.mod(prev => prev + n).get();
     }
-}
-
-export async function getRandom(options: { min?: number; max?: number } = {}): Promise<number> {
-    const { min = 1, max = 10 } = options;
-    const n = Math.floor(Math.random() * (max - min) + min);
-
-    return new Promise(resolve => {
-        window.setTimeout(() => resolve(n), 1e3);
-    });
 }
