@@ -19,7 +19,7 @@ export class AppStateReducer {
         this.lens = lens(this.state);
     }
 
-    add(n: number): AppState {
+    addCounter(n: number): AppState {
         return this.lens.counter.value.mod(prev => prev + n).get();
     }
 }
