@@ -15,10 +15,7 @@ export function useContextState<State, SelectedState>(
     selector: Selector<State, SelectedState>
 ): [SelectedState, SetState<State>] {
     const rerender = useRerender();
-
-    const selection = React.useMemo(() => {
-        return selector(store.state);
-    }, [selector, store.state]);
+    const selection = React.useMemo(() => selector(store.state), [selector, store.state]);
 
     const selectionRef = useLatestRef(selection);
     const selectorRef = useLatestRef(selector);
@@ -47,7 +44,13 @@ export function useContextState<State, SelectedState>(
     return [selection, setState];
 }
 
-export type SetState<State> = (updater: (state: State) => State) => void;
+export function buildActions<State>() {
+    return function <Actions>(getActions: (setState: SetState<State>) => Actions) {
+        return getActions;
+    };
+}
+
+type SetState<State> = (updater: (state: State) => State) => void;
 
 /* State store */
 
@@ -85,9 +88,7 @@ class Store<State> {
 
 function useLatestRef<Value>(value: Value): React.MutableRefObject<Value> {
     const ref = React.useRef(value);
-    React.useEffect(() => {
-        ref.current = value;
-    }, [value]);
+    React.useEffect(() => void (ref.current = value), [value]);
     return ref;
 }
 

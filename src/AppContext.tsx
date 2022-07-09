@@ -1,8 +1,8 @@
 import React from "react";
 import { AppStateReducer, AppState, getRandom, initialAppState } from "./AppState";
-import { buildStateHook, Selector, SetState } from "./StateContext";
+import { buildActions, buildStateHook, Selector } from "./StateContext";
 
-export const useAppStateBase = buildStateHook(initialAppState);
+export const useAppStateWithSetter = buildStateHook(initialAppState);
 
 const appActions = buildActions<AppState>()(setState => ({
     decrement: () => setState(state => new AppStateReducer(state).add(-1)),
@@ -12,6 +12,16 @@ const appActions = buildActions<AppState>()(setState => ({
         setState(state => new AppStateReducer(state).add(randomValue));
     },
 }));
+
+export function useAppState<SelectedState>(selector: Selector<AppState, SelectedState>) {
+    const [selectedState, setState] = useAppStateWithSetter(selector);
+
+    const actions = React.useMemo(() => {
+        return appActions(setState); // Add any global object useful for the actions reducer
+    }, [setState]);
+
+    return [selectedState, actions] as const;
+}
 
 /* 
 const _appActionsFunctional = {
@@ -32,19 +42,3 @@ function async<Value>(
     return { type: "asyncPromise" as const, fn };
 }
 */
-
-export function useAppState<SelectedState>(selector: Selector<AppState, SelectedState>) {
-    const [selectedState, setState] = useAppStateBase(selector);
-
-    const actions = React.useMemo(() => {
-        return appActions(setState); // We can add any generic object commonly used in the actions
-    }, [setState]);
-
-    return [selectedState, actions] as const;
-}
-
-function buildActions<State>() {
-    return function <Actions>(getActions: (setState: SetState<State>) => Actions) {
-        return getActions;
-    };
-}
