@@ -14,6 +14,7 @@ function buildReducer<State>() {
 
 const counterReducer = buildReducer<CounterState>()(
     {
+        add: (n: number) => state => ({ value: state.value + n }),
         increment: () => state => ({ value: state.value + 1 }),
         decrement: () => state => ({ value: state.value - 1 }),
     },
@@ -29,23 +30,39 @@ const appReducer = buildReducer<AppState>()(
     }
 );
 
+type T1 = Replace<typeof appReducer>;
+type T2 = T1["reset"];
+type T3 = T1["counter"]["add"];
+
+type GetReducerState<Reducer extends BuildReducer<any>> = Reducer extends BuildReducer<infer State>
+    ? State
+    : never;
+
 type ActionsBase<State> = Record<string, (...args: any[]) => (state: State) => State>;
 
 type NestedBase<State> = { [K in keyof State]?: BuildReducer<State[K]> };
 
-type BuildReducer<State> = { actions: ActionsBase<State>; nested: NestedBase<State> };
+interface BuildReducer<State> {
+    actions: ActionsBase<State>;
+    nested: NestedBase<State>;
+}
 
-// type ReplaceReducerState<State, Reducer extends BuilderReducer<State>> = ... RECURSIVE
-
-type ReplaceActionsState<State, Actions> = {
-    [A in keyof Actions]: Actions[A] extends (...args: infer Args) => (state: State) => State
+type ActionsToEffects<Actions> = {
+    [A in keyof Actions]: Actions[A] extends (...args: infer Args) => (state: any) => any
         ? (...args: Args) => void
         : never;
 };
 
-type Pair<T1, T2> = [T1, T2];
-
-type GetActions<Reducer> = Reducer extends { actions: infer Actions } ? Actions : never;
+type Replace<
+    Reducer extends BuildReducer<any>,
+    State = GetReducerState<Reducer>,
+    Actions = Reducer["actions"],
+    Nested = Reducer["nested"]
+> = ActionsToEffects<Actions> & {
+    [N in keyof Nested & keyof State]: Nested[N] extends BuildReducer<State[N]>
+        ? Replace<Nested[N]>
+        : never;
+};
 
 function getSetStateActions<
     State,
@@ -54,9 +71,7 @@ function getSetStateActions<
 >(
     reducer: { actions: Actions; nested: Nested },
     setState: SetState<State>
-): ReplaceActionsState<State, Actions> & {
-    [K in keyof Nested & keyof State]: ReplaceActionsState<State[K], GetActions<Nested[K]>>;
-} {
+): Replace<typeof reducer> {
     const actions2 = _.mapValues(reducer.actions, (value2: Actions[keyof Actions]) => {
         return (...args: any[]) => {
             setState(state => {
