@@ -53,15 +53,15 @@ type ActionsToEffects<Actions> = {
         : never;
 };
 
+type ReplaceNested<Nested, State> = Nested extends BuildReducer<State> ? Replace<Nested> : never;
+
 type Replace<
     Reducer extends BuildReducer<any>,
     State = GetReducerState<Reducer>,
     Actions = Reducer["actions"],
     Nested = Reducer["nested"]
 > = ActionsToEffects<Actions> & {
-    [N in keyof Nested & keyof State]: Nested[N] extends BuildReducer<State[N]>
-        ? Replace<Nested[N]>
-        : never;
+    [N in keyof Nested & keyof State]: ReplaceNested<Nested[N], State[N]>;
 };
 
 function getSetStateActions<
