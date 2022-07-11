@@ -2,10 +2,12 @@ import React from "react";
 import { useAppStore } from "./AppStore";
 
 function SessionComponent() {
-    const [session] = useAppStore(state => state.session);
+    const [session, actions] = useAppStore(state => state.session);
 
     return (
         <div>
+            <button onClick={actions.reset}>Reset</button>
+
             {session.type === "logged" ? (
                 <span>Logged {session.username}</span>
             ) : (

@@ -5,7 +5,7 @@ export type AppState = {
     session: { type: "notLogged" } | { type: "logged"; username: string };
 };
 
-type CounterState = { value: number };
+export type CounterState = { value: number };
 
 export const initialAppState: AppState = {
     counter: { value: 0 },
