@@ -5,20 +5,25 @@ import { getStore, Selector, SetState } from "./StoreState";
 
 const counterReducer = buildReducer<CounterState>()(
     {
-        add: (n: number) => state => ({ value: state.value + n }),
-        increment: () => state => ({ value: state.value + 1 }),
-        decrement: () => state => ({ value: state.value - 1 }),
+        add: (n: number) => state => ({ ...state, value: state.value + n }),
+        increment: () => state => ({ ...state, value: state.value + 1 }),
+        decrement: () => state => ({ ...state, value: state.value - 1 }),
     },
     {}
+);
+
+const sectionsReducer = buildReducer<AppState["sections"]>()(
+    {},
+    {
+        counter: counterReducer,
+    }
 );
 
 const appReducer = buildReducer<AppState>()(
     {
         reset: () => _state => initialAppState,
     },
-    {
-        counter: counterReducer,
-    }
+    { sections: sectionsReducer }
 );
 
 /* Implementation */
@@ -32,13 +37,7 @@ function buildReducer<State>() {
     };
 }
 
-type T1 = Replace<typeof appReducer>;
-type T2 = T1["reset"];
-type T3 = T1["counter"]["add"];
-
-type GetReducerState<Reducer extends BuildReducer<any>> = Reducer extends BuildReducer<infer State>
-    ? State
-    : never;
+type GetReducerState<R extends ReducerBase> = R extends BuildReducer<infer State> ? State : never;
 
 type ActionsBase<State> = Record<string, (...args: any[]) => (state: State) => State>;
 
@@ -68,30 +67,36 @@ type Replace<
     [N in keyof Nested & keyof State]: ReplaceNested<Nested[N], State[N]>;
 };
 
-function getEffectActions<StateA, Reducer extends ReducerBase>(
+function getEffectActions<Reducer extends ReducerBase, StateA, StateB>(
     reducer: Reducer,
-    setState: SetState<StateA> // TODO: fn
+    setState: SetState<StateA>,
+    lens: {
+        get: (stateA: StateA) => StateB;
+        set: (stateA: StateA, stateB: StateB) => StateA;
+    }
 ): Replace<Reducer> {
     const innerActions = _.mapValues(reducer.actions, (value2: any) => {
         return (...args: any[]) => {
             setState(stateA => {
-                const stateB = stateA;
-                const newStateB = value2(...args)(stateB);
-                return newStateB;
+                const stateB = lens.get(stateA);
+                const fn = value2(...args);
+                const newStateB = fn(stateB);
+                return lens.set(stateA, newStateB);
             });
         };
     });
 
     const nestedActions = _.mapValues(reducer.nested, (reducerB: any, key: any) => {
-        // TODO: Recursive call to getSetStateActions
-        return _.mapValues(reducerB.actions, (value2: any) => {
-            return (...args: any[]) => {
-                setState(stateA => {
-                    const stateB = (stateA as any)[key]; // get: StateA => StateB
-                    const newStateB = value2(...args)(stateB);
-                    return { ...stateA, [key]: newStateB }; // set: (StateA, )
-                });
-            };
+        return getEffectActions(reducerB, setState, {
+            get: stateA => {
+                const stateB = lens.get(stateA) as any;
+                return stateB[key];
+            },
+            set: (stateA, newStateB) => {
+                const stateB = lens.get(stateA) as any;
+                const newStateN = { ...stateB, [key]: newStateB };
+                return lens.set(stateA, newStateN);
+            },
         });
     });
 
@@ -106,7 +111,10 @@ export function useAppStore<SelectedState>(selector: Selector<AppState, Selected
     const [selectedState, setState] = useAppStoreWithSetState(selector);
 
     const actions = React.useMemo(() => {
-        return getEffectActions(appReducer, setState);
+        return getEffectActions(appReducer, setState, {
+            get: state => state,
+            set: (_stateA, stateB: AppState) => stateB,
+        });
     }, [setState]);
 
     return [selectedState, actions] as const;
@@ -117,13 +125,13 @@ addRandom: () =>
     getRandomInteger({ min: 1, max: 5 })
         .then(value => update(state => new AppStateReducer(state).addCounter(value)))
         .catch(console.error),
-*/
-
-async function getRandomInteger(options: { min: number; max: number }): Promise<number> {
-    const { min, max } = options;
-    const value = Math.floor(Math.random() * (max - min) + min);
-
-    return new Promise(resolve => {
-        window.setTimeout(() => resolve(value), 1e3);
-    });
+        
+        async function getRandomInteger(options: { min: number; max: number }): Promise<number> {
+            const { min, max } = options;
+            const value = Math.floor(Math.random() * (max - min) + min);
+            
+            return new Promise(resolve => {
+                window.setTimeout(() => resolve(value), 1e3);
+            });
 }
+*/

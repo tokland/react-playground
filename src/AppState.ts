@@ -1,15 +1,15 @@
 import { ProxyLens, lens } from "proxy-lens";
 
 export type AppState = {
-    counter: CounterState;
     session: { type: "notLogged" } | { type: "logged"; username: string };
+    sections: { counter: CounterState };
 };
 
 export type CounterState = { value: number };
 
 export const initialAppState: AppState = {
-    counter: { value: 0 },
     session: { type: "notLogged" },
+    sections: { counter: { value: 0 } },
 };
 
 export class AppStateReducer {
@@ -20,6 +20,6 @@ export class AppStateReducer {
     }
 
     addCounter(n: number): AppState {
-        return this.lens.counter.value.mod(prev => prev + n).get();
+        return this.lens.sections.counter.value.mod(prev => prev + n).get();
     }
 }
