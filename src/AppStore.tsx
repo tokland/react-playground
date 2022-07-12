@@ -70,7 +70,7 @@ type Replace<
 
 function getEffectActions<State, Reducer extends ReducerBase>(
     reducer: Reducer,
-    setState: SetState<State>
+    setState: SetState<State> // TODO: fn
 ): Replace<Reducer> {
     const innerActions = _.mapValues(reducer.actions, (value2: any) => {
         return (...args: any[]) => {
@@ -87,9 +87,9 @@ function getEffectActions<State, Reducer extends ReducerBase>(
         return _.mapValues(reducerB.actions, (value2: any) => {
             return (...args: any[]) => {
                 setState(state => {
-                    const stateB = (state as any)[key];
+                    const stateB = (state as any)[key]; // get: StateA => StateB
                     const newStateB = value2(...args)(stateB);
-                    return { ...state, [key]: newStateB };
+                    return { ...state, [key]: newStateB }; // set: (StateA, )
                 });
             };
         });
