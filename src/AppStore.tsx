@@ -68,14 +68,14 @@ type Replace<
     [N in keyof Nested & keyof State]: ReplaceNested<Nested[N], State[N]>;
 };
 
-function getEffectActions<State, Reducer extends ReducerBase>(
+function getEffectActions<StateA, Reducer extends ReducerBase>(
     reducer: Reducer,
-    setState: SetState<State> // TODO: fn
+    setState: SetState<StateA> // TODO: fn
 ): Replace<Reducer> {
     const innerActions = _.mapValues(reducer.actions, (value2: any) => {
         return (...args: any[]) => {
-            setState(state => {
-                const stateB = state;
+            setState(stateA => {
+                const stateB = stateA;
                 const newStateB = value2(...args)(stateB);
                 return newStateB;
             });
@@ -86,10 +86,10 @@ function getEffectActions<State, Reducer extends ReducerBase>(
         // TODO: Recursive call to getSetStateActions
         return _.mapValues(reducerB.actions, (value2: any) => {
             return (...args: any[]) => {
-                setState(state => {
-                    const stateB = (state as any)[key]; // get: StateA => StateB
+                setState(stateA => {
+                    const stateB = (stateA as any)[key]; // get: StateA => StateB
                     const newStateB = value2(...args)(stateB);
-                    return { ...state, [key]: newStateB }; // set: (StateA, )
+                    return { ...stateA, [key]: newStateB }; // set: (StateA, )
                 });
             };
         });
