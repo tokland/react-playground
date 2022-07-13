@@ -2,7 +2,11 @@ import React from "react";
 
 export type Selector<State, SelectedState> = (state: State) => SelectedState;
 
-export function getStore<State>(initialState: State) {
+export type Store2<State> = <SelectedState>(
+    selector: Selector<State, SelectedState>
+) => [SelectedState, SetState<State>];
+
+export function getStore<State>(initialState: State): Store2<State> {
     const store = new Store(initialState);
 
     return function <SelectedState>(selector: Selector<State, SelectedState>) {
@@ -52,7 +56,7 @@ type Listener<State> = (newState: State) => void;
 
 type Unsubscriber = () => void;
 
-class Store<State> {
+export class Store<State> {
     private listeners: Set<Listener<State>>;
 
     constructor(private _state: State) {

@@ -1,8 +1,8 @@
 import React from "react";
-import { useAppStore } from "./AppStore";
+import { useAppStoreWithActions } from "./AppStore";
 
 function CounterComponent() {
-    const [counter, actions] = useAppStore(state => state.sections.counter);
+    const [counter, actions] = useAppStoreWithActions(state => state.sections.counter);
 
     return (
         <div>

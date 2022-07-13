@@ -1,8 +1,8 @@
 import React from "react";
-import { useAppStore } from "./AppStore";
+import { useAppStoreWithActions } from "./AppStore";
 
 function SessionComponent() {
-    const [session, actions] = useAppStore(state => state.session);
+    const [session, actions] = useAppStoreWithActions(state => state.session);
 
     return (
         <div>
