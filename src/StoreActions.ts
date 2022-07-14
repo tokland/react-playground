@@ -2,7 +2,10 @@ import React from "react";
 import _ from "lodash";
 import { Selector, SetState, Store, useContextState } from "./StoreState";
 
-export function getActionsStore<State>(initialState: State, reducer: BuildReducer<State>) {
+export function getActionsStore<State, Reducer extends BuildReducer<State>>(
+    initialState: State,
+    reducer: Reducer
+) {
     const store = new Store(initialState);
 
     return function <SelectedState>(selector: Selector<State, SelectedState>) {
@@ -11,7 +14,7 @@ export function getActionsStore<State>(initialState: State, reducer: BuildReduce
         const actions = React.useMemo(() => {
             return getEffectActions(reducer, setState, {
                 get: state => state,
-                set: (_stateA, stateB: State) => stateB,
+                set: (_prevStateA, newStateA: State) => newStateA,
             });
         }, [setState]);
 
@@ -22,9 +25,9 @@ export function getActionsStore<State>(initialState: State, reducer: BuildReduce
 export function buildReducer<State>() {
     return function <Actions extends ActionsBase<State>, Nested extends NestedBase<State>>(
         actions: Actions,
-        nested: Nested
-    ) {
-        return { actions, nested };
+        nested?: Nested
+    ): { actions: Actions; nested: Nested } {
+        return { actions, nested: nested || ({} as Nested) };
     };
 }
 
@@ -54,9 +57,8 @@ type ReplaceNested<Nested, State> = Nested extends BuildReducer<State> ? Replace
 type Replace<
     Reducer extends ReducerBase,
     State = GetReducerState<Reducer>,
-    Actions = Reducer["actions"],
     Nested = Reducer["nested"]
-> = ActionsToEffects<Actions> & {
+> = ActionsToEffects<Reducer["actions"]> & {
     [N in keyof Nested & keyof State]: ReplaceNested<Nested[N], State[N]>;
 };
 
@@ -97,4 +99,3 @@ export function getEffectActions<Reducer extends ReducerBase, StateA, StateB>(
 
     return { ...innerActions, ...nestedActions } as unknown as Replace<Reducer>;
 }
-    

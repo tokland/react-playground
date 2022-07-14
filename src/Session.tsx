@@ -1,18 +1,13 @@
 import React from "react";
-import { useAppStoreWithActions } from "./AppStore";
+import { useAppStore } from "./AppStore";
 
 function SessionComponent() {
-    const [session, actions] = useAppStoreWithActions(state => state.session);
+    const [session, actions] = useAppStore(state => state.session);
 
     return (
         <div>
             <button onClick={actions.reset}>Reset</button>
-
-            {session.type === "logged" ? (
-                <span>Logged {session.username}</span>
-            ) : (
-                <span>Not logged in</span>
-            )}
+            {session.type === "logged" && <span>Logged {session.username}</span>}
         </div>
     );
 }

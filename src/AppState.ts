@@ -7,11 +7,6 @@ export type AppState = {
 
 export type CounterState = { value: number };
 
-export const initialAppState: AppState = {
-    session: { type: "notLogged" },
-    sections: { counter: { value: 0 } },
-};
-
 export class AppStateReducer {
     lens: ProxyLens<AppState, AppState>;
 
