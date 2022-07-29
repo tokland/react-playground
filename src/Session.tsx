@@ -12,4 +12,13 @@ function SessionComponent() {
     );
 }
 
+/**
+ * @expect [2, 4] toEqual 1
+ * @expect [2, 4] toEqual 6
+ */
+
+export function sum(a: number, b: number) {
+    return a + b;
+}
+
 export const Session = React.memo(SessionComponent);

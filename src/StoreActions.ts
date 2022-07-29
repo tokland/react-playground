@@ -22,16 +22,31 @@ export function getActionsStore<State, Reducer extends BuildReducer<State>>(
     };
 }
 
+type BaseObj<State> = Record<string, Action<State> | BuildReducer<any>>;
+
+type BuildReducerFromMixedObj<State, Obj extends BaseObj<State>> = {
+    actions: Get<Obj, Action<State>>;
+    nested: Get<Obj, BuildReducer<any>>;
+};
+
 export function buildReducer<State>() {
-    return function <Actions extends ActionsBase<State>, Nested extends NestedBase<State>>(
-        actions: Actions,
-        nested?: Nested
-    ): { actions: Actions; nested: Nested } {
-        return { actions, nested: nested || ({} as Nested) };
+    return function <Obj extends Record<string, Action<State> | BuildReducer<any>>>(obj: Obj) {
+        const keys: Array<keyof Obj> = _(obj)
+            .toPairs()
+            .map(([key, value]) => ("actions" in value ? key : null))
+            .compact()
+            .value();
+
+        return {
+            actions: _.omit(obj, keys),
+            nested: _.pick(obj, keys),
+        } as unknown as BuildReducerFromMixedObj<State, Obj>;
     };
 }
 
-type GetReducerState<R extends ReducerBase> = R extends BuildReducer<infer State> ? State : never;
+type Id<T> = { [K in keyof T]: T[K] } | never;
+
+type Get<T, S> = Id<Pick<T, { [K in keyof T]: T[K] extends S ? K : never }[keyof T]>>;
 
 type Action<State> = (...args: any[]) => (state: State) => State;
 
@@ -52,24 +67,26 @@ type ActionsToEffects<Actions> = {
         : never;
 };
 
-type ReplaceNested<Nested, State> = Nested extends BuildReducer<State> ? Replace<Nested> : never;
+type ReplaceNested<Nested, State> = Nested extends BuildReducer<State>
+    ? Replace<State, Nested>
+    : never;
 
 type Replace<
-    Reducer extends ReducerBase,
-    State = GetReducerState<Reducer>,
+    State,
+    Reducer extends BuildReducer<State>,
     Nested = Reducer["nested"]
 > = ActionsToEffects<Reducer["actions"]> & {
     [N in keyof Nested & keyof State]: ReplaceNested<Nested[N], State[N]>;
 };
 
-export function getEffectActions<Reducer extends ReducerBase, StateA, StateB>(
+function getEffectActions<Reducer extends ReducerBase, StateA, StateB>(
     reducer: Reducer,
     setState: SetState<StateA>,
     lens: {
         get: (stateA: StateA) => StateB;
         set: (stateA: StateA, stateB: StateB) => StateA;
     }
-): Replace<Reducer> {
+): Replace<StateA, Reducer> {
     const innerActions = _.mapValues(reducer.actions, (actionB: Action<StateB>) => {
         return (...args: Parameters<typeof actionB>[0]) => {
             setState(stateA => {
@@ -97,5 +114,5 @@ export function getEffectActions<Reducer extends ReducerBase, StateA, StateB>(
         });
     });
 
-    return { ...innerActions, ...nestedActions } as unknown as Replace<Reducer>;
+    return { ...innerActions, ...nestedActions } as unknown as Replace<StateA, Reducer>;
 }

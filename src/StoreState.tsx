@@ -2,18 +2,6 @@ import React from "react";
 
 export type Selector<State, SelectedState> = (state: State) => SelectedState;
 
-export type Store2<State> = <SelectedState>(
-    selector: Selector<State, SelectedState>
-) => [SelectedState, SetState<State>];
-
-export function getStore<State>(initialState: State): Store2<State> {
-    const store = new Store(initialState);
-
-    return function <SelectedState>(selector: Selector<State, SelectedState>) {
-        return useContextState(store, selector);
-    };
-}
-
 export function useContextState<State, SelectedState>(
     store: Store<State>,
     selector: Selector<State, SelectedState>

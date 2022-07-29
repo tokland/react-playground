@@ -6,6 +6,7 @@ function CounterComponent() {
 
     const addRandom = React.useCallback(async () => {
         const randomValue = await getRandomInteger({ min: 1, max: 10 });
+        actions.reset();
         actions.sections.counter.add(randomValue);
     }, [actions]);
 
