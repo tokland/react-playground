@@ -1,6 +1,10 @@
-export type AppState = {
+export interface AppState {
     session: { type: "notLogged" } | { type: "logged"; username: string };
-    sections: { counter: CounterState };
-};
+    sections: {
+        counter: CounterState;
+    };
+}
 
-export type CounterState = { value: number };
+export interface CounterState {
+    value: number;
+}

@@ -7,9 +7,7 @@ const counterReducer = buildReducer<CounterState>()({
     decrement: () => state => ({ value: state.value - 1 }),
 });
 
-type SectionsState = AppState["sections"];
-
-const sectionsReducer = buildReducer<SectionsState>()({
+const sectionsReducer = buildReducer<AppState["sections"]>()({
     counter: counterReducer,
 });
 
