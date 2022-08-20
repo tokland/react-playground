@@ -15,6 +15,15 @@ export function buildReducer<State>() {
     };
 }
 
+export interface BuildReducer<State> {
+    actions: ActionsBase<State>;
+    nested: NestedBase<State>;
+}
+
+export type Action<State> = (...args: any[]) => (state: State) => State;
+
+/* Internal */
+
 type BaseObj<State> = Record<string, Action<State> | BuildReducer<any>>;
 
 type BuildReducerFromMixedObj<State, Obj extends BaseObj<State>> = {
@@ -26,13 +35,6 @@ type Id<T> = { [K in keyof T]: T[K] } | never;
 
 type Get<T, S> = Id<Pick<T, { [K in keyof T]: T[K] extends S ? K : never }[keyof T]>>;
 
-export type Action<State> = (...args: any[]) => (state: State) => State;
-
 type ActionsBase<State> = Record<string, Action<State>>;
 
 type NestedBase<State> = { [K in keyof State]?: BuildReducer<State[K]> };
-
-export interface BuildReducer<State> {
-    actions: ActionsBase<State>;
-    nested: NestedBase<State>;
-}

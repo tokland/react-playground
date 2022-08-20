@@ -1,10 +1,10 @@
 import React from "react";
-import { AppState } from "../../domain/entities/AppState";
+import { Page } from "../../domain/entities/AppState";
 import { useAppStore } from "../../domain/entities/AppStore";
 import { getPath } from "../App";
 
 export interface LinkProps {
-    to: AppState["page"];
+    to: Page;
     text: string;
 }
 

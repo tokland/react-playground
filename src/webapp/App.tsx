@@ -1,22 +1,22 @@
 import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
-import { AppState } from "../domain/entities/AppState";
+import { Page } from "../domain/entities/AppState";
 import { useAppStore } from "../domain/entities/AppStore";
 
-export function getPage(path: string): AppState["page"] {
+export function getPage(path: string): Page {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
         return { type: "home" };
     } else if (counterMatch) {
-        return { type: "counter", id: parseInt(counterMatch.groups?.id || "0") };
+        return { type: "counter", id: parseInt(counterMatch.groups?.id || "1") };
     } else {
-        return <>No match</>;
+        throw new Error("getPage: no match");
     }
 }
 
-export function getPath(page: AppState["page"]): string {
+export function getPath(page: Page): string {
     switch (page.type) {
         case "home":
             return "/";
@@ -38,16 +38,14 @@ const App: React.FC = () => {
     React.useEffect(() => {
         const path = window.location.pathname;
         const page = getPage(path);
-        console.log("Initial", { path, page });
         actions.goTo(page);
     }, [actions]);
 
-    if (page.type === "home") {
-        return <HomePage />;
-    } else if (page.type === "counter") {
-        return <CounterPage id={page.id} />;
-    } else {
-        return <>No match</>;
+    switch (page.type) {
+        case "home":
+            return <HomePage />;
+        case "counter":
+            return <CounterPage id={page.id} />;
     }
 };
 

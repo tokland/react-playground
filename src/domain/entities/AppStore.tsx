@@ -1,4 +1,4 @@
-import { AppState } from "./AppState";
+import { AppState, Page } from "./AppState";
 import { getActionsStore } from "../../webapp/StoreActions";
 import { counterReducer } from "./Counter";
 import { buildReducer } from "../../libs/reducer";
@@ -9,7 +9,7 @@ const countersReducer = buildReducer<AppState["counters"]>()({
 });
 
 const appReducer = buildReducer<AppState>()({
-    goTo: (page: AppState["page"]) => state => ({ ...state, page }),
+    goTo: (page: Page) => state => ({ ...state, page }),
     counters: countersReducer,
 });
 
