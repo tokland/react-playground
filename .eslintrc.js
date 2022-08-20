@@ -10,10 +10,16 @@ module.exports = {
     rules: {
         "no-console": "off",
         "@typescript-eslint/explicit-function-return-type": ["off"],
-        "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "_" }],
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {
+                argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                caughtErrorsIgnorePattern: "^_",
+            },
+        ],
         "react/prop-types": "off",
         "@typescript-eslint/no-unused-expressions": "off",
-        "no-unused-expressions": "warn",
         "no-useless-concat": "off",
         "no-redeclare": "off",
         "no-use-before-define": "off",

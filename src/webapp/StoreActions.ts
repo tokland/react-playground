@@ -31,15 +31,15 @@ type BuildReducerFromMixedObj<State, Obj extends BaseObj<State>> = {
 
 export function buildReducer<State>() {
     return function <Obj extends Record<string, Action<State> | BuildReducer<any>>>(obj: Obj) {
-        const keys: Array<keyof Obj> = _(obj)
+        const actionKeys: Array<keyof Obj> = _(obj)
             .toPairs()
-            .map(([key, value]) => ("actions" in value ? key : null))
+            .map(([key, value]) => (typeof value === "function" ? key : null))
             .compact()
             .value();
 
         return {
-            actions: _.omit(obj, keys),
-            nested: _.pick(obj, keys),
+            actions: _.pick(obj, actionKeys),
+            nested: _.omit(obj, actionKeys),
         } as unknown as BuildReducerFromMixedObj<State, Obj>;
     };
 }

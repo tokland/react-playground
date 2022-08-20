@@ -1,20 +1,21 @@
 import React from "react";
-import { useAppStore } from "./AppStore";
+import { useAppStore } from "../domain/entities/AppStore";
 
 function CounterComponent() {
-    const [counter, actions] = useAppStore(state => state.sections.counter);
+    const [counter, actions] = useAppStore(state => state.counter);
 
+    // Use case with repository
     const addRandom = React.useCallback(async () => {
         const randomValue = await getRandomInteger({ min: 1, max: 10 });
-        actions.sections.counter.add(randomValue);
+        actions.counter.add(randomValue);
     }, [actions]);
 
     return (
         <div>
             <span>value = {counter.value}</span>
 
-            <button onClick={actions.sections.counter.decrement}>-ONE</button>
-            <button onClick={actions.sections.counter.increment}>+ONE</button>
+            <button onClick={actions.counter.decrement}>-ONE</button>
+            <button onClick={actions.counter.increment}>+ONE</button>
             <button onClick={addRandom}>+RANDOM</button>
         </div>
     );
