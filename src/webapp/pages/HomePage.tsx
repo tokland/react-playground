@@ -7,6 +7,7 @@ const HomePage: React.FC = () => {
         <>
             <Session />
             <Link to={{ type: "counter", id: 1 }} text="Counter 1" />
+            <Link to={{ type: "counter", id: 2 }} text="Counter 2" />
         </>
     );
 };

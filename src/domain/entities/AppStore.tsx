@@ -1,22 +1,25 @@
 import { AppState } from "./AppState";
-import { buildReducer, getActionsStore } from "../../webapp/StoreActions";
-import { Counter } from "./Counter";
+import { getActionsStore } from "../../webapp/StoreActions";
+import { counterReducer } from "./Counter";
+import { buildReducer } from "../../libs/reducer";
 
-const counterReducer = buildReducer<Counter>()({
-    add: (n: number) => state => ({ value: state.value + n }),
-    increment: () => state => ({ value: state.value + 1 }),
-    decrement: () => state => ({ value: state.value - 1 }),
+const countersReducer = buildReducer<AppState["counters"]>()({
+    counter1: counterReducer,
+    counter2: counterReducer,
 });
 
 const appReducer = buildReducer<AppState>()({
     goTo: (page: AppState["page"]) => state => ({ ...state, page }),
-    counter: counterReducer,
+    counters: countersReducer,
 });
 
 export const initialAppState: AppState = {
     page: { type: "home" },
     session: { type: "notLogged" },
-    counter: { value: 0 },
+    counters: {
+        counter1: { id: 1, value: 1 },
+        counter2: { id: 2, value: 2 },
+    },
 };
 
 export const useAppStore = getActionsStore(initialAppState, appReducer);

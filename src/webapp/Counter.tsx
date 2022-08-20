@@ -1,21 +1,31 @@
 import React from "react";
-import { useAppStore } from "../domain/entities/AppStore";
+import { Counter } from "../domain/entities/Counter";
 
-function CounterComponent() {
-    const [counter, actions] = useAppStore(state => state.counter);
+export interface CounterProps {
+    counter: Counter;
+    actions: {
+        add(n: number): void;
+        increment(): void;
+        decrement(): void;
+    };
+}
+
+function CounterComponent(props: CounterProps) {
+    const { counter, actions } = props;
 
     // Use case with repository
     const addRandom = React.useCallback(async () => {
         const randomValue = await getRandomInteger({ min: 1, max: 10 });
-        actions.counter.add(randomValue);
+        actions.add(randomValue);
     }, [actions]);
 
     return (
         <div>
+            <h2>Counter {counter.id}</h2>
             <span>value = {counter.value}</span>
 
-            <button onClick={actions.counter.decrement}>-ONE</button>
-            <button onClick={actions.counter.increment}>+ONE</button>
+            <button onClick={actions.decrement}>-ONE</button>
+            <button onClick={actions.increment}>+ONE</button>
             <button onClick={addRandom}>+RANDOM</button>
         </div>
     );
@@ -30,4 +40,4 @@ async function getRandomInteger(options: { min: number; max: number }): Promise<
     });
 }
 
-export const Counter = React.memo(CounterComponent);
+export default React.memo(CounterComponent);

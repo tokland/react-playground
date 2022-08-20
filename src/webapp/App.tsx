@@ -5,10 +5,12 @@ import { AppState } from "../domain/entities/AppState";
 import { useAppStore } from "../domain/entities/AppStore";
 
 export function getPage(path: string): AppState["page"] {
+    const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
+
     if (path === "/") {
         return { type: "home" };
-    } else if (path.match(/^\/counter\/\d+/)) {
-        return { type: "counter", id: 1 };
+    } else if (counterMatch) {
+        return { type: "counter", id: parseInt(counterMatch.groups?.id || "0") };
     } else {
         return <>No match</>;
     }
@@ -34,14 +36,16 @@ const App: React.FC = () => {
     }, [actions]);
 
     React.useEffect(() => {
-        const page = getPage(window.location.pathname);
+        const path = window.location.pathname;
+        const page = getPage(path);
+        console.log("Initial", { path, page });
         actions.goTo(page);
     }, [actions]);
 
     if (page.type === "home") {
         return <HomePage />;
     } else if (page.type === "counter") {
-        return <CounterPage />;
+        return <CounterPage id={page.id} />;
     } else {
         return <>No match</>;
     }
