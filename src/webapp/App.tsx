@@ -4,6 +4,18 @@ import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
 import { useAppStore } from "../domain/entities/AppStore";
 
+declare const route: any;
+
+() => {
+    const _routes = [
+        route("/", { toPage: () => ({ type: "home" }), fromPage: () => "/" }),
+        route("/counter/:id", {
+            toPage: ({ id }: any, _params: any) => ({ type: "counter", id }),
+            fromPage: (page: Page) => `/counter/${page.type}`, // Page can be anything
+        }),
+    ];
+};
+
 export function getPage(path: string): Page {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
@@ -16,6 +28,7 @@ export function getPage(path: string): Page {
     }
 }
 
+// TODO?:       getPath(state: AppState): string
 export function getPath(page: Page): string {
     switch (page.type) {
         case "home":

@@ -7,6 +7,7 @@ export interface AppState {
         counter1: Counter;
         counter2: Counter;
     };
+    // TODO?: counter only inside Page of type counter
 }
 
 export type Page = { type: "home" } | { type: "counter"; id: number };
