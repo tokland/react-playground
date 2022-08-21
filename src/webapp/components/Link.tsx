@@ -1,6 +1,6 @@
 import React from "react";
 import { Page } from "../../domain/entities/AppState";
-import { useAppStore } from "../../domain/entities/AppStore";
+import { useAppActions } from "../../domain/entities/AppStore";
 import { getPath } from "../App";
 
 export interface LinkProps {
@@ -9,8 +9,7 @@ export interface LinkProps {
 }
 
 const Link: React.FC<LinkProps> = props => {
-    // TODO: useAppState / useAppActions
-    const [_currentPage, actions] = useAppStore(state => state.page);
+    const actions = useAppActions();
     const page = props.to;
     const path = React.useMemo(() => getPath(page), [page]);
 

@@ -1,8 +1,8 @@
 import React from "react";
-import { useAppStore } from "../domain/entities/AppStore";
+import { useAppState } from "../domain/entities/AppStore";
 
 function SessionComponent() {
-    const [session, _actions] = useAppStore(state => state.session);
+    const session = useAppState(state => state.session);
 
     return (
         <div>

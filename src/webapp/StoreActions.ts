@@ -9,8 +9,16 @@ export function getActionsStore<State, Reducer extends BuildReducer<State>>(
 ) {
     const store = new Store(initialState);
 
-    return function <SelectedState>(selector: Selector<State, SelectedState>) {
-        const [selectedState, setState] = useContextState(store, selector);
+    function useState<SelectedState>(selector: Selector<State, SelectedState>) {
+        const [selectedState, _setState] = useContextState(store, selector);
+        return selectedState;
+    }
+
+    function useActions() {
+        const setState = React.useCallback<SetState<State>>(action => {
+            const newState = action(store.state);
+            store.setState(newState);
+        }, []);
 
         const actions = React.useMemo(() => {
             return getEffectActions(reducer, setState, {
@@ -19,8 +27,10 @@ export function getActionsStore<State, Reducer extends BuildReducer<State>>(
             });
         }, [setState]);
 
-        return [selectedState, actions] as const;
-    };
+        return actions;
+    }
+
+    return { useState, useActions };
 }
 
 export type ReducerBase = BuildReducer<any>;

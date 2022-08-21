@@ -22,4 +22,7 @@ export const initialAppState: AppState = {
     },
 };
 
-export const useAppStore = getActionsStore(initialAppState, appReducer);
+export const { useState: useAppState, useActions: useAppActions } = getActionsStore(
+    initialAppState,
+    appReducer
+);

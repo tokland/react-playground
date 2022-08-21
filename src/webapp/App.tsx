@@ -2,7 +2,7 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
-import { useAppStore } from "../domain/entities/AppStore";
+import { useAppActions, useAppState } from "../domain/entities/AppStore";
 
 declare const route: any;
 
@@ -39,7 +39,8 @@ export function getPath(page: Page): string {
 }
 
 const App: React.FC = () => {
-    const [page, actions] = useAppStore(state => state.page);
+    const page = useAppState(state => state.page);
+    const actions = useAppActions();
 
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
