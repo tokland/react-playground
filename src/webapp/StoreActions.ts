@@ -15,7 +15,6 @@ export function getStoreHooks<State, Reducer extends BuildReducer<State>>(
 
     function useActions() {
         const setState = useStoreSet(store);
-
         const actions = React.useMemo(() => {
             return getEffectActions(reducer, setState, {
                 get: state => state,
@@ -26,7 +25,11 @@ export function getStoreHooks<State, Reducer extends BuildReducer<State>>(
         return actions;
     }
 
-    return { useState, useActions };
+    function useSetState() {
+        return useStoreSet(store);
+    }
+
+    return { useState, useActions, useSetState };
 }
 
 export type ReducerBase = BuildReducer<any>;

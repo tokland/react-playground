@@ -22,7 +22,8 @@ export function getPage(path: string): Page {
     if (path === "/") {
         return { type: "home" };
     } else if (counterMatch) {
-        return { type: "counter", id: parseInt(counterMatch.groups?.id || "1") };
+        const id = parseInt(counterMatch.groups?.id || "1");
+        return { type: "counter", counter: { id: id, value: id } };
     } else {
         throw new Error("getPage: no match");
     }
@@ -34,7 +35,7 @@ export function getPath(page: Page): string {
         case "home":
             return "/";
         case "counter":
-            return `/counter/${page.id}`;
+            return `/counter/${page.counter.id}`;
     }
 }
 
@@ -59,7 +60,7 @@ const App: React.FC = () => {
         case "home":
             return <HomePage />;
         case "counter":
-            return <CounterPage id={page.id} />;
+            return <CounterPage counter={page.counter} />;
     }
 };
 
