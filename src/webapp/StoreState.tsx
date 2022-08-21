@@ -2,7 +2,7 @@ import React from "react";
 
 export type Selector<State, SelectedState> = (state: State) => SelectedState;
 
-export function useContextState<State, SelectedState>(
+export function useStoreState<State, SelectedState>(
     store: Store<State>,
     selector: Selector<State, SelectedState>
 ): SelectedState {
@@ -26,6 +26,18 @@ export function useContextState<State, SelectedState>(
     }, [store, stateTransition]);
 
     return selection;
+}
+
+export function useStoreSet<State>(store: Store<State>) {
+    const setState = React.useCallback<SetState<State>>(
+        action => {
+            const newState = action(store.state);
+            store.setState(newState);
+        },
+        [store]
+    );
+
+    return setState;
 }
 
 export type SetState<State> = (updater: (state: State) => State) => void;

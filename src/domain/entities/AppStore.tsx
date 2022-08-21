@@ -1,5 +1,5 @@
 import { AppState, Page } from "./AppState";
-import { getActionsStore } from "../../webapp/StoreActions";
+import { getStoreHooks } from "../../webapp/StoreActions";
 import { counterReducer } from "./Counter";
 import { buildReducer } from "../../libs/reducer";
 
@@ -22,7 +22,7 @@ export const initialAppState: AppState = {
     },
 };
 
-export const { useState: useAppState, useActions: useAppActions } = getActionsStore(
+export const { useState: useAppState, useActions: useAppActions } = getStoreHooks(
     initialAppState,
     appReducer
 );

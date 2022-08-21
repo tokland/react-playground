@@ -1,23 +1,20 @@
 import React from "react";
 import _ from "lodash";
-import { Selector, SetState, Store, useContextState } from "./StoreState";
+import { Selector, SetState, Store, useStoreSet, useStoreState } from "./StoreState";
 import { Action, BuildReducer } from "../libs/reducer";
 
-export function getActionsStore<State, Reducer extends BuildReducer<State>>(
+export function getStoreHooks<State, Reducer extends BuildReducer<State>>(
     initialState: State,
     reducer: Reducer
 ) {
     const store = new Store(initialState);
 
     function useState<SelectedState>(selector: Selector<State, SelectedState>) {
-        return useContextState(store, selector);
+        return useStoreState(store, selector);
     }
 
     function useActions() {
-        const setState = React.useCallback<SetState<State>>(action => {
-            const newState = action(store.state);
-            store.setState(newState);
-        }, []);
+        const setState = useStoreSet(store);
 
         const actions = React.useMemo(() => {
             return getEffectActions(reducer, setState, {
