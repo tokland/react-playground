@@ -5,7 +5,7 @@ export type Selector<State, SelectedState> = (state: State) => SelectedState;
 export function useContextState<State, SelectedState>(
     store: Store<State>,
     selector: Selector<State, SelectedState>
-): [SelectedState, SetState<State>] {
+): SelectedState {
     const rerender = useRerender();
     const selection = React.useMemo(() => selector(store.state), [selector, store.state]);
 
@@ -25,15 +25,7 @@ export function useContextState<State, SelectedState>(
         return store.subscribe(stateTransition);
     }, [store, stateTransition]);
 
-    const setState = React.useCallback(
-        action => {
-            const newState = action(store.state);
-            store.setState(newState);
-        },
-        [store]
-    );
-
-    return [selection, setState];
+    return selection;
 }
 
 export type SetState<State> = (updater: (state: State) => State) => void;

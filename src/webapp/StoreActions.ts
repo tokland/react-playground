@@ -10,8 +10,7 @@ export function getActionsStore<State, Reducer extends BuildReducer<State>>(
     const store = new Store(initialState);
 
     function useState<SelectedState>(selector: Selector<State, SelectedState>) {
-        const [selectedState, _setState] = useContextState(store, selector);
-        return selectedState;
+        return useContextState(store, selector);
     }
 
     function useActions() {
