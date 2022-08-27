@@ -1,11 +1,27 @@
 import { AppState, Page } from "./AppState";
 import { getStoreHooks } from "../../webapp/StoreHooks";
-import { buildReducer } from "../../libs/reducer";
+import { counterReducer } from "./Counter";
 
-export const appReducer = buildReducer<AppState>()({
-    goTo: (page: Page) => state => ({ ...state, page }),
-    //counter: counterReducer,
-});
+function reducer(updater: (state: AppState) => AppState) {
+    return updater;
+}
+export const appReducer = {
+    goTo: (page: Page) => reducer(state => ({ ...state, page })),
+    counter: {
+        add: (n: number) =>
+            reducer(state =>
+                state.page.type === "counter"
+                    ? {
+                          ...state,
+                          page: {
+                              type: "counter",
+                              counter: counterReducer.add(n)(state.page.counter),
+                          },
+                      }
+                    : state
+            ),
+    },
+};
 
 const initialAppState: AppState = {
     page: { type: "home" },
