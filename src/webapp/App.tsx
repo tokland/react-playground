@@ -58,26 +58,14 @@ const App: React.FC = () => {
 };
 
 const Url: React.FC = () => {
-    const page = useAppState(state => state.page);
-
-    React.useEffect(() => {
-        const path = getPath(page);
-        window.history.pushState(page, "unused", path);
-    }, [page]);
-
-    return null;
-};
-
-const Router: React.FC = () => {
-    const page = useAppState(state => state.page);
-    const dispatch = userAppDispatch();
     const { compositionRoot } = useAppContext();
+    const dispatch = userAppDispatch();
+    const page = useAppState(state => state.page);
 
     // useUrlToStateSync
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
-            console.log({ pageInState });
             dispatch(appReducer.goTo(pageInState));
         });
     }, [dispatch]);
@@ -91,6 +79,17 @@ const Router: React.FC = () => {
         }
         run();
     }, [dispatch, compositionRoot]);
+
+    React.useEffect(() => {
+        const path = getPath(page);
+        window.history.pushState(page, "unused", path);
+    }, [page]);
+
+    return null;
+};
+
+const Router: React.FC = () => {
+    const page = useAppState(state => state.page);
 
     switch (page.type) {
         case "home":
