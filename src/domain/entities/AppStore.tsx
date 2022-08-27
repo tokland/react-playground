@@ -7,8 +7,12 @@ function reducer(updater: (state: AppState) => AppState) {
 }
 export const appReducer = {
     goTo: (page: Page) => reducer(state => ({ ...state, page })),
+    // counter: onPageType("counter", counterReducer)
+    // counter: forPageType("counter", { add: (n: number) => counterReducer.add(n), ... })
     counter: {
+        // add: pageAction((n: number) => counterReducer.add(n))
         add: (n: number) =>
+            // pageReducerForPageType("counter", counterReducer.add(n))
             reducer(state =>
                 state.page.type === "counter"
                     ? {
