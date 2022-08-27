@@ -1,7 +1,8 @@
 import { buildReducer } from "../../libs/reducer";
+import { Id } from "./Base";
 
 export interface Counter {
-    id: number;
+    id: Id;
     value: number;
 }
 

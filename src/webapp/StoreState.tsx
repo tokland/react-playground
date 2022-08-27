@@ -40,7 +40,7 @@ export function useStoreDispatch<State>(store: Store<State>) {
     return setState;
 }
 
-export type Dispatcher<State> = (updater: (state: State) => State) => void;
+type Dispatcher<State> = (updater: (state: State) => State) => void;
 
 /* State store */
 

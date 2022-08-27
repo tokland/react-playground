@@ -1,29 +1,27 @@
 import React from "react";
 import { appReducer, userAppDispatch } from "../../domain/entities/AppStore";
-import { Counter } from "../../domain/entities/Counter";
+import { Id } from "../../domain/entities/Base";
+import { useAppContext } from "../AppContext";
 import { Session } from "../Session";
-
-async function getCounterByIdUseCase(id: number): Promise<Counter> {
-    return { id, value: id };
-}
 
 const HomePage: React.FC = () => {
     const dispatch = userAppDispatch();
+    const { compositionRoot } = useAppContext();
 
     const goToCounter = React.useCallback(
-        async (id: number) => {
+        async (id: Id) => {
             console.log("goTo", { id });
             // TODO: actions.setLoading(`counter-${id}`);
-            const counter = await getCounterByIdUseCase(id);
+            const counter = await compositionRoot.counters.get(id);
             dispatch(appReducer.goTo({ type: "counter", counter }));
         },
-        [dispatch]
+        [dispatch, compositionRoot]
     );
 
     return (
         <>
             <Session />
-            <button onClick={() => goToCounter(1)}>Counter 1</button>
+            <button onClick={() => goToCounter("1")}>Counter 1</button>
             {/*<Link to={{ type: "counter", counter: { type: "loading", id: 1 } }} text="Counter 1" />*/}
         </>
     );

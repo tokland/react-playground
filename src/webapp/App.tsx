@@ -3,6 +3,8 @@ import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
 import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppStore";
+import { getCompositionRoot } from "../compositionRoot";
+import { AppContext } from "./AppContext";
 
 declare const route: any;
 
@@ -23,8 +25,8 @@ function getPage(path: string): Page {
     if (path === "/") {
         return { type: "home" };
     } else if (counterMatch) {
-        const id = parseInt(counterMatch.groups?.id || "1");
-        return { type: "counter", counter: { id: id, value: id } };
+        const id = counterMatch.groups?.id || "1";
+        return { type: "counter", counter: { id: id, value: 0 } };
     } else {
         throw new Error("getPage: no match");
     }
@@ -40,7 +42,17 @@ export function getPath(page: Page): string {
     }
 }
 
+const appContext = { compositionRoot: getCompositionRoot() };
+
 const App: React.FC = () => {
+    return (
+        <AppContext.Provider value={appContext}>
+            <Router />
+        </AppContext.Provider>
+    );
+};
+
+const Router: React.FC = () => {
     const page = useAppState(state => state.page);
     const dispatch = userAppDispatch();
 
