@@ -1,5 +1,5 @@
 import React from "react";
-import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppReducer";
+import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
 import { Counter } from "../domain/entities/Counter";
 import { useAppContext } from "./AppContext";
 
@@ -44,7 +44,7 @@ async function getRandomInteger(options: { min: number; max: number }): Promise<
 
 const CounterApp: React.FC = () => {
     const { compositionRoot } = useAppContext();
-    const dispatch = userAppDispatch();
+    const dispatch = useAppDispatch();
     const counter = useAppState(state =>
         state.page.type === "counter" ? state.page.counter : undefined
     );

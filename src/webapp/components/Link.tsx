@@ -1,6 +1,6 @@
 import React from "react";
 import { Page } from "../../domain/entities/AppState";
-import { appReducer, userAppDispatch } from "../../domain/entities/AppReducer";
+import { appReducer, useAppDispatch } from "../../domain/entities/AppReducer";
 import { getPath } from "../App";
 
 interface LinkProps {
@@ -9,7 +9,7 @@ interface LinkProps {
 }
 
 const Link: React.FC<LinkProps> = props => {
-    const dispatch = userAppDispatch();
+    const dispatch = useAppDispatch();
     const page = props.to;
     const path = React.useMemo(() => getPath(page), [page]);
 

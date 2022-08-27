@@ -2,7 +2,7 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
-import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppReducer";
+import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { Session } from "./Session";
@@ -59,16 +59,8 @@ const App: React.FC = () => {
 
 const Url: React.FC = () => {
     const { compositionRoot } = useAppContext();
-    const dispatch = userAppDispatch();
+    const dispatch = useAppDispatch();
     const page = useAppState(state => state.page);
-
-    // useUrlToStateSync
-    React.useEffect(() => {
-        window.addEventListener("popstate", ev => {
-            const pageInState = ev.state;
-            dispatch(appReducer.goTo(pageInState));
-        });
-    }, [dispatch]);
 
     // useUrlToStateOnInit
     React.useEffect(() => {
@@ -80,6 +72,15 @@ const Url: React.FC = () => {
         run();
     }, [dispatch, compositionRoot]);
 
+    // useUrlToStateSync
+    React.useEffect(() => {
+        window.addEventListener("popstate", ev => {
+            const pageInState = ev.state;
+            dispatch(appReducer.goTo(pageInState));
+        });
+    }, [dispatch]);
+
+    // useSyncFromStateToUrl
     React.useEffect(() => {
         const path = getPath(page);
         window.history.pushState(page, "unused", path);

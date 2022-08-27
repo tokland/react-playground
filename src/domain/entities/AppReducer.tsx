@@ -28,4 +28,4 @@ const initialAppState: AppState = {
 
 const hooks = getStoreHooks(initialAppState);
 
-export const { useState: useAppState, useDispatch: userAppDispatch } = hooks;
+export const { useState: useAppState, useDispatch: useAppDispatch } = hooks;

@@ -1,10 +1,10 @@
 import React from "react";
-import { appReducer, userAppDispatch } from "../../domain/entities/AppReducer";
+import { appReducer, useAppDispatch } from "../../domain/entities/AppReducer";
 import { Id } from "../../domain/entities/Base";
 import { useAppContext } from "../AppContext";
 
 const HomePage: React.FC = () => {
-    const dispatch = userAppDispatch();
+    const dispatch = useAppDispatch();
     const { compositionRoot } = useAppContext();
 
     const goToCounter = React.useCallback(

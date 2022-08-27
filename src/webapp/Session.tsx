@@ -1,9 +1,9 @@
 import React from "react";
-import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppReducer";
+import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
 
 function SessionComponent() {
     const session = useAppState(state => state.session);
-    const dispatch = userAppDispatch();
+    const dispatch = useAppDispatch();
     const logout = React.useCallback(() => dispatch(appReducer.logout()), [dispatch]);
 
     return (
