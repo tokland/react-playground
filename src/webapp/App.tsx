@@ -3,8 +3,9 @@ import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
 import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppStore";
-import { getCompositionRoot } from "../compositionRoot";
-import { AppContext } from "./AppContext";
+import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
+import { AppContext, useAppContext } from "./AppContext";
+import { Session } from "./Session";
 
 declare const route: any;
 
@@ -19,14 +20,16 @@ declare const route: any;
     ];
 };
 
-function getPage(path: string): Page {
+async function getPage(compositionRoot: CompositionRoot, path: string): Promise<Page> {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
         return { type: "home" };
     } else if (counterMatch) {
-        const id = counterMatch.groups?.id || "1";
-        return { type: "counter", counter: { id: id, value: 0 } };
+        const id = counterMatch.groups?.id;
+        if (!id) throw new Error();
+        const counter = await compositionRoot.counters.get(id);
+        return { type: "counter", counter };
     } else {
         throw new Error("getPage: no match");
     }
@@ -47,6 +50,7 @@ const appContext = { compositionRoot: getCompositionRoot() };
 const App: React.FC = () => {
     return (
         <AppContext.Provider value={appContext}>
+            <Session />
             <Router />
         </AppContext.Provider>
     );
@@ -55,6 +59,7 @@ const App: React.FC = () => {
 const Router: React.FC = () => {
     const page = useAppState(state => state.page);
     const dispatch = userAppDispatch();
+    const { compositionRoot } = useAppContext();
 
     // useUrlToStateSync
     React.useEffect(() => {
@@ -66,10 +71,13 @@ const Router: React.FC = () => {
 
     // useUrlToStateOnInit
     React.useEffect(() => {
-        const path = window.location.pathname;
-        const page = getPage(path);
-        dispatch(appReducer.goTo(page));
-    }, [dispatch]);
+        async function run() {
+            const path = window.location.pathname;
+            const page = await getPage(compositionRoot, path);
+            dispatch(appReducer.goTo(page));
+        }
+        run();
+    }, [dispatch, compositionRoot]);
 
     switch (page.type) {
         case "home":

@@ -2,7 +2,6 @@ import React from "react";
 import { appReducer, userAppDispatch } from "../../domain/entities/AppStore";
 import { Id } from "../../domain/entities/Base";
 import { useAppContext } from "../AppContext";
-import { Session } from "../Session";
 
 const HomePage: React.FC = () => {
     const dispatch = userAppDispatch();
@@ -20,7 +19,6 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            <Session />
             <button onClick={() => goToCounter("1")}>Counter 1</button>
             {/*<Link to={{ type: "counter", counter: { type: "loading", id: 1 } }} text="Counter 1" />*/}
         </>
