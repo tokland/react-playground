@@ -2,7 +2,7 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
-import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppStore";
+import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppReducer";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { Session } from "./Session";

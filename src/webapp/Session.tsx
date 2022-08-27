@@ -1,13 +1,18 @@
 import React from "react";
-import { useAppState } from "../domain/entities/AppStore";
+import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppReducer";
 
 function SessionComponent() {
     const session = useAppState(state => state.session);
+    const dispatch = userAppDispatch();
+    const logout = React.useCallback(() => dispatch(appReducer.logout()), [dispatch]);
 
     return (
         <div>
             {session.type === "logged" ? (
-                <span>Logged {session.username}</span>
+                <>
+                    <span>Logged {session.username}</span>&nbsp;
+                    <button onClick={logout}>Logout</button>
+                </>
             ) : (
                 <span>Not logged in</span>
             )}

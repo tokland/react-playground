@@ -3,5 +3,5 @@ import { Counter } from "../entities/Counter";
 
 export interface CountersRepository {
     get(id: Id): Promise<Counter>;
-    save(counter: Counter): Promise<void>;
+    save(counter: Counter): Promise<Counter>;
 }

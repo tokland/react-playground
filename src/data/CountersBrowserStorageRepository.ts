@@ -8,7 +8,8 @@ export class CountersBrowserStorageRepository implements CountersRepository {
         return { id, value: value ? parseInt(value) : 0 };
     }
 
-    async save(counter: Counter): Promise<void> {
+    async save(counter: Counter): Promise<Counter> {
         window.localStorage.setItem(`counter-${counter.id}`, counter.value.toString());
+        return counter;
     }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Page } from "../../domain/entities/AppState";
-import { appReducer, userAppDispatch } from "../../domain/entities/AppStore";
+import { appReducer, userAppDispatch } from "../../domain/entities/AppReducer";
 import { getPath } from "../App";
 
 interface LinkProps {
@@ -16,6 +16,7 @@ const Link: React.FC<LinkProps> = props => {
     const goTo = React.useCallback<NonNullable<React.MouseEventHandler>>(
         ev => {
             ev.preventDefault();
+            console.log({ path });
             window.history.pushState(page, "unused", path);
             dispatch(appReducer.goTo(page));
         },

@@ -1,5 +1,5 @@
-import { buildReducer } from "../../libs/reducer";
 import { Id } from "./Base";
+import { buildReducer } from "../../libs/reducer";
 
 export interface Counter {
     id: Id;

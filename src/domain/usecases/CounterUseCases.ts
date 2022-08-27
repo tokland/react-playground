@@ -1,5 +1,5 @@
 import { Id } from "../entities/Base";
-import { Counter } from "../entities/Counter";
+import { Counter, counterReducer } from "../entities/Counter";
 import { CountersRepository } from "../repositories/CountersRepository";
 
 export class CounterUseCases {
@@ -9,7 +9,12 @@ export class CounterUseCases {
         return this.countersRepository.get(id);
     }
 
-    save(counter: Counter): Promise<void> {
+    save(counter: Counter): Promise<Counter> {
         return this.countersRepository.save(counter);
+    }
+
+    add(counter: Counter, n: number): Promise<Counter> {
+        const counterUpdated = counterReducer.add(n)(counter);
+        return this.countersRepository.save(counterUpdated);
     }
 }
