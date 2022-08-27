@@ -44,6 +44,7 @@ const App: React.FC = () => {
     const page = useAppState(state => state.page);
     const dispatch = userAppDispatch();
 
+    // useUrlToStateSync
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
@@ -51,6 +52,7 @@ const App: React.FC = () => {
         });
     }, [dispatch]);
 
+    // useUrlToStateOnInit
     React.useEffect(() => {
         const path = window.location.pathname;
         const page = getPage(path);

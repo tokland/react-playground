@@ -4,7 +4,7 @@ import { Counter } from "../domain/entities/Counter";
 interface CounterProps {
     counter: Counter;
     actions: {
-        add(n: number): void;
+        add: (n: number) => void;
         //increment(): void;
         //decrement(): void;
     };

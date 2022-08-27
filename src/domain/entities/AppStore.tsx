@@ -1,8 +1,8 @@
 import { AppState, Page } from "./AppState";
 import { getStoreHooks } from "../../webapp/StoreHooks";
-import { buildSimpleReducer } from "../../libs/reducer";
+import { buildReducer } from "../../libs/reducer";
 
-export const appReducer = buildSimpleReducer<AppState>()({
+export const appReducer = buildReducer<AppState>()({
     goTo: (page: Page) => state => ({ ...state, page }),
     //counter: counterReducer,
 });
