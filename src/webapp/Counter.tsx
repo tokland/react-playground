@@ -52,6 +52,7 @@ const CounterApp: React.FC = () => {
     const actions = React.useMemo(() => {
         if (!counter) throw new Error();
 
+        // Move to global view actions? (aware of compositionRoot)
         return {
             add: async (n: number) => {
                 const counterUpdated = await compositionRoot.counters.add(counter, n);

@@ -10,7 +10,7 @@ const HomePage: React.FC = () => {
     const goToCounter = React.useCallback(
         async (id: Id) => {
             const counter = await compositionRoot.counters.get(id);
-            dispatch(appReducer.goTo({ type: "counter", counter }));
+            dispatch(appReducer.setPage({ type: "counter", counter }));
         },
         [dispatch, compositionRoot]
     );

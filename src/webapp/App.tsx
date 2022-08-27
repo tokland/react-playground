@@ -61,30 +61,38 @@ const Url: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const dispatch = useAppDispatch();
     const page = useAppState(state => state.page);
+    const listenToChangesRef = React.useRef(false);
 
     // useUrlToStateOnInit
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
             const page = await getPage(compositionRoot, path);
-            dispatch(appReducer.goTo(page));
+            dispatch(appReducer.setPage(page));
+            listenToChangesRef.current = true;
         }
         run();
     }, [dispatch, compositionRoot]);
+
+    // useSyncFromStateToUrl
+    React.useEffect(() => {
+        if (!listenToChangesRef.current) return;
+
+        const currentPath = window.location.pathname;
+        const pathFromState = getPath(page);
+
+        if (currentPath !== pathFromState) {
+            window.history.pushState(page, "unused", pathFromState);
+        }
+    }, [page]);
 
     // useUrlToStateSync
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
-            dispatch(appReducer.goTo(pageInState));
+            dispatch(appReducer.setPage(pageInState));
         });
     }, [dispatch]);
-
-    // useSyncFromStateToUrl
-    React.useEffect(() => {
-        const path = getPath(page);
-        window.history.pushState(page, "unused", path);
-    }, [page]);
 
     return null;
 };

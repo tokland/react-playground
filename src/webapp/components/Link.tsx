@@ -13,10 +13,10 @@ const Link: React.FC<LinkProps> = props => {
     const page = props.to;
     const path = React.useMemo(() => getPath(page), [page]);
 
-    const goTo = React.useCallback<NonNullable<React.MouseEventHandler>>(
+    const goTo = React.useCallback<React.MouseEventHandler>(
         ev => {
             ev.preventDefault();
-            dispatch(appReducer.goTo(page));
+            dispatch(appReducer.setPage(page));
         },
         [dispatch, page]
     );

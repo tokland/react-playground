@@ -7,7 +7,7 @@ function reducer(updater: (state: AppState) => AppState) {
 }
 
 export const appReducer = {
-    goTo: (page: Page) => reducer(state => ({ ...state, page })),
+    setPage: (page: Page) => reducer(state => ({ ...state, page })),
     logout: () => reducer(state => ({ ...state, session: { type: "notLogged" } })),
     // counter: onPageType("counter", counterReducer)
     // counter: forPageType("counter", { add: (n: number) => counterReducer.add(n), ... })
