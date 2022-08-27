@@ -1,15 +1,15 @@
 import React from "react";
 import { Page } from "../../domain/entities/AppState";
-import { useAppActions } from "../../domain/entities/AppStore";
+import { appReducer, userAppDispatch } from "../../domain/entities/AppStore";
 import { getPath } from "../App";
 
-export interface LinkProps {
+interface LinkProps {
     to: Page;
     text: string;
 }
 
 const Link: React.FC<LinkProps> = props => {
-    const actions = useAppActions();
+    const dispatch = userAppDispatch();
     const page = props.to;
     const path = React.useMemo(() => getPath(page), [page]);
 
@@ -17,9 +17,9 @@ const Link: React.FC<LinkProps> = props => {
         ev => {
             ev.preventDefault();
             window.history.pushState(page, "unused", path);
-            actions.goTo(page);
+            dispatch(appReducer.goTo(page));
         },
-        [actions, page, path]
+        [dispatch, page, path]
     );
 
     return (

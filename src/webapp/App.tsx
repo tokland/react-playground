@@ -2,10 +2,11 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { Page } from "../domain/entities/AppState";
-import { useAppActions, useAppState } from "../domain/entities/AppStore";
+import { appReducer, useAppState, userAppDispatch } from "../domain/entities/AppStore";
 
 declare const route: any;
 
+// DEMO
 () => {
     const _routes = [
         route("/", { toPage: () => ({ type: "home" }), fromPage: () => "/" }),
@@ -16,7 +17,7 @@ declare const route: any;
     ];
 };
 
-export function getPage(path: string): Page {
+function getPage(path: string): Page {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
@@ -41,20 +42,20 @@ export function getPath(page: Page): string {
 
 const App: React.FC = () => {
     const page = useAppState(state => state.page);
-    const actions = useAppActions();
+    const dispatch = userAppDispatch();
 
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
-            actions.goTo(pageInState);
+            dispatch(appReducer.goTo(pageInState));
         });
-    }, [actions]);
+    }, [dispatch]);
 
     React.useEffect(() => {
         const path = window.location.pathname;
         const page = getPage(path);
-        actions.goTo(page);
-    }, [actions]);
+        dispatch(appReducer.goTo(page));
+    }, [dispatch]);
 
     switch (page.type) {
         case "home":

@@ -1,7 +1,7 @@
 import React from "react";
 import { Counter } from "../domain/entities/Counter";
 
-export interface CounterProps {
+interface CounterProps {
     counter: Counter;
     actions: {
         add(n: number): void;

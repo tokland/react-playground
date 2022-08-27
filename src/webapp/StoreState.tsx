@@ -28,7 +28,7 @@ export function useStoreState<State, SelectedState>(
     return selection;
 }
 
-export function useStoreSet<State>(store: Store<State>) {
+export function useStoreDispatch<State>(store: Store<State>) {
     const setState = React.useCallback<SetState<State>>(
         action => {
             const newState = action(store.state);
@@ -40,7 +40,7 @@ export function useStoreSet<State>(store: Store<State>) {
     return setState;
 }
 
-export type SetState<State> = (updater: (state: State) => State) => void;
+type SetState<State> = (updater: (state: State) => State) => void;
 
 /* State store */
 

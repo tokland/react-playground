@@ -1,19 +1,17 @@
 import { AppState, Page } from "./AppState";
-import { getStoreHooks } from "../../webapp/StoreActions";
-import { buildReducer } from "../../libs/reducer";
+import { getStoreHooks } from "../../webapp/StoreHooks";
+import { buildSimpleReducer } from "../../libs/reducer";
 
-const appReducer = buildReducer<AppState>()({
+export const appReducer = buildSimpleReducer<AppState>()({
     goTo: (page: Page) => state => ({ ...state, page }),
     //counter: counterReducer,
 });
 
-export const initialAppState: AppState = {
+const initialAppState: AppState = {
     page: { type: "home" },
     session: { type: "notLogged" },
 };
 
-export const {
-    useState: useAppState,
-    useActions: useAppActions,
-    useSetState: useAppSetState,
-} = getStoreHooks(initialAppState, appReducer);
+const hooks = getStoreHooks(initialAppState);
+
+export const { useState: useAppState, useDispatch: userAppDispatch } = hooks;

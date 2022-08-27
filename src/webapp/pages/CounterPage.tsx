@@ -3,11 +3,11 @@ import Link from "../components/Link";
 import Counter from "../Counter";
 import { Session } from "../Session";
 import { Counter as CounterE, counterReducer } from "../../domain/entities/Counter";
-import { useAppSetState } from "../../domain/entities/AppStore";
+import { userAppDispatch } from "../../domain/entities/AppStore";
 
 const CounterPage: React.FC<{ counter: CounterE }> = props => {
     const { counter } = props;
-    const setAppState = useAppSetState();
+    const setAppState = userAppDispatch();
 
     const actions = React.useMemo(() => {
         return {
@@ -18,7 +18,7 @@ const CounterPage: React.FC<{ counter: CounterE }> = props => {
                               ...state,
                               page: {
                                   type: "counter",
-                                  counter: counterReducer.actions.add(n)(state.page.counter),
+                                  counter: counterReducer.add(n)(state.page.counter),
                               },
                           }
                         : state
