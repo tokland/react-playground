@@ -16,11 +16,9 @@ const Link: React.FC<LinkProps> = props => {
     const goTo = React.useCallback<NonNullable<React.MouseEventHandler>>(
         ev => {
             ev.preventDefault();
-            console.log({ path });
-            window.history.pushState(page, "unused", path);
             dispatch(appReducer.goTo(page));
         },
-        [dispatch, page, path]
+        [dispatch, page]
     );
 
     return (

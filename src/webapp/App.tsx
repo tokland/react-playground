@@ -50,10 +50,22 @@ const appContext = { compositionRoot: getCompositionRoot() };
 const App: React.FC = () => {
     return (
         <AppContext.Provider value={appContext}>
+            <Url />
             <Session />
             <Router />
         </AppContext.Provider>
     );
+};
+
+const Url: React.FC = () => {
+    const page = useAppState(state => state.page);
+
+    React.useEffect(() => {
+        const path = getPath(page);
+        window.history.pushState(page, "unused", path);
+    }, [page]);
+
+    return null;
 };
 
 const Router: React.FC = () => {
@@ -65,6 +77,7 @@ const Router: React.FC = () => {
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
+            console.log({ pageInState });
             dispatch(appReducer.goTo(pageInState));
         });
     }, [dispatch]);
@@ -83,7 +96,7 @@ const Router: React.FC = () => {
         case "home":
             return <HomePage />;
         case "counter":
-            return <CounterPage counter={page.counter} />;
+            return <CounterPage />;
     }
 };
 
