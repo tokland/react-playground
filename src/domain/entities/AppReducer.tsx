@@ -6,11 +6,9 @@ function reducer(updater: (state: AppState) => AppState) {
     return updater;
 }
 
-export const appReducer = {
+const _appReducer = {
     setPage: (page: Page) => reducer(state => ({ ...state, page })),
     logout: () => reducer(state => ({ ...state, session: { type: "notLogged" } })),
-    // counter: onPageType("counter", counterReducer)
-    // counter: forPageType("counter", { add: (n: number) => counterReducer.add(n), ... })
     counter: {
         set: (counter: Counter) => reducer(state => ({ ...state, counter })),
     },
@@ -23,6 +21,6 @@ const initialAppState: AppState = {
     isLoading: false,
 };
 
-const hooks = getStoreHooks(initialAppState);
+const [useAppState, useAppSetState] = getStoreHooks(initialAppState);
 
-export const { useState: useAppState, useSetState: useAppSetState } = hooks;
+export { useAppState, useAppSetState };

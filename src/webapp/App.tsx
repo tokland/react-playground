@@ -34,7 +34,7 @@ async function runStoreActionFromPath(store: AppStore, path: string) {
     }
 }
 
-export function getPathFromState(state: AppState): string {
+function getPathFromState(state: AppState): string {
     switch (state.page.type) {
         case "home":
             return "/";

@@ -12,5 +12,5 @@ export function getStoreHooks<State>(initialState: State) {
         return useStoreSetState(store);
     }
 
-    return { useState, useSetState };
+    return [useState, useSetState] as const;
 }

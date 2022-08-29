@@ -30,7 +30,7 @@ export function useStoreState<State, SelectedState>(
 
 export function useStoreSetState<State>(store: Store<State>): SetState<State> {
     const setState = React.useCallback(
-        async (action: Updater<State>) => {
+        async (action: ValueOrUpdater<State>) => {
             if (typeof action === "function") {
                 const newState = await action(store.state);
                 store.setState({ ...store.state, ...newState });
@@ -44,11 +44,11 @@ export function useStoreSetState<State>(store: Store<State>): SetState<State> {
     return setState;
 }
 
-export type Updater<State> =
+type ValueOrUpdater<State> =
     | Partial<State>
     | ((state: State) => Partial<State> | Promise<Partial<State>>);
 
-export type SetState<State> = (updater: Updater<State>) => void;
+export type SetState<State> = (updater: ValueOrUpdater<State>) => void;
 
 /* State store */
 
