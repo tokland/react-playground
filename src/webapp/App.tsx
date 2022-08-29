@@ -2,8 +2,8 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { AppState, Page } from "../domain/entities/AppState";
-import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
-import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
+import { appReducer, useAppState, useAppSetState } from "../domain/entities/AppReducer";
+import { getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { Session } from "./Session";
 import { AppStore } from "./AppStore";
@@ -45,13 +45,13 @@ export function getPathFromState(state: AppState): string {
 }
 
 const App: React.FC = () => {
-    const dispatch = useAppDispatch();
+    const setState = useAppSetState();
 
     const appContext = React.useMemo(() => {
         const compositionRoot = getCompositionRoot();
-        const store = new AppStore(compositionRoot, dispatch);
+        const store = new AppStore(compositionRoot, setState);
         return { compositionRoot, store };
-    }, [dispatch]);
+    }, [setState]);
 
     return (
         <AppContext.Provider value={appContext}>
@@ -64,7 +64,7 @@ const App: React.FC = () => {
 
 const Url: React.FC = () => {
     const { store } = useAppContext();
-    const dispatch = useAppDispatch();
+    const setState = useAppSetState();
     const state = useAppState(state => state);
     const { page } = state;
     const listenToChangesRef = React.useRef(false);
@@ -77,7 +77,7 @@ const Url: React.FC = () => {
             listenToChangesRef.current = true;
         }
         run();
-    }, [dispatch, store]);
+    }, [setState, store]);
 
     // useSyncFromStateToUrl
     React.useEffect(() => {
@@ -95,9 +95,9 @@ const Url: React.FC = () => {
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
-            dispatch(appReducer.setPage(pageInState));
+            setState(appReducer.setPage(pageInState));
         });
-    }, [dispatch]);
+    }, [setState]);
 
     return null;
 };

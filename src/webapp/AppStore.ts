@@ -1,24 +1,27 @@
 import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
-import { Dispatcher } from "./StoreState";
+import { SetState } from "./StoreState";
 
 export class AppStore {
-    constructor(private compositionRoot: CompositionRoot, private dispatch: Dispatcher<AppState>) {}
+    constructor(private compositionRoot: CompositionRoot, private setState: SetState<AppState>) {}
 
+    async logout() {
+        return this.setState({ session: { type: "notLogged" } });
+    }
     async goToHome() {
-        return this.dispatch(() => ({ page: { type: "home" } }));
+        return this.setState({ page: { type: "home" } });
     }
     async goToCounter(id: Id) {
         return this.withLoader(async () => {
             const counter = await this.compositionRoot.counters.get(id);
-            this.dispatch(() => ({ page: { type: "counter" }, counter }));
+            this.setState({ page: { type: "counter" }, counter });
         });
     }
 
     async addCounter(n: number) {
-        // return Promise on finish
-        return this.dispatch(async state => {
+        // TODO: setState could return a Promise when finished so caller can chain events
+        return this.setState(async state => {
             const counter = this.getCounter(state);
             const counterUpdated = await this.compositionRoot.counters.add(counter, n);
             return { counter: counterUpdated };
@@ -33,10 +36,10 @@ export class AppStore {
 
     private withLoader(fn: () => void) {
         try {
-            this.dispatch(state => ({ isLoading: true }));
+            this.setState({ isLoading: true });
             fn();
         } finally {
-            this.dispatch(state => ({ isLoading: false }));
+            this.setState({ isLoading: false });
         }
     }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Page } from "../../domain/entities/AppState";
-import { appReducer, useAppDispatch } from "../../domain/entities/AppReducer";
+import { appReducer, useAppSetState } from "../../domain/entities/AppReducer";
 
 interface LinkProps {
     to: Page;
@@ -8,16 +8,16 @@ interface LinkProps {
 }
 
 const Link: React.FC<LinkProps> = props => {
-    const dispatch = useAppDispatch();
+    const setState = useAppSetState();
     const page = props.to;
     const path = "/"; // React.useMemo(() => getPath(page), [page]);
 
     const goTo = React.useCallback<React.MouseEventHandler>(
         ev => {
             ev.preventDefault();
-            dispatch(appReducer.setPage(page));
+            setState(appReducer.setPage(page));
         },
-        [dispatch, page]
+        [setState, page]
     );
 
     return (

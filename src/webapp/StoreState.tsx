@@ -28,11 +28,15 @@ export function useStoreState<State, SelectedState>(
     return selection;
 }
 
-export function useStoreDispatch<State>(store: Store<State>) {
-    const setState = React.useCallback<Dispatcher<State>>(
-        async action => {
-            const newState = await action(store.state);
-            store.setState({ ...store.state, newState });
+export function useStoreSetState<State>(store: Store<State>): SetState<State> {
+    const setState = React.useCallback(
+        async (action: Updater<State>) => {
+            if (typeof action === "function") {
+                const newState = await action(store.state);
+                store.setState({ ...store.state, ...newState });
+            } else {
+                store.setState({ ...store.state, ...action });
+            }
         },
         [store]
     );
@@ -40,9 +44,11 @@ export function useStoreDispatch<State>(store: Store<State>) {
     return setState;
 }
 
-export type Dispatcher<State> = (
-    updater: (state: State) => Partial<State> | Promise<Partial<State>>
-) => void;
+export type Updater<State> =
+    | Partial<State>
+    | ((state: State) => Partial<State> | Promise<Partial<State>>);
+
+export type SetState<State> = (updater: Updater<State>) => void;
 
 /* State store */
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
+import { useAppState } from "../domain/entities/AppReducer";
 import { Counter } from "../domain/entities/Counter";
 import { useAppContext } from "./AppContext";
 
@@ -15,7 +15,7 @@ interface CounterProps {
 function CounterComponent(props: CounterProps) {
     const { counter, actions } = props;
 
-    // TODO: Use case + repository
+    // TODO: Use case
     const addRandom = React.useCallback(async () => {
         const randomValue = await getRandomInteger({ min: 1, max: 10 });
         actions.add(randomValue);
@@ -43,21 +43,12 @@ async function getRandomInteger(options: { min: number; max: number }): Promise<
 }
 
 const CounterApp: React.FC = () => {
-    const { compositionRoot } = useAppContext();
-    const dispatch = useAppDispatch();
+    const { store } = useAppContext();
     const counter = useAppState(state => state.counter);
 
     const actions = React.useMemo(() => {
-        if (!counter) throw new Error("Counter not loaded");
-
-        // Move to global view actions? (aware of compositionRoot)
-        return {
-            add: async (n: number) => {
-                const counterUpdated = await compositionRoot.counters.add(counter, n);
-                dispatch(appReducer.counter.set(counterUpdated));
-            },
-        };
-    }, [dispatch, counter, compositionRoot]);
+        return { add: store.addCounter.bind(store) };
+    }, [store]);
 
     if (!counter) return null;
 

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Selector, Store, useStoreDispatch, useStoreState } from "./StoreState";
+import { Selector, Store, useStoreSetState, useStoreState } from "./StoreState";
 
 export function getStoreHooks<State>(initialState: State) {
     const store = new Store(initialState);
@@ -8,9 +8,9 @@ export function getStoreHooks<State>(initialState: State) {
         return useStoreState(store, selector);
     }
 
-    function useDispatch() {
-        return useStoreDispatch(store);
+    function useSetState() {
+        return useStoreSetState(store);
     }
 
-    return { useState, useDispatch };
+    return { useState, useSetState };
 }

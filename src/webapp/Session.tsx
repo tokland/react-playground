@@ -1,10 +1,14 @@
 import React from "react";
-import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
+import { useAppState } from "../domain/entities/AppReducer";
+import { useAppContext } from "./AppContext";
 
 function SessionComponent() {
+    const { store } = useAppContext();
     const session = useAppState(state => state.session);
-    const dispatch = useAppDispatch();
-    const logout = React.useCallback(() => dispatch(appReducer.logout()), [dispatch]);
+    // TODO: can be written with useCallback? store.logout
+    const logout = React.useCallback(() => {
+        return store.logout();
+    }, [store]);
 
     return (
         <div>
