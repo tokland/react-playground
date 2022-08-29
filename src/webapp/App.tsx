@@ -21,7 +21,7 @@ declare const route: any;
     ];
 };
 
-async function getPage(store: AppStore, path: string) {
+async function runStoreActionFromPath(store: AppStore, path: string) {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
@@ -55,33 +55,34 @@ const App: React.FC = () => {
 
     return (
         <AppContext.Provider value={appContext}>
-            <Url />
-            <Session />
-            <Router />
+            <SyncUrl>
+                <Session />
+                <Router />
+            </SyncUrl>
         </AppContext.Provider>
     );
 };
 
-const Url: React.FC = () => {
+const SyncUrl: React.FC = ({ children }) => {
     const { store } = useAppContext();
     const setState = useAppSetState();
     const state = useAppState(state => state);
     const { page } = state;
-    const listenToChangesRef = React.useRef(false);
+    const [syncDone, setSyncDone] = React.useState(false);
 
-    // useUrlToStateOnInit
+    // Set initial state from URL
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
-            await getPage(store, path);
-            listenToChangesRef.current = true;
+            await runStoreActionFromPath(store, path);
+            setSyncDone(true);
         }
         run();
     }, [setState, store]);
 
-    // useSyncFromStateToUrl
+    // Update URL from state changes
     React.useEffect(() => {
-        if (!listenToChangesRef.current) return;
+        if (!syncDone) return;
 
         const currentPath = window.location.pathname;
         const pathFromState = getPathFromState(state);
@@ -89,9 +90,9 @@ const Url: React.FC = () => {
         if (currentPath !== pathFromState) {
             window.history.pushState(page, "unused", pathFromState);
         }
-    }, [state, page]);
+    }, [state, page, syncDone]);
 
-    // useUrlToStateSync
+    // Update state on popstate (back/forward button)
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
             const pageInState = ev.state;
@@ -99,7 +100,7 @@ const Url: React.FC = () => {
         });
     }, [setState]);
 
-    return null;
+    return syncDone ? <>{children}</> : null;
 };
 
 const Router: React.FC = () => {

@@ -6,12 +6,14 @@ import { SetState } from "./StoreState";
 export class AppStore {
     constructor(private compositionRoot: CompositionRoot, private setState: SetState<AppState>) {}
 
-    async logout() {
+    logout = () => {
         return this.setState({ session: { type: "notLogged" } });
-    }
-    async goToHome() {
+    };
+
+    goToHome = () => {
         return this.setState({ page: { type: "home" } });
-    }
+    };
+
     async goToCounter(id: Id) {
         return this.withLoader(async () => {
             const counter = await this.compositionRoot.counters.get(id);
@@ -19,14 +21,14 @@ export class AppStore {
         });
     }
 
-    async addCounter(n: number) {
+    addCounter = async (n: number) => {
         // TODO: setState could return a Promise when finished so caller can chain events
         return this.setState(async state => {
             const counter = this.getCounter(state);
             const counterUpdated = await this.compositionRoot.counters.add(counter, n);
             return { counter: counterUpdated };
         });
-    }
+    };
 
     private getCounter(state: AppState) {
         const counter = state.counter;

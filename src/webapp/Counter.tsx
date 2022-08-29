@@ -47,7 +47,7 @@ const CounterApp: React.FC = () => {
     const counter = useAppState(state => state.counter);
 
     const actions = React.useMemo(() => {
-        return { add: store.addCounter.bind(store) };
+        return { add: store.addCounter };
     }, [store]);
 
     if (!counter) return null;
