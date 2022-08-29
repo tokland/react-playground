@@ -1,7 +1,7 @@
 import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
-import { AppState, Page } from "../domain/entities/AppState";
+import { AppState } from "../domain/entities/AppState";
 import { useAppState, useAppSetState } from "./AppStateHooks";
 import { getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
@@ -15,7 +15,7 @@ declare const route: any;
         route("/", { toPage: () => ({ type: "home" }), fromPage: () => "/" }),
         route("/counter/:id", {
             toPage: ({ id }: any, _params: any) => ({ type: "counter", id }),
-            fromPage: (page: Page) => `/counter/${page.type}`, // Page can be anything
+            fromPage: (state: AppState) => `/counter/${state.counter?.id}`,
         }),
     ];
 };
@@ -24,13 +24,13 @@ async function runStoreActionFromPath(store: AppStore, path: string) {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
-        return store.routes.goToHome();
+        store.routes.goToHome();
     } else if (counterMatch) {
         const id = counterMatch.groups?.id;
         if (!id) throw new Error();
-        return store.routes.goToCounter(id);
+        store.routes.goToCounter(id);
     } else {
-        throw new Error("getPage: no match");
+        throw new Error(`No route match: ${path}`);
     }
 }
 
@@ -39,7 +39,7 @@ function getPathFromState(state: AppState): string {
         case "home":
             return "/";
         case "counter":
-            return `/counter/1`;
+            return `/counter/${state.counter?.id || "1"}`;
     }
 }
 

@@ -7,5 +7,7 @@ const initialAppState: AppState = {
     counter: undefined,
     isLoading: false,
 };
+
 const [useAppState, useAppSetState] = getStoreHooks(initialAppState);
+
 export { useAppState, useAppSetState };

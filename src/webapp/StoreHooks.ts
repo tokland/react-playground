@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { Selector, Store, useStoreSetState, useStoreState } from "./StoreState";
 
 export function getStoreHooks<State>(initialState: State) {
