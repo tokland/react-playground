@@ -11,7 +11,7 @@ function SessionComponent() {
             {session.type === "logged" ? (
                 <>
                     <span>Logged {session.username}</span>&nbsp;
-                    <button onClick={store.logout}>Logout</button>
+                    <button onClick={store.session.logout}>Logout</button>
                 </>
             ) : (
                 <span>Not logged in</span>

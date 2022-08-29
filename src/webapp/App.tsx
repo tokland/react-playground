@@ -24,11 +24,11 @@ async function runStoreActionFromPath(store: AppStore, path: string) {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
-        return store.goToHome();
+        return store.routes.goToHome();
     } else if (counterMatch) {
         const id = counterMatch.groups?.id;
         if (!id) throw new Error();
-        return store.goToCounter(id);
+        return store.routes.goToCounter(id);
     } else {
         throw new Error("getPage: no match");
     }
