@@ -43,6 +43,7 @@ async function getRandomInteger(options: { min: number; max: number }): Promise<
 
 const AppCounter: React.FC = () => {
     const { store } = useAppContext();
+    // TODO: useAppStateOrFail(state => state.counter)
     const counter = useAppState(state => state.counter);
     if (!counter) return null;
 
