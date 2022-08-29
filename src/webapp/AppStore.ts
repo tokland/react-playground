@@ -6,6 +6,9 @@ import { Dispatcher } from "./StoreState";
 export class AppStore {
     constructor(private compositionRoot: CompositionRoot, private dispatch: Dispatcher<AppState>) {}
 
+    async goToHome() {
+        return this.dispatch(() => ({ page: { type: "home" } }));
+    }
     async goToCounter(id: Id) {
         return this.withLoader(async () => {
             const counter = await this.compositionRoot.counters.get(id);

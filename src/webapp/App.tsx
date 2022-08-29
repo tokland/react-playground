@@ -21,22 +21,21 @@ declare const route: any;
     ];
 };
 
-async function getPage(store: AppStore, path: string): Promise<Page> {
+async function getPage(store: AppStore, path: string) {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
-        return { type: "home" };
+        return store.goToHome();
     } else if (counterMatch) {
         const id = counterMatch.groups?.id;
         if (!id) throw new Error();
-        return { type: "counter" };
+        return store.goToCounter(id);
     } else {
         throw new Error("getPage: no match");
     }
 }
 
-// TODO?:       getPath(state: AppState): string
-export function getPath(state: AppState): string {
+export function getPathFromState(state: AppState): string {
     switch (state.page.type) {
         case "home":
             return "/";
@@ -74,8 +73,7 @@ const Url: React.FC = () => {
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
-            const page = await getPage(store, path);
-            dispatch(appReducer.setPage(page));
+            await getPage(store, path);
             listenToChangesRef.current = true;
         }
         run();
@@ -86,7 +84,7 @@ const Url: React.FC = () => {
         if (!listenToChangesRef.current) return;
 
         const currentPath = window.location.pathname;
-        const pathFromState = getPath(state);
+        const pathFromState = getPathFromState(state);
 
         if (currentPath !== pathFromState) {
             window.history.pushState(page, "unused", pathFromState);
