@@ -5,7 +5,6 @@ import { AppState, Page } from "../domain/entities/AppState";
 import { useAppState, useAppSetState } from "../domain/entities/AppReducer";
 import { getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
-import { Session } from "./Session";
 import { AppStore } from "./AppStore";
 
 declare const route: any;
@@ -37,7 +36,6 @@ async function runStoreActionFromPath(store: AppStore, path: string) {
 
 export function getPathFromState(state: AppState): string {
     switch (state.page.type) {
-        case "initial":
         case "home":
             return "/";
         case "counter":
@@ -54,19 +52,22 @@ const App: React.FC = () => {
         return { compositionRoot, store };
     }, [setState]);
 
+    const [isReady, setIsReady] = React.useState(false);
+
     return (
         <AppContext.Provider value={appContext}>
-            <UrlSync />
-            <Session />
-            <Router />
+            <UrlSync isReady={isReady} setIsReady={setIsReady} />
+            {isReady && <Router />}
         </AppContext.Provider>
     );
 };
 
-const UrlSync: React.FC = ({ children }) => {
+const UrlSync: React.FC<{
+    isReady: boolean;
+    setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ isReady, setIsReady }) => {
     const { store } = useAppContext();
     const setState = useAppSetState();
-    const [syncDone, setSyncDone] = React.useState(false);
     const state = useAppState(state => state);
 
     // Set initial state from URL
@@ -74,14 +75,14 @@ const UrlSync: React.FC = ({ children }) => {
         async function run() {
             const path = window.location.pathname;
             await runStoreActionFromPath(store, path);
-            setSyncDone(true);
+            setIsReady(true);
         }
         run();
-    }, [store]);
+    }, [store, setIsReady]);
 
     // Update URL from state changes
     React.useEffect(() => {
-        if (!syncDone) return;
+        if (!isReady) return;
 
         const currentPath = window.location.pathname;
         const pathFromState = getPathFromState(state);
@@ -89,7 +90,7 @@ const UrlSync: React.FC = ({ children }) => {
         if (currentPath !== pathFromState) {
             window.history.pushState(state.page, "unused", pathFromState);
         }
-    }, [state, syncDone]);
+    }, [state, isReady]);
 
     // Update state on popstate (back/forward button)
     React.useEffect(() => {
@@ -98,15 +99,13 @@ const UrlSync: React.FC = ({ children }) => {
         });
     }, [setState]);
 
-    return syncDone ? <>{children}</> : <h2>Loading...</h2>;
+    return null;
 };
 
 const Router: React.FC = () => {
     const page = useAppState(state => state.page);
 
     switch (page.type) {
-        case "initial":
-            return <>Loading...</>;
         case "home":
             return <HomePage />;
         case "counter":
