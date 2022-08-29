@@ -2,7 +2,7 @@ import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
 import { AppState, Page } from "../domain/entities/AppState";
-import { appReducer, useAppState, useAppSetState } from "../domain/entities/AppReducer";
+import { useAppState, useAppSetState } from "../domain/entities/AppReducer";
 import { getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { Session } from "./Session";
@@ -37,6 +37,7 @@ async function runStoreActionFromPath(store: AppStore, path: string) {
 
 export function getPathFromState(state: AppState): string {
     switch (state.page.type) {
+        case "initial":
         case "home":
             return "/";
         case "counter":
@@ -55,20 +56,18 @@ const App: React.FC = () => {
 
     return (
         <AppContext.Provider value={appContext}>
-            <SyncUrl>
-                <Session />
-                <Router />
-            </SyncUrl>
+            <UrlSync />
+            <Session />
+            <Router />
         </AppContext.Provider>
     );
 };
 
-const SyncUrl: React.FC = ({ children }) => {
+const UrlSync: React.FC = ({ children }) => {
     const { store } = useAppContext();
     const setState = useAppSetState();
-    const state = useAppState(state => state);
-    const { page } = state;
     const [syncDone, setSyncDone] = React.useState(false);
+    const state = useAppState(state => state);
 
     // Set initial state from URL
     React.useEffect(() => {
@@ -78,7 +77,7 @@ const SyncUrl: React.FC = ({ children }) => {
             setSyncDone(true);
         }
         run();
-    }, [setState, store]);
+    }, [store]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -88,25 +87,26 @@ const SyncUrl: React.FC = ({ children }) => {
         const pathFromState = getPathFromState(state);
 
         if (currentPath !== pathFromState) {
-            window.history.pushState(page, "unused", pathFromState);
+            window.history.pushState(state.page, "unused", pathFromState);
         }
-    }, [state, page, syncDone]);
+    }, [state, syncDone]);
 
     // Update state on popstate (back/forward button)
     React.useEffect(() => {
         window.addEventListener("popstate", ev => {
-            const pageInState = ev.state;
-            setState(appReducer.setPage(pageInState));
+            setState(ev.state);
         });
     }, [setState]);
 
-    return syncDone ? <>{children}</> : null;
+    return syncDone ? <>{children}</> : <h2>Loading...</h2>;
 };
 
 const Router: React.FC = () => {
     const page = useAppState(state => state.page);
 
     switch (page.type) {
+        case "initial":
+            return <>Loading...</>;
         case "home":
             return <HomePage />;
         case "counter":

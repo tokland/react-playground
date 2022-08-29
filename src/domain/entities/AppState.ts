@@ -7,6 +7,6 @@ export interface AppState {
     isLoading: boolean;
 }
 
-export type Page = { type: "home" } | { type: "counter" };
+export type Page = { type: "initial" | "home" | "counter" };
 
 type Session = { type: "notLogged" } | { type: "logged"; username: string };
