@@ -30,9 +30,9 @@ export function useStoreState<State, SelectedState>(
 
 export function useStoreDispatch<State>(store: Store<State>) {
     const setState = React.useCallback<Dispatcher<State>>(
-        action => {
-            const newState = action(store.state);
-            store.setState(newState);
+        async action => {
+            const newState = await action(store.state);
+            store.setState({ ...store.state, newState });
         },
         [store]
     );
@@ -40,7 +40,9 @@ export function useStoreDispatch<State>(store: Store<State>) {
     return setState;
 }
 
-type Dispatcher<State> = (updater: (state: State) => State) => void;
+export type Dispatcher<State> = (
+    updater: (state: State) => Partial<State> | Promise<Partial<State>>
+) => void;
 
 /* State store */
 

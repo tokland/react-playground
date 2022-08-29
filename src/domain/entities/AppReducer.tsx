@@ -12,18 +12,15 @@ export const appReducer = {
     // counter: onPageType("counter", counterReducer)
     // counter: forPageType("counter", { add: (n: number) => counterReducer.add(n), ... })
     counter: {
-        set: (counter: Counter) =>
-            reducer(state =>
-                state.page.type === "counter"
-                    ? { ...state, page: { type: "counter", counter } }
-                    : state
-            ),
+        set: (counter: Counter) => reducer(state => ({ ...state, counter })),
     },
 };
 
 const initialAppState: AppState = {
     page: { type: "home" },
     session: { type: "logged", username: "arnau" },
+    counter: undefined,
+    isLoading: false,
 };
 
 const hooks = getStoreHooks(initialAppState);

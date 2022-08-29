@@ -45,12 +45,10 @@ async function getRandomInteger(options: { min: number; max: number }): Promise<
 const CounterApp: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const dispatch = useAppDispatch();
-    const counter = useAppState(state =>
-        state.page.type === "counter" ? state.page.counter : undefined
-    );
+    const counter = useAppState(state => state.counter);
 
     const actions = React.useMemo(() => {
-        if (!counter) throw new Error();
+        if (!counter) throw new Error("Counter not loaded");
 
         // Move to global view actions? (aware of compositionRoot)
         return {

@@ -1,11 +1,12 @@
 import React from "react";
 import HomePage from "./pages/HomePage";
 import CounterPage from "./pages/CounterPage";
-import { Page } from "../domain/entities/AppState";
+import { AppState, Page } from "../domain/entities/AppState";
 import { appReducer, useAppState, useAppDispatch } from "../domain/entities/AppReducer";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { Session } from "./Session";
+import { AppStore } from "./AppStore";
 
 declare const route: any;
 
@@ -20,7 +21,7 @@ declare const route: any;
     ];
 };
 
-async function getPage(compositionRoot: CompositionRoot, path: string): Promise<Page> {
+async function getPage(store: AppStore, path: string): Promise<Page> {
     const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
 
     if (path === "/") {
@@ -28,26 +29,31 @@ async function getPage(compositionRoot: CompositionRoot, path: string): Promise<
     } else if (counterMatch) {
         const id = counterMatch.groups?.id;
         if (!id) throw new Error();
-        const counter = await compositionRoot.counters.get(id);
-        return { type: "counter", counter };
+        return { type: "counter" };
     } else {
         throw new Error("getPage: no match");
     }
 }
 
 // TODO?:       getPath(state: AppState): string
-export function getPath(page: Page): string {
-    switch (page.type) {
+export function getPath(state: AppState): string {
+    switch (state.page.type) {
         case "home":
             return "/";
         case "counter":
-            return `/counter/${page.counter.id}`;
+            return `/counter/1`;
     }
 }
 
-const appContext = { compositionRoot: getCompositionRoot() };
-
 const App: React.FC = () => {
+    const dispatch = useAppDispatch();
+
+    const appContext = React.useMemo(() => {
+        const compositionRoot = getCompositionRoot();
+        const store = new AppStore(compositionRoot, dispatch);
+        return { compositionRoot, store };
+    }, [dispatch]);
+
     return (
         <AppContext.Provider value={appContext}>
             <Url />
@@ -58,33 +64,34 @@ const App: React.FC = () => {
 };
 
 const Url: React.FC = () => {
-    const { compositionRoot } = useAppContext();
+    const { store } = useAppContext();
     const dispatch = useAppDispatch();
-    const page = useAppState(state => state.page);
+    const state = useAppState(state => state);
+    const { page } = state;
     const listenToChangesRef = React.useRef(false);
 
     // useUrlToStateOnInit
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
-            const page = await getPage(compositionRoot, path);
+            const page = await getPage(store, path);
             dispatch(appReducer.setPage(page));
             listenToChangesRef.current = true;
         }
         run();
-    }, [dispatch, compositionRoot]);
+    }, [dispatch, store]);
 
     // useSyncFromStateToUrl
     React.useEffect(() => {
         if (!listenToChangesRef.current) return;
 
         const currentPath = window.location.pathname;
-        const pathFromState = getPath(page);
+        const pathFromState = getPath(state);
 
         if (currentPath !== pathFromState) {
             window.history.pushState(page, "unused", pathFromState);
         }
-    }, [page]);
+    }, [state, page]);
 
     // useUrlToStateSync
     React.useEffect(() => {
