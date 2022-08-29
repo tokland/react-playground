@@ -1,5 +1,4 @@
 import { AppState, Page } from "./AppState";
-import { getStoreHooks } from "../../webapp/StoreHooks";
 import { Counter } from "./Counter";
 
 function reducer(updater: (state: AppState) => AppState) {
@@ -13,14 +12,3 @@ const _appReducer = {
         set: (counter: Counter) => reducer(state => ({ ...state, counter })),
     },
 };
-
-const initialAppState: AppState = {
-    page: { type: "home" },
-    session: { type: "logged", username: "arnau" },
-    counter: undefined,
-    isLoading: false,
-};
-
-const [useAppState, useAppSetState] = getStoreHooks(initialAppState);
-
-export { useAppState, useAppSetState };

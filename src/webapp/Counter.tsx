@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppState } from "../domain/entities/AppReducer";
+import { useAppState } from "./AppStateHooks";
 import { Counter } from "../domain/entities/Counter";
 import { useAppContext } from "./AppContext";
 
