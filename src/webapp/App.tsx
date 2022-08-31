@@ -31,7 +31,6 @@ const UrlSync: React.FC<{
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ isReady, setIsReady }) => {
     const { store } = useAppContext();
-    const setState = useAppSetState();
     const state = useAppState(state => state);
 
     // Set initial state from URL
@@ -52,16 +51,17 @@ const UrlSync: React.FC<{
         const pathFromState = getPathFromState(state);
 
         if (currentPath !== pathFromState) {
-            window.history.pushState(state.page, "unused", pathFromState);
+            window.history.pushState(state, "unused", pathFromState);
         }
     }, [state, isReady]);
 
     // Update state on popstate (back/forward button)
     React.useEffect(() => {
-        window.addEventListener("popstate", ev => {
-            setState(ev.state);
+        window.addEventListener("popstate", () => {
+            const currentPath = window.location.pathname;
+            runStoreActionFromPath(store, currentPath);
         });
-    }, [setState]);
+    }, [store]);
 
     return null;
 };
@@ -101,8 +101,6 @@ type ExtractArgsFromPath<
 > = Path extends `${string}[${infer Var}]${infer S2}`
     ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
-
-type Test1 = ExtractArgsFromPath<"/path/[id]/[value]", {}>;
 
 () => {
     const _routes = [

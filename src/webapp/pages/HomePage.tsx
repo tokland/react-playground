@@ -1,4 +1,4 @@
-import React, { ReactComponentElement } from "react";
+import React from "react";
 import { useAppContext } from "../AppContext";
 import { Session } from "../Session";
 
@@ -27,7 +27,7 @@ const CounterButton: React.FC<{
     counterId: string;
 }> = props => {
     const { onClick, counterId } = props;
-    const clickWithId = React.useCallback(() => onClick(counterId), [counterId]);
+    const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 
     return <button onClick={clickWithId}>Counter {counterId}</button>;
 };
