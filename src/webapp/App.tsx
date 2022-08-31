@@ -78,7 +78,12 @@ const Router: React.FC = () => {
 };
 
 // DEMO
-declare const route: any;
+declare function route(path: string, options: Options): { path: string; options: Options };
+
+interface Options {
+    onEnter: (store: AppStore, args: any, params: object) => void | Promise<void>;
+    fromState: (state: AppState) => string | undefined;
+}
 
 () => {
     const _routes = [
@@ -87,7 +92,7 @@ declare const route: any;
             fromState: (state: AppState) => (state.page.type === "home" ? `/` : undefined),
         }),
         route("/counter/:id", {
-            onEnter: (store: AppStore, args: any, _params: any) =>
+            onEnter: (store: AppStore, args, _params) =>
                 store.routes.loadCounterAndSetPage(args.id),
             fromState: (state: AppState) =>
                 state.page.type === "counter" && state.counter
