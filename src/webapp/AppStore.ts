@@ -7,8 +7,12 @@ export class AppStore {
     constructor(private compositionRoot: CompositionRoot, private setState: SetState<AppState>) {}
 
     session = {
+        login: (username: string) => {
+            return this.setState({ session: { type: "logged", username } });
+        },
+
         logout: () => {
-            return this.setState({ session: { type: "notLogged" } });
+            return this.setState({ session: { type: "notLogged" }, page: { type: "home" } });
         },
     };
 
