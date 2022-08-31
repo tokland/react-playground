@@ -78,12 +78,31 @@ const Router: React.FC = () => {
 };
 
 // DEMO
-declare function route(path: string, options: Options): { path: string; options: Options };
-
-interface Options {
-    onEnter: (store: AppStore, args: any, params: object) => void | Promise<void>;
-    fromState: (state: AppState) => string | undefined;
+function route<Path extends string, Params extends readonly string[]>(
+    path: Path,
+    options: Options<Path, Params>
+): { path: Path; options: Options<Path, Params> } {
+    return { path, options };
 }
+
+interface Options<Path extends string, Params extends readonly string[]> {
+    onEnter: (
+        store: AppStore,
+        args: ExtractArgsFromPath<Path, {}>,
+        params: Record<Params[number], string>
+    ) => void | Promise<void>;
+    fromState: (state: AppState) => string | undefined;
+    params?: Params;
+}
+
+type ExtractArgsFromPath<
+    Path extends String,
+    Output
+> = Path extends `${string}[${infer Var}]${infer S2}`
+    ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
+    : { [K in keyof Output]: Output[K] };
+
+type Test1 = ExtractArgsFromPath<"/path/[id]/[value]", {}>;
 
 () => {
     const _routes = [
@@ -91,7 +110,8 @@ interface Options {
             onEnter: (store: AppStore) => store.routes.goToHome(),
             fromState: (state: AppState) => (state.page.type === "home" ? `/` : undefined),
         }),
-        route("/counter/:id", {
+        route("/counter/[id]", {
+            params: ["x", "y"] as const,
             onEnter: (store: AppStore, args, _params) =>
                 store.routes.loadCounterAndSetPage(args.id),
             fromState: (state: AppState) =>
@@ -99,27 +119,7 @@ interface Options {
                     ? `/counter/${state.counter.id}`
                     : undefined,
         }),
-    ];
-};
-
-// DEMO2: no
-() => {
-    function _router(state: AppState) {
-        switch (state.page.type) {
-            case "home":
-                return {
-                    matchPath: "/",
-                    generatePath: "/",
-                    render: () => <HomePage />,
-                };
-            case "counter":
-                return {
-                    matchPath: `/counter/:id`,
-                    generatePath: `/counter/${state.counter?.id || "1"}`,
-                    render: () => <CounterPage />,
-                };
-        }
-    }
+    ] as const;
 };
 
 async function runStoreActionFromPath(store: AppStore, path: string) {
