@@ -7,42 +7,6 @@ import { getCompositionRoot } from "../compositionRoot";
 import { AppContext, useAppContext } from "./AppContext";
 import { AppStore } from "./AppStore";
 
-declare const route: any;
-
-// DEMO
-() => {
-    const _routes = [
-        route("/", { toPage: () => ({ type: "home" }), fromPage: () => "/" }),
-        route("/counter/:id", {
-            toPage: ({ id }: any, _params: any) => ({ type: "counter", id }),
-            fromPage: (state: AppState) => `/counter/${state.counter?.id}`,
-        }),
-    ];
-};
-
-async function runStoreActionFromPath(store: AppStore, path: string) {
-    const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
-
-    if (path === "/") {
-        store.routes.goToHome();
-    } else if (counterMatch) {
-        const id = counterMatch.groups?.id;
-        if (!id) throw new Error();
-        store.routes.goToCounter(id);
-    } else {
-        throw new Error(`No route match: ${path}`);
-    }
-}
-
-function getPathFromState(state: AppState): string {
-    switch (state.page.type) {
-        case "home":
-            return "/";
-        case "counter":
-            return `/counter/${state.counter?.id || "1"}`;
-    }
-}
-
 const App: React.FC = () => {
     const setState = useAppSetState();
 
@@ -112,5 +76,67 @@ const Router: React.FC = () => {
             return <CounterPage />;
     }
 };
+
+// DEMO
+declare const route: any;
+
+() => {
+    const _routes = [
+        route("/", {
+            onEnter: (store: AppStore) => store.routes.goToHome(),
+            fromState: (state: AppState) => (state.page.type === "home" ? `/` : undefined),
+        }),
+        route("/counter/:id", {
+            onEnter: (store: AppStore, args: any, _params: any) =>
+                store.routes.loadCounterAndSetPage(args.id),
+            fromState: (state: AppState) =>
+                state.page.type === "counter" && state.counter
+                    ? `/counter/${state.counter.id}`
+                    : undefined,
+        }),
+    ];
+};
+
+// DEMO2: no
+() => {
+    function _router(state: AppState) {
+        switch (state.page.type) {
+            case "home":
+                return {
+                    matchPath: "/",
+                    generatePath: "/",
+                    render: () => <HomePage />,
+                };
+            case "counter":
+                return {
+                    matchPath: `/counter/:id`,
+                    generatePath: `/counter/${state.counter?.id || "1"}`,
+                    render: () => <CounterPage />,
+                };
+        }
+    }
+};
+
+async function runStoreActionFromPath(store: AppStore, path: string) {
+    const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
+
+    if (path === "/") {
+        store.routes.goToHome();
+    } else if (counterMatch) {
+        const id = counterMatch.groups?.id || "1";
+        store.routes.loadCounterAndSetPage(id);
+    } else {
+        throw new Error(`No route match: ${path}`);
+    }
+}
+
+function getPathFromState(state: AppState): string {
+    switch (state.page.type) {
+        case "home":
+            return "/";
+        case "counter":
+            return `/counter/${state.counter?.id || "1"}`;
+    }
+}
 
 export default App;

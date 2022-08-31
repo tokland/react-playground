@@ -8,8 +8,8 @@ const HomePage: React.FC = () => {
     return (
         <>
             <Session />
-            <button onClick={() => store.routes.goToCounter("1")}>Counter 1</button>
-            <button onClick={() => store.routes.goToCounter("2")}>Counter 2</button>
+            <button onClick={() => store.routes.loadCounterAndSetPage("1")}>Counter 1</button>
+            <button onClick={() => store.routes.loadCounterAndSetPage("2")}>Counter 2</button>
         </>
     );
 };
