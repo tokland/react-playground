@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactComponentElement } from "react";
 import { useAppContext } from "../AppContext";
 import { Session } from "../Session";
 
@@ -8,10 +8,28 @@ const HomePage: React.FC = () => {
     return (
         <>
             <Session />
-            <button onClick={() => store.routes.loadCounterAndSetPage("1")}>Counter 1</button>
-            <button onClick={() => store.routes.loadCounterAndSetPage("2")}>Counter 2</button>
+
+            {ids.map(id => (
+                <CounterButton
+                    key={id}
+                    onClick={store.routes.loadCounterAndSetPage}
+                    counterId={id}
+                />
+            ))}
         </>
     );
+};
+
+const ids = ["1", "2", "3"];
+
+const CounterButton: React.FC<{
+    onClick: (counterId: string) => void;
+    counterId: string;
+}> = props => {
+    const { onClick, counterId } = props;
+    const clickWithId = React.useCallback(() => onClick(counterId), [counterId]);
+
+    return <button onClick={clickWithId}>Counter {counterId}</button>;
 };
 
 export default HomePage;
