@@ -123,12 +123,12 @@ type Test1 = ExtractArgsFromPath<"/path/[id]/[value]", {}>;
 };
 
 async function runStoreActionFromPath(store: AppStore, path: string) {
-    const counterMatch = path.match(/^\/counter\/(?<id>\d+)/);
+    let match: RegExpMatchArray | null;
 
     if (path === "/") {
         store.routes.goToHome();
-    } else if (counterMatch) {
-        const id = counterMatch.groups?.id || "1";
+    } else if ((match = path.match(/^\/counter\/(?<id>\d+)/))) {
+        const id = match.groups?.id || "";
         store.routes.loadCounterAndSetPage(id);
     } else {
         throw new Error(`No route match: ${path}`);
