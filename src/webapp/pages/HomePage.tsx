@@ -8,6 +8,7 @@ const HomePage: React.FC = () => {
     const session = useAppState(state => state.session);
 
     const counterIds = React.useMemo(() => {
+        const ids = ["1", "2", "3"];
         const username = session.type === "logged" ? session.username : undefined;
         return username ? ids.map(id => `${username}-${id}`) : [];
     }, [session]);
@@ -19,20 +20,20 @@ const HomePage: React.FC = () => {
             {counterIds.map(id => (
                 <CounterButton
                     key={id}
-                    onClick={store.routes.loadCounterAndSetPage}
                     counterId={id}
+                    onClick={store.routes.loadCounterAndSetPage}
                 />
             ))}
         </>
     );
 };
 
-const ids = ["1", "2", "3"];
-
-const CounterButton: React.FC<{
+interface CounterButtonProps {
     onClick: (counterId: string) => void;
     counterId: string;
-}> = props => {
+}
+
+const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, counterId } = props;
     const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 

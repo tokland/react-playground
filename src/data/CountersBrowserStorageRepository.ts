@@ -4,12 +4,18 @@ import { CountersRepository } from "../domain/repositories/CountersRepository";
 
 export class CountersBrowserStorageRepository implements CountersRepository {
     async get(id: Id): Promise<Counter> {
-        const value = window.localStorage.getItem(`counter-${id}`);
+        const value = window.localStorage.getItem(this.getKey(id));
         return { id, value: value ? parseInt(value) : 0 };
     }
 
     async save(counter: Counter): Promise<Counter> {
-        window.localStorage.setItem(`counter-${counter.id}`, counter.value.toString());
+        const key = this.getKey(counter.id);
+        const value = counter.value.toString();
+        window.localStorage.setItem(key, value);
         return counter;
+    }
+
+    private getKey(id: Id): string {
+        return `counter-${id}`;
     }
 }
