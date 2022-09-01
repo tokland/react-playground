@@ -4,7 +4,7 @@ import CounterPage from "./pages/CounterPage";
 import { AppState } from "../domain/entities/AppState";
 import { useAppState, useAppSetState } from "./AppStateHooks";
 import { getCompositionRoot } from "../compositionRoot";
-import { AppContext, useAppContext } from "./AppContext";
+import { AppContext } from "./AppContext";
 import { AppStore } from "./AppStore";
 
 const App: React.FC = () => {
@@ -20,20 +20,23 @@ const App: React.FC = () => {
 
     return (
         <AppContext.Provider value={appContext}>
-            <UrlSync isReady={isReady} setIsReady={setIsReady} />
+            <UrlSync store={appContext.store} isReady={isReady} setIsReady={setIsReady} />
             {isReady && <Router />}
         </AppContext.Provider>
     );
 };
 
-const UrlSync: React.FC<{
+interface UrlSyncProps {
+    store: AppStore;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ isReady, setIsReady }) => {
-    const { store } = useAppContext();
+}
+
+const UrlSync: React.FC<UrlSyncProps> = props => {
+    const { store, isReady, setIsReady } = props;
     const state = useAppState(state => state);
 
-    // Set initial state from URL
+    // Set state from initial URL
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
@@ -45,17 +48,15 @@ const UrlSync: React.FC<{
 
     // Update URL from state changes
     React.useEffect(() => {
-        if (!isReady) return;
-
         const currentPath = window.location.pathname;
         const pathFromState = getPathFromState(state);
 
-        if (currentPath !== pathFromState) {
+        if (isReady && currentPath !== pathFromState) {
             window.history.pushState(state, "unused", pathFromState);
         }
     }, [state, isReady]);
 
-    // Update state on popstate (back/forward button)
+    // Update state on Back/Forward browser actions
     React.useEffect(() => {
         window.addEventListener("popstate", () => {
             const currentPath = window.location.pathname;
@@ -78,6 +79,7 @@ const Router: React.FC = () => {
 };
 
 // DEMO
+
 function route<Path extends string, Params extends readonly string[]>(
     path: Path,
     options: Options<Path, Params>
@@ -89,9 +91,9 @@ interface Options<Path extends string, Params extends readonly string[]> {
     onEnter: (
         store: AppStore,
         args: ExtractArgsFromPath<Path, {}>,
-        params: Record<Params[number], string>
+        params: Partial<Record<Params[number], string>>
     ) => void | Promise<void>;
-    fromState: (state: AppState) => string | undefined;
+    fromState: (state: AppState) => string | boolean;
     params?: Params;
 }
 
@@ -106,7 +108,7 @@ type ExtractArgsFromPath<
     const _routes = [
         route("/", {
             onEnter: (store: AppStore) => store.routes.goToHome(),
-            fromState: (state: AppState) => (state.page.type === "home" ? `/` : undefined),
+            fromState: (state: AppState) => state.page.type === "home",
         }),
         route("/counter/[id]", {
             params: ["x", "y"] as const,
@@ -115,7 +117,7 @@ type ExtractArgsFromPath<
             fromState: (state: AppState) =>
                 state.page.type === "counter" && state.counter
                     ? `/counter/${state.counter.id}`
-                    : undefined,
+                    : false,
         }),
     ] as const;
 };
