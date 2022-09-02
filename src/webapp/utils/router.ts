@@ -1,15 +1,15 @@
 export function getRouteBuilder<State, Store>() {
     return function route<Path extends string, Params extends readonly string[] = []>(
         path: Path,
-        options: Omit<Route<State, Store, Path, Params>, "path" | "pathRegExp">
-    ): Route<State, Store, Path, Params> {
+        options: Omit<TypedRoute<State, Store, Path, Params>, "path" | "pathRegExp">
+    ): TypedRoute<State, Store, Path, Params> {
         // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
         const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
         return { path, pathRegExp, ...options };
     };
 }
 
-interface Route<State, Store, Path extends string, Params extends readonly string[]> {
+interface TypedRoute<State, Store, Path extends string, Params extends readonly string[]> {
     path: Path;
     pathRegExp: RegExp;
     onEnter: (options: {
@@ -21,6 +21,8 @@ interface Route<State, Store, Path extends string, Params extends readonly strin
     params?: Params;
 }
 
+export type Route = TypedRoute<any, any, any, any>;
+
 type ExtractArgsFromPath<
     Path extends String,
     Output = {}
@@ -28,11 +30,7 @@ type ExtractArgsFromPath<
     ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
-export async function runRouteOnEnterForPath<Store>(
-    routes: GenericRoute[],
-    store: Store,
-    path: string
-) {
+export async function runRouteOnEnterForPath<Store>(routes: Route[], store: Store, path: string) {
     routes.forEach(route => {
         const match = path.match(route.pathRegExp);
 
@@ -43,19 +41,17 @@ export async function runRouteOnEnterForPath<Store>(
     });
 }
 
-export type GenericRoute = Route<any, any, any, any>;
-
-export function getRouterPathFromState<State>(routes: GenericRoute[], state: State): string {
+export function getRouterPathFromState<State>(routes: Route[], state: State): string {
     for (const route of routes) {
-        const res = route.fromState(state);
+        const match = route.fromState(state);
 
-        switch (res) {
+        switch (match) {
             case true:
                 return route.path;
             case false:
                 continue;
             default:
-                return res;
+                return match;
         }
     }
 

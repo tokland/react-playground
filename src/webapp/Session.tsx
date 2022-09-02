@@ -18,7 +18,7 @@ const SessionComponent: React.FC = () => {
                 </>
             ) : (
                 <>
-                    <input onBlur={setUsernameFromEv}></input>
+                    <input onBlur={setUsernameFromEv} placeholder="Username"></input>
                     <button onClick={login}>Login</button>
                 </>
             )}

@@ -1,11 +1,11 @@
 import React from "react";
 import { useAppState } from "../../AppStateHooks";
 import { AppStore } from "../../AppStore";
-import { GenericRoute, getRouterPathFromState, runRouteOnEnterForPath } from "../../utils/router";
+import { Route, getRouterPathFromState, runRouteOnEnterForPath } from "../../utils/router";
 
 interface UrlSyncProps {
     store: AppStore;
-    routes: GenericRoute[];
+    routes: Route[];
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
 }

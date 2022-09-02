@@ -6,35 +6,31 @@ import { Session } from "../Session";
 const HomePage: React.FC = () => {
     const { store } = useAppContext();
     const session = useAppState(state => state.session);
-
-    const counterIds = React.useMemo(() => {
-        const ids = ["1", "2", "3"];
-        const username = session.type === "logged" ? session.username : undefined;
-        return username ? ids.map(id => `${username}-${id}`) : [];
-    }, [session]);
+    const userLoggedIn = session.type === "logged";
 
     return (
         <>
             <Session />
-
-            {counterIds.map(id => (
-                <CounterButton
-                    key={id}
-                    counterId={id}
-                    onClick={store.routes.loadCounterAndSetPage}
-                />
-            ))}
+            {userLoggedIn && (
+                <>
+                    <CounterButton index="1" onClick={store.routes.loadCounterAndSetPage} />
+                    <CounterButton index="2" onClick={store.routes.loadCounterAndSetPage} />
+                </>
+            )}
         </>
     );
 };
 
 interface CounterButtonProps {
     onClick: (counterId: string) => void;
-    counterId: string;
+    index: string;
 }
 
 const CounterButton: React.FC<CounterButtonProps> = props => {
-    const { onClick, counterId } = props;
+    const { onClick, index } = props;
+    const session = useAppState(state => state.session);
+    const username = session.type === "logged" ? session.username : undefined;
+    const counterId = `${username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 
     return <button onClick={clickWithId}>Counter {counterId}</button>;
