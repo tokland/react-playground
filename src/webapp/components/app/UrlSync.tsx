@@ -10,7 +10,7 @@ interface UrlSyncProps {
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const UrlSync: React.FC<UrlSyncProps> = props => {
+const UrlSync: React.FC<UrlSyncProps> = props => {
     const { store, routes, isReady, setIsReady } = props;
     const state = useAppState(state => state);
 
@@ -49,3 +49,5 @@ export function useUrlSync() {
     const [isReady, setIsReady] = React.useState(false);
     return { isReady, setIsReady };
 }
+
+export default React.memo(UrlSync);

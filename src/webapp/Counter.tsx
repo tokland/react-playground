@@ -1,14 +1,12 @@
 import React from "react";
-import { useAppState } from "./AppStateHooks";
 import { Counter } from "../domain/entities/Counter";
-import { useAppContext } from "./AppContext";
 
 interface CounterProps {
     counter: Counter;
     onAdd: (n: number) => void;
 }
 
-function CounterComponent(props: CounterProps) {
+const CounterComponent: React.FC<CounterProps> = props => {
     const { counter, onAdd } = props;
     const increment = React.useCallback(() => onAdd(+1), [onAdd]);
     const decrement = React.useCallback(() => onAdd(-1), [onAdd]);
@@ -22,15 +20,6 @@ function CounterComponent(props: CounterProps) {
             <button onClick={increment}>+ONE</button>
         </div>
     );
-}
-
-const AppCounter: React.FC = () => {
-    const { store } = useAppContext();
-    // TODO: useAppStateOrFail(state => state.counter)
-    const counter = useAppState(state => state.counter);
-    if (!counter) return null;
-
-    return <CounterComponent counter={counter} onAdd={store.counter.add} />;
 };
 
-export default AppCounter;
+export default React.memo(CounterComponent);

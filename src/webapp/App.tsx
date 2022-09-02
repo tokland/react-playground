@@ -3,8 +3,8 @@ import { useAppSetState } from "./AppStateHooks";
 import { getCompositionRoot } from "../compositionRoot";
 import { AppContext } from "./AppContext";
 import { AppStore } from "./AppStore";
-import { UrlSync, useUrlSync } from "./components/app/UrlSync";
-import { Router, routes } from "./pages/Router";
+import UrlSync, { useUrlSync } from "./components/app/UrlSync";
+import Router, { routes } from "./pages/Router";
 
 const App: React.FC = () => {
     const setState = useAppSetState();
@@ -24,4 +24,4 @@ const App: React.FC = () => {
     );
 };
 
-export default App;
+export default React.memo(App);

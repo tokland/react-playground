@@ -26,4 +26,4 @@ const SessionComponent: React.FC = () => {
     );
 };
 
-export const Session = React.memo(SessionComponent);
+export default React.memo(SessionComponent);

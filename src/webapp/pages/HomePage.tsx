@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "../AppContext";
 import { useAppState } from "../AppStateHooks";
-import { Session } from "../Session";
+import Session from "../Session";
 
 const HomePage: React.FC = () => {
     const { store } = useAppContext();
@@ -13,8 +13,8 @@ const HomePage: React.FC = () => {
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index="1" onClick={store.routes.loadCounterAndSetPage} />
-                    <CounterButton index="2" onClick={store.routes.loadCounterAndSetPage} />
+                    <CounterButton index="1" onClick={store.routes.loadCounterAndGoToCounterPage} />
+                    <CounterButton index="2" onClick={store.routes.loadCounterAndGoToCounterPage} />
                 </>
             )}
         </>
@@ -36,4 +36,4 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     return <button onClick={clickWithId}>Counter {counterId}</button>;
 };
 
-export default HomePage;
+export default React.memo(HomePage);

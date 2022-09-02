@@ -8,24 +8,33 @@ export class AppStore {
 
     session = {
         login: (username: string) => {
-            return this.setState({ session: { type: "logged", username } });
+            return this.setState({
+                session: { type: "logged", username },
+            });
         },
 
         logout: () => {
-            return this.setState({ session: { type: "notLogged" }, page: { type: "home" } });
+            return this.setState({
+                session: { type: "notLogged" },
+                page: { type: "home" },
+            });
         },
     };
 
     routes = {
         goToHome: () => {
-            return this.setState({ page: { type: "home" } });
+            return this.setState({
+                page: { type: "home" },
+            });
         },
 
-        loadCounterAndSetPage: async (id: Id) => {
+        loadCounterAndGoToCounterPage: async (id: Id) => {
             return this.withLoader(async () => {
                 const counter = await this.compositionRoot.counters.get(id);
-                // TODO: setState could return a Promise when finished so caller can chain events
-                this.setState({ page: { type: "counter" }, counter });
+                this.setState({
+                    page: { type: "counter" },
+                    counter,
+                });
             });
         },
     };
