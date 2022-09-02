@@ -3,11 +3,12 @@ import { useAppSetState } from "./AppStateHooks";
 import { getCompositionRoot } from "../compositionRoot";
 import { AppContext } from "./AppContext";
 import { AppStore } from "./AppStore";
-import { useUrlSync } from "./hooks/useUrlSync";
+import { UrlSync, useUrlSync } from "./components/app/UrlSync";
 import { Router, routes } from "./pages/Router";
 
 const App: React.FC = () => {
     const setState = useAppSetState();
+    const urlSync = useUrlSync();
 
     const appContext = React.useMemo(() => {
         const compositionRoot = getCompositionRoot();
@@ -15,10 +16,9 @@ const App: React.FC = () => {
         return { compositionRoot, store };
     }, [setState]);
 
-    const urlSync = useUrlSync(routes, appContext.store);
-
     return (
         <AppContext.Provider value={appContext}>
+            <UrlSync routes={routes} store={appContext.store} {...urlSync} />
             {urlSync.isReady && <Router />}
         </AppContext.Provider>
     );
