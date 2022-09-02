@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppState } from "../../AppStateHooks";
 import { AppStore } from "../../AppStore";
-import { Route } from "../../utils/router";
+import { GenericRoute, getRouterPathFromState, Route } from "../../utils/router";
 
 interface UrlSyncProps {
     store: AppStore;
@@ -18,7 +18,7 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
-            await runStoreActionFromPath(routes, store, path);
+            await runRouteOnEnterForMatchingPath(routes, store, path);
             setIsReady(true);
         }
         run();
@@ -27,7 +27,7 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
     // Update URL from state changes
     React.useEffect(() => {
         const currentPath = window.location.pathname;
-        const pathFromState = getPathFromState(routes, state);
+        const pathFromState = getRouterPathFromState(routes, state);
 
         if (isReady && currentPath !== pathFromState) {
             window.history.pushState(state, "unused", pathFromState);
@@ -38,7 +38,7 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
     React.useEffect(() => {
         window.addEventListener("popstate", () => {
             const currentPath = window.location.pathname;
-            runStoreActionFromPath(routes, store, currentPath);
+            runRouteOnEnterForMatchingPath(routes, store, currentPath);
         });
     }, [store, routes]);
 
@@ -49,39 +49,6 @@ export function useUrlSync() {
     const [isReady, setIsReady] = React.useState(false);
     return { isReady, setIsReady };
 }
-
-export async function runStoreActionFromPath<Store>(
-    routes: GenericRoute[],
-    store: Store,
-    path: string
-) {
-    routes.forEach(route => {
-        // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
-        const re = route.path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)");
-        const match = path.match(new RegExp(re));
-
-        if (match) {
-            const args = match.groups as Parameters<typeof route.onEnter>[0]["args"]; // ExtractArgsFromPath<typeof route.path>;
-            route.onEnter({ store, args, params: {} });
-        }
-    });
-}
-
-type GenericRoute = Route<any, any, any, any>;
-
-export function getPathFromState<State>(routes: GenericRoute[], state: State): string {
-    for (const route of routes) {
-        const res = route.fromState(state);
-
-        switch (res) {
-            case true:
-                return route.path;
-            case false:
-                continue;
-            default:
-                return res;
-        }
-    }
-
-    return "/";
+function runRouteOnEnterForMatchingPath(routes: GenericRoute[], store: AppStore, path: string) {
+    throw new Error("Function not implemented.");
 }
