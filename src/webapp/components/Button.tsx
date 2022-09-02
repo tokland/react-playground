@@ -1,14 +1,14 @@
 import React from "react";
 
-interface LinkProps {
+interface ButtonProps {
     onClick(): void;
     text: string;
 }
 
-const Link: React.FC<LinkProps> = props => {
+const Button: React.FC<ButtonProps> = props => {
     const { onClick, text } = props;
 
     return <button onClick={onClick}>{text}</button>;
 };
 
-export default Link;
+export default Button;

@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../AppContext";
 import { useAppState } from "../AppStateHooks";
+import Button from "../components/Button";
 import Session from "../Session";
 
 const HomePage: React.FC = () => {
@@ -33,7 +34,7 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const counterId = `${username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 
-    return <button onClick={clickWithId}>Counter {counterId}</button>;
+    return <Button onClick={clickWithId} text={`Counter ${counterId}`} />;
 };
 
 export default React.memo(HomePage);

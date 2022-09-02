@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "../AppContext";
 import { useAppState } from "../AppStateHooks";
-import Link from "../components/Link";
+import Button from "../components/Button";
 import Counter from "../Counter";
 import Session from "../Session";
 
@@ -12,7 +12,7 @@ const CounterPage: React.FC = () => {
     return (
         <>
             <Session />
-            <Link onClick={store.routes.goToHome} text="Back" />
+            <Button onClick={store.routes.goToHome} text="Back" />
             {counter && <Counter counter={counter} onAdd={store.counter.add} />}
         </>
     );
