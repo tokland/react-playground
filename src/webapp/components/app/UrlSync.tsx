@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppState } from "../../AppStateHooks";
 import { AppStore } from "../../AppStore";
-import { GenericRoute, getRouterPathFromState, Route } from "../../utils/router";
+import { GenericRoute, getRouterPathFromState, runRouteOnEnterForPath } from "../../utils/router";
 
 interface UrlSyncProps {
     store: AppStore;
@@ -18,7 +18,7 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
     React.useEffect(() => {
         async function run() {
             const path = window.location.pathname;
-            await runRouteOnEnterForMatchingPath(routes, store, path);
+            await runRouteOnEnterForPath(routes, store, path);
             setIsReady(true);
         }
         run();
@@ -38,7 +38,7 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
     React.useEffect(() => {
         window.addEventListener("popstate", () => {
             const currentPath = window.location.pathname;
-            runRouteOnEnterForMatchingPath(routes, store, currentPath);
+            runRouteOnEnterForPath(routes, store, currentPath);
         });
     }, [store, routes]);
 
@@ -48,7 +48,4 @@ export const UrlSync: React.FC<UrlSyncProps> = props => {
 export function useUrlSync() {
     const [isReady, setIsReady] = React.useState(false);
     return { isReady, setIsReady };
-}
-function runRouteOnEnterForMatchingPath(routes: GenericRoute[], store: AppStore, path: string) {
-    throw new Error("Function not implemented.");
 }

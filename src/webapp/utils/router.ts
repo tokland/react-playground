@@ -1,14 +1,17 @@
 export function getRouteBuilder<State, Store>() {
     return function route<Path extends string, Params extends readonly string[] = []>(
         path: Path,
-        options: Omit<Route<State, Store, Path, Params>, "path">
+        options: Omit<Route<State, Store, Path, Params>, "path" | "pathRegExp">
     ): Route<State, Store, Path, Params> {
-        return { path, ...options };
+        // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
+        const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
+        return { path, pathRegExp, ...options };
     };
 }
 
-export interface Route<State, Store, Path extends string, Params extends readonly string[]> {
+interface Route<State, Store, Path extends string, Params extends readonly string[]> {
     path: Path;
+    pathRegExp: RegExp;
     onEnter: (options: {
         store: Store;
         args: ExtractArgsFromPath<Path>;
@@ -25,15 +28,13 @@ type ExtractArgsFromPath<
     ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
-export async function runRouteOnEnterForMatchingPath<Store>(
+export async function runRouteOnEnterForPath<Store>(
     routes: GenericRoute[],
     store: Store,
     path: string
 ) {
     routes.forEach(route => {
-        // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
-        const re = route.path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)");
-        const match = path.match(new RegExp(re));
+        const match = path.match(route.pathRegExp);
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
