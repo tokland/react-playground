@@ -40,6 +40,13 @@ export class AppStore {
     };
 
     counter = {
+        set: async (id: Id) => {
+            // return compositionRoot.counters.get(id).run(counter => this.setState({ counter }), onErr)
+            // return this.setStateFromEffect(compositionRoot.counters.get(id))
+            const counter = await this.compositionRoot.counters.get(id);
+            this.setState({ counter });
+        },
+
         add: async (n: number) => {
             return this.setState(async state => {
                 const counter = this.getCounter(state);
