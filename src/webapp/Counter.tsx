@@ -16,8 +16,8 @@ const CounterComponent: React.FC<CounterProps> = props => {
             <h2>Counter {counter.id}</h2>
             <span>value = {counter.value}</span>
 
-            <button onClick={decrement}>-ONE</button>
-            <button onClick={increment}>+ONE</button>
+            <button onClick={decrement}>- DECREMENT</button>
+            <button onClick={increment}>+ INCREMENT</button>
         </div>
     );
 };
