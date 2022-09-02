@@ -10,13 +10,6 @@ interface CounterProps {
 
 function CounterComponent(props: CounterProps) {
     const { counter, onAdd } = props;
-
-    // TODO: Use case
-    const addRandom = React.useCallback(async () => {
-        const randomValue = await getRandomInteger({ min: 1, max: 10 });
-        onAdd(randomValue);
-    }, [onAdd]);
-
     const increment = React.useCallback(() => onAdd(+1), [onAdd]);
     const decrement = React.useCallback(() => onAdd(-1), [onAdd]);
 
@@ -27,18 +20,8 @@ function CounterComponent(props: CounterProps) {
 
             <button onClick={decrement}>-ONE</button>
             <button onClick={increment}>+ONE</button>
-            <button onClick={addRandom}>+RANDOM</button>
         </div>
     );
-}
-
-async function getRandomInteger(options: { min: number; max: number }): Promise<number> {
-    const { min, max } = options;
-    const value = Math.floor(Math.random() * (max - min) + min);
-
-    return new Promise(resolve => {
-        window.setTimeout(() => resolve(value), 1000);
-    });
 }
 
 const AppCounter: React.FC = () => {
