@@ -75,10 +75,10 @@ export class AppActions {
         return counter;
     }
 
-    private withLoader(fn: (capture: CaptureCancellablePromise) => void) {
+    private withLoader<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>) {
         try {
             this.setState({ isLoading: true });
-            buildCancellablePromise(async capture => fn(capture));
+            buildCancellablePromise(fn);
         } finally {
             this.setState({ isLoading: false });
         }
