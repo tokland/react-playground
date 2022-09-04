@@ -1,8 +1,8 @@
 import React from "react";
-import { useAppContext } from "../AppContext";
-import { useAppState } from "../App";
+import { useAppContext } from "../components/app/AppContext";
+import { useAppState } from "../components/app/App";
 import Button from "../components/Button";
-import Session from "../Session";
+import Session from "../components/Session";
 
 const HomePage: React.FC = () => {
     const { actions } = useAppContext();

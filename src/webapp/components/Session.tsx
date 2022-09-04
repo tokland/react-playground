@@ -1,7 +1,7 @@
 import React from "react";
-import { useAppState } from "./App";
-import { useAppContext } from "./AppContext";
-import { useStateWithEventSetter } from "./hooks/useStateWithEventSetter";
+import { useAppState } from "./app/App";
+import { useAppContext } from "./app/AppContext";
+import { useStateWithEventSetter } from "../hooks/useStateWithEventSetter";
 
 const SessionComponent: React.FC = () => {
     const session = useAppState(state => state.session);

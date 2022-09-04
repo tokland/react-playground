@@ -1,5 +1,5 @@
 import React from "react";
-import { Counter, counterReducer } from "../domain/entities/Counter";
+import { Counter, counterReducer } from "../../domain/entities/Counter";
 
 interface CounterProps {
     counter: Counter;

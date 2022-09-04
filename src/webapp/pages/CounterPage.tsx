@@ -1,9 +1,9 @@
 import React from "react";
-import { useAppContext } from "../AppContext";
-import { useAppState } from "../App";
+import { useAppContext } from "../components/app/AppContext";
+import { useAppState } from "../components/app/App";
 import Button from "../components/Button";
-import Counter from "../Counter";
-import Session from "../Session";
+import Counter from "../components/Counter";
+import Session from "../components/Session";
 import { useCancellableEffect } from "../hooks/useCancellableEffect";
 
 const CounterPage: React.FC = () => {

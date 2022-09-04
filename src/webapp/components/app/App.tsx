@@ -1,11 +1,11 @@
 import React from "react";
-import { getCompositionRoot } from "../compositionRoot";
+import { getCompositionRoot } from "../../../compositionRoot";
 import { AppContext, AppContextState } from "./AppContext";
-import { AppActions } from "./AppActions";
-import UrlSync, { useUrlSync } from "./components/app/UrlSync";
-import Router, { routes } from "./pages/Router";
-import { AppState } from "../domain/entities/AppState";
-import { getStoreHooks } from "./StoreHooks";
+import { AppActions } from "../../AppActions";
+import UrlSync, { useUrlSync } from "./UrlSync";
+import Router, { routes } from "../Router";
+import { AppState } from "../../../domain/entities/AppState";
+import { getStoreHooks } from "../../StoreHooks";
 
 const App: React.FC = () => {
     const urlSync = useUrlSync();

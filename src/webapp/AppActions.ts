@@ -8,7 +8,7 @@ import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { Store } from "./StoreState";
+import { Store } from "./hooks/useStoreState";
 
 export class AppActions {
     constructor(private compositionRoot: CompositionRoot, private store: Store<AppState>) {}

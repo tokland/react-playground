@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppState } from "../../App";
+import { useAppState } from "./App";
 import { Route, getRouterPathFromState, runRouteOnEnterForPath } from "../../utils/router";
 
 interface UrlSyncProps {

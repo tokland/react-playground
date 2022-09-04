@@ -1,12 +1,12 @@
 import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
-import { useAppState } from "../App";
+import { useAppState } from "./app/App";
 import { AppActions } from "../AppActions";
 import { getRouteBuilder } from "../utils/router";
 
-import CounterPage from "./CounterPage";
-import HomePage from "./HomePage";
+import CounterPage from "../pages/CounterPage";
+import HomePage from "../pages/HomePage";
 
 const route = getRouteBuilder<AppState, AppActions>();
 

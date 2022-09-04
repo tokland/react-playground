@@ -1,4 +1,4 @@
-import { Selector, Store, useStoreSetState, useStoreState } from "./StoreState";
+import { Selector, Store, useStoreSetState, useStoreState } from "./hooks/useStoreState";
 
 export function getStoreHooks<State>(initialState: State) {
     const store = new Store(initialState);
