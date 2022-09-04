@@ -1,5 +1,9 @@
 import _ from "lodash";
-import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
+import {
+    buildCancellablePromise,
+    CancellablePromise,
+    CaptureCancellablePromise,
+} from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
@@ -75,10 +79,12 @@ export class AppActions {
         return counter;
     }
 
-    private withLoader<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>) {
+    private withLoader<U>(
+        fn: (capture: CaptureCancellablePromise) => Promise<U>
+    ): CancellablePromise<U> {
         try {
             this.setState({ isLoading: true });
-            buildCancellablePromise(fn);
+            return buildCancellablePromise(fn);
         } finally {
             this.setState({ isLoading: false });
         }
