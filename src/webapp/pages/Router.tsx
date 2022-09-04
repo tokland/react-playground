@@ -1,7 +1,7 @@
 import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
-import { useAppState } from "../AppStateHooks";
+import { useAppState } from "../App";
 import { AppActions } from "../AppActions";
 import { getRouteBuilder } from "../utils/router";
 

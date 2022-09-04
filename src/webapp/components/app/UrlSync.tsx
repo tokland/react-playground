@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppState } from "../../AppStateHooks";
+import { useAppState } from "../../App";
 import { AppActions } from "../../AppActions";
 import { Route, getRouterPathFromState, runRouteOnEnterForPath } from "../../utils/router";
 

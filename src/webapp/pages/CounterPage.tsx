@@ -1,7 +1,7 @@
 import React from "react";
 import { CancellablePromise } from "real-cancellable-promise";
 import { useAppContext } from "../AppContext";
-import { useAppState } from "../AppStateHooks";
+import { useAppState } from "../App";
 import Button from "../components/Button";
 import Counter from "../Counter";
 import Session from "../Session";
@@ -46,7 +46,7 @@ function useCancellableEffect<T>(
         cancelRef.current = promise.cancel;
 
         if (cancelOnComponentUnmount) return promise.cancel;
-    }, [isActive, action, cancelOnComponentUnmount]);
+    }, [isActive, action, cancelOnComponentUnmount, isMounted]);
 
     return [run, isActive, cancel];
 }
