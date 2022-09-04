@@ -13,9 +13,3 @@ export interface AppState {
 type Page = { type: "home" } | { type: "counter"; id: Id; isLoading: boolean };
 
 type Session = { type: "notLogged" } | { type: "logged"; username: string };
-
-const _appReducer = reducer<AppState>()({
-    setPage: (page: Page) => state => ({ ...state, page }),
-    logout: () => state => ({ ...state, session: { type: "notLogged" } }),
-    setCounter: (counter: Counter) => state => ({ ...state, counter }),
-});

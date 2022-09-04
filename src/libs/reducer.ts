@@ -1,7 +1,18 @@
+import _ from "lodash";
+
+type BaseActions<State> = Record<string, (...args: any[]) => (state: State) => Partial<State>>;
+
 export function reducer<State>() {
-    return function <Actions extends Record<string, (...args: any[]) => (state: State) => State>>(
+    return function <Actions extends BaseActions<State>>(
         actions: Actions
-    ) {
-        return actions;
+    ): {
+        [A in keyof Actions]: (...args: Parameters<Actions[A]>) => (state: State) => State;
+    } {
+        return _.mapValues(actions, action => (...args) => {
+            return function (state: State): State {
+                const newPartialState = action(...args)(state);
+                return { ...state, ...newPartialState };
+            };
+        });
     };
 }

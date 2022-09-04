@@ -13,7 +13,7 @@ const CounterPage: React.FC = () => {
         <>
             <Session />
             <CounterFromState />
-            <Button onClick={actions.routes.goToHome} text="Back to Home page" />
+            <Button onClick={actions.routes.goToHome} text="Back to Home Page" />
         </>
     );
 };
