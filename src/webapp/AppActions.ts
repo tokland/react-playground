@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
@@ -31,11 +32,11 @@ export class AppActions {
         },
 
         loadCounterAndGoToPage: async (id: Id) => {
-            return this.withLoader(async () => {
+            return this.withLoader(async capture => {
                 this.setState({
                     page: { type: "counter", id, isLoading: true },
                 });
-                const counter = await this.compositionRoot.counters.get(id);
+                const counter = await capture(this.compositionRoot.counters.get(id));
                 this.setState({
                     page: { type: "counter", id, isLoading: false },
                     counter,
@@ -74,10 +75,10 @@ export class AppActions {
         return counter;
     }
 
-    private withLoader(fn: () => void) {
+    private withLoader(fn: (capture: CaptureCancellablePromise) => void) {
         try {
             this.setState({ isLoading: true });
-            fn();
+            buildCancellablePromise(async capture => fn(capture));
         } finally {
             this.setState({ isLoading: false });
         }
