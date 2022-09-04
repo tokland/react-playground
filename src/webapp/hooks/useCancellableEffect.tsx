@@ -1,17 +1,17 @@
 import React from "react";
 import { CancellablePromise } from "real-cancellable-promise";
 
-export function useCancellableEffect<T>(
-    effect: () => CancellablePromise<T>,
+export function useCancellableEffect<T, Args extends any[]>(
+    effect: (...args: Args) => CancellablePromise<T>,
     options: { cancelOnComponentUnmount?: boolean } = {}
-): [Callback, boolean, Cancel] {
+): [(...args: Args) => void, boolean, Cancel] {
     const { cancelOnComponentUnmount = false } = options;
-    const [isActive, setActive] = React.useState(false);
+    const [args, setArgs] = React.useState<Args>();
     const isMounted = useIsMounted();
     const cancelRef = React.useRef<Cancel>();
 
-    const run = React.useCallback(() => {
-        setActive(true);
+    const run = React.useCallback((...args: Args) => {
+        setArgs(args);
     }, []);
 
     const cancel = React.useCallback(() => {
@@ -19,17 +19,19 @@ export function useCancellableEffect<T>(
     }, []);
 
     React.useEffect(() => {
-        if (!isActive) return;
+        if (!args) return;
 
-        const promise = effect().finally(() => {
-            if (isMounted()) setActive(false);
+        const promise = effect(...args).finally(() => {
+            if (isMounted()) setArgs(undefined);
         });
         cancelRef.current = promise.cancel;
 
         if (cancelOnComponentUnmount) return promise.cancel;
-    }, [isActive, effect, cancelOnComponentUnmount, isMounted]);
+    }, [args, effect, cancelOnComponentUnmount, isMounted]);
 
-    return [run, isActive, cancel];
+    const isRunning = args !== undefined;
+
+    return [run, isRunning, cancel];
 }
 
 function useIsMounted() {
@@ -46,5 +48,3 @@ function useIsMounted() {
 }
 
 type Cancel = () => void;
-
-type Callback = () => void;

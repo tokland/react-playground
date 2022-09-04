@@ -8,14 +8,14 @@ interface CounterProps {
 
 const CounterComponent: React.FC<CounterProps> = props => {
     const { counter, onChange } = props;
-    const increment = React.useCallback(
-        () => onChange(counterReducer.increment()(counter)),
-        [onChange, counter]
-    );
-    const decrement = React.useCallback(
-        () => onChange(counterReducer.decrement()(counter)),
-        [onChange, counter]
-    );
+
+    const increment = React.useCallback(() => {
+        return onChange(counterReducer.increment()(counter));
+    }, [onChange, counter]);
+
+    const decrement = React.useCallback(() => {
+        return onChange(counterReducer.decrement()(counter));
+    }, [onChange, counter]);
 
     return (
         <div>
