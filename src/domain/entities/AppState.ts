@@ -1,5 +1,6 @@
 import { reducer } from "../../libs/reducer";
 import { Maybe } from "../../libs/ts-utils";
+import { Id } from "./Base";
 import { Counter } from "./Counter";
 
 export interface AppState {
@@ -9,7 +10,7 @@ export interface AppState {
     isLoading: boolean;
 }
 
-type Page = { type: "home" | "counter" };
+type Page = { type: "home" } | { type: "counter"; id: Id; isLoading: boolean };
 
 type Session = { type: "notLogged" } | { type: "logged"; username: string };
 

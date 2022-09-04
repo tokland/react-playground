@@ -8,6 +8,6 @@ const initialAppState: AppState = {
     isLoading: false,
 };
 
-const [useAppState, useAppSetState] = getStoreHooks(initialAppState);
+const [appStore, useAppState] = getStoreHooks(initialAppState);
 
-export { useAppState, useAppSetState };
+export { appStore, useAppState };

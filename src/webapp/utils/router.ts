@@ -16,7 +16,7 @@ interface TypedRoute<State, Store, Path extends string, Params extends readonly 
         store: Store;
         args: ExtractArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => void | Promise<void>;
+    }) => unknown;
     fromState: (state: State) => string | boolean;
     params?: Params;
 }

@@ -1,15 +1,21 @@
 import React from "react";
-import { Counter } from "../domain/entities/Counter";
+import { Counter, counterReducer } from "../domain/entities/Counter";
 
 interface CounterProps {
     counter: Counter;
-    onAdd: (n: number) => void;
+    onChange: (counter: Counter) => void;
 }
 
 const CounterComponent: React.FC<CounterProps> = props => {
-    const { counter, onAdd } = props;
-    const increment = React.useCallback(() => onAdd(+1), [onAdd]);
-    const decrement = React.useCallback(() => onAdd(-1), [onAdd]);
+    const { counter, onChange } = props;
+    const increment = React.useCallback(
+        () => onChange(counterReducer.increment()(counter)),
+        [onChange, counter]
+    );
+    const decrement = React.useCallback(
+        () => onChange(counterReducer.decrement()(counter)),
+        [onChange, counter]
+    );
 
     return (
         <div>

@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import Session from "../Session";
 
 const HomePage: React.FC = () => {
-    const { store } = useAppContext();
+    const { actions } = useAppContext();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "logged";
 
@@ -14,8 +14,8 @@ const HomePage: React.FC = () => {
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index="1" onClick={store.routes.loadCounterAndGoToCounterPage} />
-                    <CounterButton index="2" onClick={store.routes.loadCounterAndGoToCounterPage} />
+                    <CounterButton index="1" onClick={actions.routes.loadCounterAndGoToPage} />
+                    <CounterButton index="2" onClick={actions.routes.loadCounterAndGoToPage} />
                 </>
             )}
         </>

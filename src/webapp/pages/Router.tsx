@@ -2,13 +2,13 @@ import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
 import { useAppState } from "../AppStateHooks";
-import { AppStore } from "../AppStore";
+import { AppActions } from "../AppActions";
 import { getRouteBuilder } from "../utils/router";
 
 import CounterPage from "./CounterPage";
 import HomePage from "./HomePage";
 
-const route = getRouteBuilder<AppState, AppStore>();
+const route = getRouteBuilder<AppState, AppActions>();
 
 export const routes = [
     route("/", {
@@ -17,10 +17,8 @@ export const routes = [
     }),
     route("/counter/[id]", {
         params: ["x", "y"] as const,
-        onEnter: ({ store, args, params: _params }) =>
-            store.routes.loadCounterAndGoToCounterPage(args.id),
-        fromState: state =>
-            state.page.type === "counter" && state.counter ? `/counter/${state.counter.id}` : false,
+        onEnter: ({ store, args, params: _params }) => store.routes.loadCounterAndGoToPage(args.id),
+        fromState: state => (state.page.type === "counter" ? `/counter/${state.page.id}` : false),
     }),
 ];
 

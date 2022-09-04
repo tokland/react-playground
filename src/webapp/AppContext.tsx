@@ -1,11 +1,11 @@
 import React from "react";
 import { useContext } from "react";
 import { CompositionRoot } from "../compositionRoot";
-import { AppStore } from "./AppStore";
+import { AppActions } from "./AppActions";
 
-interface AppContextState {
+export interface AppContextState {
     compositionRoot: CompositionRoot;
-    store: AppStore;
+    actions: AppActions;
 }
 
 export const AppContext = React.createContext<AppContextState | null>(null);

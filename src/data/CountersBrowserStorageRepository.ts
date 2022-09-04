@@ -1,4 +1,4 @@
-import { CancellablePromise, pseudoCancellable } from "real-cancellable-promise";
+import { CancellablePromise } from "real-cancellable-promise";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
 import { CountersRepository } from "../domain/repositories/CountersRepository";
@@ -7,14 +7,18 @@ export class CountersBrowserStorageRepository implements CountersRepository {
     get(id: Id): CancellablePromise<Counter> {
         const value = window.localStorage.getItem(this.getKey(id));
         const counter: Counter = { id, value: value ? parseInt(value) : 0 };
-        return pseudoCancellable(Promise.resolve(counter));
+        return CancellablePromise.delay(1000).then(() => counter);
     }
 
     save(counter: Counter): CancellablePromise<Counter> {
         const key = this.getKey(counter.id);
         const value = counter.value.toString();
-        window.localStorage.setItem(key, value);
-        return pseudoCancellable(Promise.resolve(counter));
+
+        return CancellablePromise.delay(1000).then(() => {
+            console.log("save", key, value);
+            window.localStorage.setItem(key, value);
+            return counter;
+        });
     }
 
     private getKey(id: Id): string {

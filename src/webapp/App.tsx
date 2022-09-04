@@ -1,24 +1,23 @@
 import React from "react";
-import { useAppSetState } from "./AppStateHooks";
+import { appStore } from "./AppStateHooks";
 import { getCompositionRoot } from "../compositionRoot";
-import { AppContext } from "./AppContext";
-import { AppStore } from "./AppStore";
+import { AppContext, AppContextState } from "./AppContext";
+import { AppActions } from "./AppActions";
 import UrlSync, { useUrlSync } from "./components/app/UrlSync";
 import Router, { routes } from "./pages/Router";
 
 const App: React.FC = () => {
-    const setState = useAppSetState();
     const urlSync = useUrlSync();
 
-    const appContext = React.useMemo(() => {
+    const appContext = React.useMemo<AppContextState>(() => {
         const compositionRoot = getCompositionRoot();
-        const store = new AppStore(compositionRoot, setState);
-        return { compositionRoot, store };
-    }, [setState]);
+        const actions = new AppActions(compositionRoot, appStore);
+        return { compositionRoot, actions };
+    }, []);
 
     return (
         <AppContext.Provider value={appContext}>
-            <UrlSync routes={routes} store={appContext.store} {...urlSync} />
+            <UrlSync routes={routes} store={appContext.actions} {...urlSync} />
             {urlSync.isReady && <Router />}
         </AppContext.Provider>
     );
