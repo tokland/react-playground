@@ -7238,6 +7238,11 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
+real-cancellable-promise@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/real-cancellable-promise/-/real-cancellable-promise-1.1.1.tgz#be793502f7ed8067936d95dc040a2d2a2a1944a7"
+  integrity sha512-vxanUX4Aff5sRX6Rb1CSeCDWhO20L0hKQXWTLOYbtRo9WYFMjlhEBX0E75iz3+7ucrmFdPpDolwLC7L65P7hag==
+
 recursive-readdir@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/recursive-readdir/-/recursive-readdir-2.2.2.tgz#9946fb3274e1628de6e36b2f6714953b4845094f"

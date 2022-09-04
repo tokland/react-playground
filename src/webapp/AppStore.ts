@@ -1,6 +1,13 @@
+import _ from "lodash";
+import {
+    buildCancellablePromise,
+    CancellablePromise,
+    Cancellation,
+} from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
+import { Counter } from "../domain/entities/Counter";
 import { SetState } from "./StoreState";
 
 export class AppStore {
@@ -47,16 +54,38 @@ export class AppStore {
             this.setState({ counter });
         },
 
-        add: async (n: number) => {
-            return this.setState(async state => {
-                const counter = this.getCounter(state);
-                const counterUpdated = await this.compositionRoot.counters.add(counter, n);
-                return { counter: counterUpdated };
+        add: (n: number) => {
+            let cancel: (reason?: string) => void = _.noop;
+
+            const newStateP = new Promise<Partial<AppState>>((resolve, reject) => {
+                return this.setState(state => {
+                    const counter = this.getCounter(state);
+
+                    const newState$ = this.compositionRoot.counters
+                        .add(counter, n)
+                        .then(counterUpdated => ({ counter: counterUpdated }));
+
+                    newState$.then(resolve).catch(reject);
+                    cancel = newState$.cancel;
+
+                    return newState$;
+                });
             });
+
+            return new CancellablePromise(newStateP, cancel);
         },
     };
 
     /* Private */
+
+    /*
+    private setState2(mapper: (state: AppState) => CancellablePromise<unknown>) {
+        this.setState(state => {
+            const res = mapper(state);
+            return res.cancel;
+        });
+    }
+    */
 
     private getCounter(state: AppState) {
         const counter = state.counter;
