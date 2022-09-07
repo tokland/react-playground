@@ -8,6 +8,7 @@ import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
+import { Maybe } from "../libs/ts-utils";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -31,14 +32,14 @@ class BaseActions {
         return this.options.store.setState(newState);
     }
 
-    protected withLoader<U>(
+    protected effect<U>(
         fn: (capture: CaptureCancellablePromise) => Promise<U>
-    ): CancellablePromise<U> {
+    ): CancellablePromise<U | undefined> {
         try {
-            this.setState({ isLoading: true });
             return buildCancellablePromise(fn);
-        } finally {
-            this.setState({ isLoading: false });
+        } catch (err) {
+            // snackbar.error(err.message)
+            return CancellablePromise.resolve(undefined);
         }
     }
 }
@@ -62,43 +63,48 @@ export class AppActions extends BaseActions {
     session = new SessionActions(this.options);
 
     routes = {
-        goToHome: () => {
-            return this.setState({
-                page: { type: "home" },
-            });
-        },
+        goToHome: () => this.setState({ page: { type: "home" } }),
 
-        loadCounterAndGoToPage: (id: Id) => {
-            return this.withLoader(async $ => {
+        goToCounterPageAndLoad: (id: Id) => {
+            return this.effect(async $ => {
                 this.setState({
-                    page: { type: "counter", id, isLoading: true },
+                    page: { type: "counter" },
+                    counter: { type: "loading", id },
                 });
+
                 const counter = await $(this.compositionRoot.counters.get(id));
-                this.setState({
-                    page: { type: "counter", id, isLoading: false },
-                    counter,
-                });
+
+                this.setCounter(counter, { isUpdating: false });
             });
         },
     };
 
     counter = {
         set: (counter: Counter) => {
-            this.setState({ counter });
+            this.setCounter(counter, { isUpdating: false });
         },
 
         save: () =>
-            this.withLoader(() => {
+            this.effect(async $ => {
                 const counter = this.getCounter();
-                return this.compositionRoot.counters.save(counter);
+                if (!counter) return;
+
+                this.setCounter(counter, { isUpdating: true });
+                await $(this.compositionRoot.counters.save(counter));
+                this.setCounter(counter, { isUpdating: false });
             }),
     };
 
     /* Private */
 
-    private getCounter() {
+    private getCounter(): Maybe<Counter> {
         const counter = this.state.counter;
-        if (!counter) throw new Error("Counter not loaded");
-        return counter;
+        return counter.type === "loaded" ? counter.value : undefined;
+    }
+
+    private setCounter(counter: Counter, options: { isUpdating: boolean }) {
+        this.setState({
+            counter: { type: "loaded", id: counter.id, value: counter, ...options },
+        });
     }
 }

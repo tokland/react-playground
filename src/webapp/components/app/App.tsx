@@ -27,7 +27,7 @@ const App: React.FC = () => {
 const initialAppState: AppState = {
     page: { type: "home" },
     session: { type: "logged", username: "arnau" },
-    counter: undefined,
+    counter: { type: "off" },
     isLoading: false,
 };
 

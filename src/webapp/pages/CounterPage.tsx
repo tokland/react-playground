@@ -20,10 +20,12 @@ const CounterPage: React.FC = () => {
 
 const CounterFromState: React.FC = () => {
     const { actions } = useAppContext();
-    const counter = useAppState(state => state.counter);
+    const counterLoader = useAppState(state => state.counter);
+    const counter = counterLoader.type === "loaded" ? counterLoader.value : undefined;
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save);
 
-    if (!counter) return <div>Loading...</div>;
+    if (counterLoader.type === "loading") return <div>Loading...</div>;
+    if (!counter) return <div>No loader</div>;
 
     return (
         <div>
