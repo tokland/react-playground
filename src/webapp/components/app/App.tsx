@@ -12,7 +12,7 @@ const App: React.FC = () => {
 
     const appContext = React.useMemo<AppContextState>(() => {
         const compositionRoot = getCompositionRoot();
-        const actions = new AppActions(compositionRoot, appStore);
+        const actions = new AppActions({ compositionRoot, store: appStore });
         return { compositionRoot, actions };
     }, []);
 
