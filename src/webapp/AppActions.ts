@@ -69,7 +69,7 @@ export class AppActions extends BaseActions {
             return this.effect(async $ => {
                 this.setState({
                     page: { type: "counter", id },
-                    counter: { type: "loading" },
+                    counter: { type: "loading", id },
                 });
 
                 const counter = await $(this.compositionRoot.counters.get(id));

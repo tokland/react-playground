@@ -13,5 +13,5 @@ type Session = { type: "unauthenticated" } | { type: "loggedIn"; username: strin
 
 type Loader<T> =
     | { type: "off" }
-    | { type: "loading" }
+    | { type: "loading"; id: Id }
     | { type: "loaded"; value: T; isUpdating: boolean };
