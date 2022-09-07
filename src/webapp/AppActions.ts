@@ -47,14 +47,14 @@ class BaseActions {
 class SessionActions extends BaseActions {
     login = (username: string) => {
         return this.setState({
-            session: { type: "logged", username },
+            session: { type: "loggedIn", username },
         });
     };
 
     logout = () => {
         return this.setState({
             page: { type: "home" },
-            session: { type: "notLogged" },
+            session: { type: "unauthenticated" },
         });
     };
 }
@@ -65,11 +65,11 @@ export class AppActions extends BaseActions {
     routes = {
         goToHome: () => this.setState({ page: { type: "home" } }),
 
-        goToCounterPageAndLoad: (id: Id) => {
+        loadCounterAndGoToPage: (id: Id) => {
             return this.effect(async $ => {
                 this.setState({
-                    page: { type: "counter" },
-                    counter: { type: "loading", id },
+                    page: { type: "counter", id },
+                    counter: { type: "loading" },
                 });
 
                 const counter = await $(this.compositionRoot.counters.get(id));
@@ -104,7 +104,7 @@ export class AppActions extends BaseActions {
 
     private setCounter(counter: Counter, options: { isUpdating: boolean }) {
         this.setState({
-            counter: { type: "loaded", id: counter.id, value: counter, ...options },
+            counter: { type: "loaded", value: counter, ...options },
         });
     }
 }

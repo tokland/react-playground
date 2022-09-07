@@ -11,7 +11,7 @@ const SessionComponent: React.FC = () => {
 
     return (
         <div>
-            {session.type === "logged" ? (
+            {session.type === "loggedIn" ? (
                 <>
                     <span>Logged in as: {session.username}</span>&nbsp;
                     <button onClick={actions.session.logout}>Logout</button>

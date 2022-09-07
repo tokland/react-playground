@@ -5,14 +5,13 @@ export interface AppState {
     page: Page;
     session: Session;
     counter: Loader<Counter>;
-    isLoading: boolean;
 }
 
-type Page = { type: "home" } | { type: "counter" };
+type Page = { type: "home" } | { type: "counter"; id: Id };
 
-type Session = { type: "notLogged" } | { type: "logged"; username: string };
+type Session = { type: "unauthenticated" } | { type: "loggedIn"; username: string };
 
 type Loader<T> =
     | { type: "off" }
-    | { type: "loading"; id: Id }
-    | { type: "loaded"; id: Id; value: T; isUpdating: boolean };
+    | { type: "loading" }
+    | { type: "loaded"; value: T; isUpdating: boolean };

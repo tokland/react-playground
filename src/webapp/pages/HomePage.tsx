@@ -7,15 +7,15 @@ import Session from "../components/Session";
 const HomePage: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
-    const userLoggedIn = session.type === "logged";
+    const userLoggedIn = session.type === "loggedIn";
 
     return (
         <>
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index="1" onClick={actions.routes.goToCounterPageAndLoad} />
-                    <CounterButton index="2" onClick={actions.routes.goToCounterPageAndLoad} />
+                    <CounterButton index="1" onClick={actions.routes.loadCounterAndGoToPage} />
+                    <CounterButton index="2" onClick={actions.routes.loadCounterAndGoToPage} />
                 </>
             )}
         </>
@@ -30,7 +30,7 @@ interface CounterButtonProps {
 const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
     const session = useAppState(state => state.session);
-    const username = session.type === "logged" ? session.username : undefined;
+    const username = session.type === "loggedIn" ? session.username : undefined;
     const counterId = `${username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 
