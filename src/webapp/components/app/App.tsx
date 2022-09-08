@@ -27,7 +27,7 @@ const App: React.FC = () => {
 const initialAppState: AppState = {
     page: { type: "home" },
     session: { type: "loggedIn", username: "arnau" },
-    counter: { type: "off" },
+    counters: {},
 };
 
 const [appStore, useAppState] = getStoreHooks(initialAppState);

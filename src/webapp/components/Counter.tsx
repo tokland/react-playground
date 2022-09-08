@@ -4,18 +4,25 @@ import { Counter, counterReducer } from "../../domain/entities/Counter";
 interface CounterProps {
     counter: Counter;
     onChange: (counter: Counter) => void;
+    onSave: (counter: Counter) => void;
+    onCancel: () => void;
+    isSaving: boolean;
 }
 
 const CounterComponent: React.FC<CounterProps> = props => {
-    const { counter, onChange } = props;
+    const { counter, onChange, onSave, onCancel, isSaving } = props;
 
     const increment = React.useCallback(() => {
-        return onChange(counterReducer.increment()(counter));
+        onChange(counterReducer.add(+1)(counter));
     }, [onChange, counter]);
 
     const decrement = React.useCallback(() => {
-        return onChange(counterReducer.decrement()(counter));
+        onChange(counterReducer.add(-1)(counter));
     }, [onChange, counter]);
+
+    const save = React.useCallback(() => {
+        onSave(counter);
+    }, [onSave, counter]);
 
     return (
         <div>
@@ -25,6 +32,14 @@ const CounterComponent: React.FC<CounterProps> = props => {
 
             <button onClick={decrement}>- DECREMENT</button>
             <button onClick={increment}>+ INCREMENT</button>
+
+            <button onClick={save} disabled={isSaving}>
+                SAVE
+            </button>
+
+            <button onClick={onCancel} disabled={!isSaving}>
+                CANCEL
+            </button>
         </div>
     );
 };

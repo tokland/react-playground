@@ -69,7 +69,7 @@ export class AppActions extends BaseActions {
             return this.effect(async $ => {
                 this.setState({
                     page: { type: "counter", id },
-                    counter: { type: "loading", id },
+                    counters: { ...this.state.counters, [id]: { type: "loading", id } },
                 });
 
                 const counter = await $(this.compositionRoot.counters.get(id));
@@ -84,11 +84,8 @@ export class AppActions extends BaseActions {
             this.setCounter(counter, { isUpdating: false });
         },
 
-        save: () =>
+        save: (counter: Counter) =>
             this.effect(async $ => {
-                const counter = this.getCounter();
-                if (!counter) return;
-
                 this.setCounter(counter, { isUpdating: true });
                 await $(this.compositionRoot.counters.save(counter));
                 this.setCounter(counter, { isUpdating: false });
@@ -97,14 +94,17 @@ export class AppActions extends BaseActions {
 
     /* Private */
 
-    private getCounter(): Maybe<Counter> {
-        const counter = this.state.counter;
-        return counter.type === "loaded" ? counter.value : undefined;
+    private getCounter(id: Id): Maybe<Counter> {
+        const loader = this.state.counters[id];
+        return loader && loader.type === "loaded" ? loader.value : undefined;
     }
 
     private setCounter(counter: Counter, options: { isUpdating: boolean }) {
         this.setState({
-            counter: { type: "loaded", value: counter, ...options },
+            counters: {
+                ...this.state.counters,
+                [counter.id]: { type: "loaded", value: counter, ...options },
+            },
         });
     }
 }
