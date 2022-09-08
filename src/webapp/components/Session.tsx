@@ -4,8 +4,8 @@ import { useAppContext } from "./app/AppContext";
 import { useStateWithEventSetter } from "../hooks/useStateWithEventSetter";
 
 const SessionComponent: React.FC = () => {
-    const session = useAppState(state => state.session);
     const { actions } = useAppContext();
+    const session = useAppState(state => state.session);
     const [username, setUsernameFromEv] = useStateWithEventSetter("");
     const login = React.useCallback(() => actions.session.login(username), [actions, username]);
 
@@ -13,7 +13,7 @@ const SessionComponent: React.FC = () => {
         <div>
             {session.type === "loggedIn" ? (
                 <>
-                    <span>Logged in as: {session.username}</span>&nbsp;
+                    <span>Logged in as {session.username}</span>&nbsp;
                     <button onClick={actions.session.logout}>Logout</button>
                 </>
             ) : (
