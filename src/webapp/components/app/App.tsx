@@ -4,7 +4,7 @@ import { AppContext, AppContextState } from "./AppContext";
 import { AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routes } from "../Router";
-import { AppState, AppStateImpl } from "../../../domain/entities/AppState";
+import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 
 const App: React.FC = () => {
@@ -24,7 +24,7 @@ const App: React.FC = () => {
     );
 };
 
-const initialAppState = new AppStateImpl({
+const initialAppState = new AppState({
     page: { type: "home" },
     session: { type: "loggedIn", username: "arnau" },
     counters: {},

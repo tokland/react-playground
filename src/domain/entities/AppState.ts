@@ -1,38 +1,27 @@
-import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
-export interface AppState {
+export interface AppStateProperties {
     page: Page;
     session: Session;
     counters: Record<Id, Loader<Counter>>;
-    currentCounter: Maybe<Loader<Counter>>;
-    update(state: Partial<Options>): AppState;
 }
 
-type Options = Omit<AppState, "currentCounter" | "update">;
+function struct<T>() {
+    return class {
+        constructor(values: T) {
+            Object.assign(this, values || {});
+        }
+    } as new (values: T) => T;
+}
 
-export class AppStateImpl implements AppState {
-    constructor(private options: Options) {}
-
-    get page() {
-        return this.options.page;
-    }
-
-    get session() {
-        return this.options.session;
-    }
-
-    get counters() {
-        return this.options.counters;
-    }
-
+export class AppState extends struct<AppStateProperties>() {
     get currentCounter() {
         return this.page.type === "counter" ? this.counters[this.page.id] : undefined;
     }
 
-    update(state: Partial<Options>) {
-        return new AppStateImpl({ ...this.options, ...state });
+    update(state: Partial<AppStateProperties>) {
+        return new AppState({ ...this, ...state });
     }
 }
 

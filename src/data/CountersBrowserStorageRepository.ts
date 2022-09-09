@@ -1,12 +1,12 @@
 import { buildCancellablePromise, CancellablePromise } from "real-cancellable-promise";
 import { Id } from "../domain/entities/Base";
-import { Counter, CounterImpl } from "../domain/entities/Counter";
+import { Counter } from "../domain/entities/Counter";
 import { CountersRepository } from "../domain/repositories/CountersRepository";
 
 export class CountersBrowserStorageRepository implements CountersRepository {
     get(id: Id): CancellablePromise<Counter> {
         const value = window.localStorage.getItem(this.getKey(id));
-        const counter: Counter = new CounterImpl({ id, value: value ? parseInt(value) : 0 });
+        const counter: Counter = new Counter({ id, value: value ? parseInt(value) : 0 });
         return CancellablePromise.delay(1000).then(() => counter);
     }
 

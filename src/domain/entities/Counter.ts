@@ -1,26 +1,23 @@
 import { Id } from "./Base";
 
-interface CounterData {
+interface CounterProperties {
     id: Id;
     value: number;
 }
 
-export interface Counter extends CounterData {
+/*
+export interface Counter extends CounterProperties {
     add(n: number): Counter;
 }
+*/
 
-export class CounterImpl extends auto<CounterData>() {
+export class Counter extends struct<CounterProperties>() {
     add(n: number): Counter {
-        return new CounterImpl({ ...this, value: this.value + n });
+        return new Counter({ ...this, value: this.value + n });
     }
 }
 
-export const Counter = {
-    reducers: 1,
-    selectors: 2,
-};
-
-function auto<T>() {
+function struct<T>() {
     return class {
         constructor(values: T) {
             Object.assign(this, values || {});
