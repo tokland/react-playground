@@ -6,7 +6,7 @@ import { CountersRepository } from "../domain/repositories/CountersRepository";
 export class CountersBrowserStorageRepository implements CountersRepository {
     get(id: Id): CancellablePromise<Counter> {
         const value = window.localStorage.getItem(this.getKey(id));
-        const counter: Counter = new CounterImpl(id, value ? parseInt(value) : 0);
+        const counter: Counter = new CounterImpl({ id, value: value ? parseInt(value) : 0 });
         return CancellablePromise.delay(1000).then(() => counter);
     }
 

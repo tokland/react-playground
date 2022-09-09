@@ -9,22 +9,23 @@ export interface Counter extends CounterData {
     add(n: number): Counter;
 }
 
-export const Counter2 = {
+export class CounterImpl extends auto<CounterData>() {
+    add(n: number): Counter {
+        return new CounterImpl({ ...this, value: this.value + n });
+    }
+}
+
+export const Counter = {
     reducers: 1,
     selectors: 2,
 };
 
-export class CounterImpl implements Counter {
-    constructor(public readonly id: Id, public readonly value: number) {}
-
-    add(n: number): Counter {
-        return new CounterImpl(this.id, this.value + n);
-        //return this.update({ value: this.value + n });
-    }
-
-    private update(options: Partial<CounterData>): Counter {
-        return new CounterImpl(options.id ?? this.id, options.value ?? this.value);
-    }
+function auto<T>() {
+    return class {
+        constructor(values: T) {
+            Object.assign(this, values || {});
+        }
+    } as new (values: T) => T;
 }
 
 /*
