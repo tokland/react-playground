@@ -10,7 +10,7 @@ export interface AppStateProperties {
 function struct<T>() {
     return class {
         constructor(private _values: T) {
-            Object.assign(this, _values || {});
+            Object.assign(this, this._values);
         }
     } as unknown as new (values: T) => T & { _values: T };
 }
