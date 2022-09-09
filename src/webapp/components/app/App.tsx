@@ -24,11 +24,11 @@ const App: React.FC = () => {
     );
 };
 
-const initialAppState: AppState = {
+const initialAppState = new AppState({
     page: { type: "home" },
     session: { type: "loggedIn", username: "arnau" },
     counters: {},
-};
+});
 
 const [appStore, useAppState] = getStoreHooks(initialAppState);
 

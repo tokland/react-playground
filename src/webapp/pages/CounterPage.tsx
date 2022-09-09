@@ -5,7 +5,6 @@ import Button from "../components/Button";
 import Counter from "../components/Counter";
 import Session from "../components/Session";
 import { useCancellableEffect } from "../hooks/useCancellableEffect";
-import { selectors } from "../../domain/entities/AppState";
 
 const CounterPage: React.FC = () => {
     const { actions } = useAppContext();
@@ -21,18 +20,17 @@ const CounterPage: React.FC = () => {
 
 const CurrentCounter: React.FC = () => {
     const { actions } = useAppContext();
-    const loader = useAppState(selectors.currentCounter);
-    const counter = loader && loader.type === "loaded" ? loader.value : undefined;
+    const loader = useAppState(state => state.currentCounter);
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save);
 
-    if (loader && loader.type === "loading") {
+    if (loader?.type === "loading") {
         return <div>Loading...</div>;
-    } else if (!counter) {
+    } else if (loader?.type !== "loaded") {
         return <div>Counter not loaded</div>;
     } else {
         return (
             <Counter
-                counter={counter}
+                counter={loader.value}
                 onChange={actions.counter.set}
                 isSaving={isSaving}
                 onSave={save}
