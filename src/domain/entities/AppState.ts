@@ -9,10 +9,10 @@ export interface AppStateProperties {
 
 function struct<T>() {
     return class {
-        constructor(values: T) {
-            Object.assign(this, values || {});
+        constructor(private _values: T) {
+            Object.assign(this, _values || {});
         }
-    } as new (values: T) => T;
+    } as unknown as new (values: T) => T & { _values: T };
 }
 
 export class AppState extends struct<AppStateProperties>() {
@@ -21,7 +21,7 @@ export class AppState extends struct<AppStateProperties>() {
     }
 
     update(state: Partial<AppStateProperties>) {
-        return new AppState({ ...this, ...state });
+        return new AppState({ ...this._values, ...state });
     }
 }
 
