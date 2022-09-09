@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { useAppContext } from "../components/app/AppContext";
 import { useAppState } from "../components/app/App";
 import Button from "../components/Button";
@@ -34,7 +35,15 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const counterId = `${username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
 
-    return <Button onClick={clickWithId} text={`Counter ${counterId}`} />;
+    const counters = useAppState(state => state.counters);
+    const counter = counters[counterId];
+    const text = _.compact([
+        "Counter",
+        counterId,
+        counter?.type === "loaded" ? ` (${counter.value.value})` : null,
+    ]).join(" ");
+
+    return <Button onClick={clickWithId} text={text} />;
 };
 
 export default React.memo(HomePage);

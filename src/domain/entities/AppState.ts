@@ -2,16 +2,17 @@ import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
-interface IAppState {
+export interface AppState {
     page: Page;
     session: Session;
     counters: Record<Id, Loader<Counter>>;
     currentCounter: Maybe<Loader<Counter>>;
+    update(state: Partial<Options>): AppState;
 }
 
-type Options = Omit<IAppState, "currentCounter">;
+type Options = Omit<AppState, "currentCounter" | "update">;
 
-export class AppState implements IAppState {
+export class AppStateImpl implements AppState {
     constructor(private options: Options) {}
 
     get page() {
@@ -30,8 +31,8 @@ export class AppState implements IAppState {
         return this.page.type === "counter" ? this.counters[this.page.id] : undefined;
     }
 
-    static update(state0: AppState, state: Partial<Options>) {
-        return new AppState({ ...state0.options, ...state });
+    update(state: Partial<Options>) {
+        return new AppStateImpl({ ...this.options, ...state });
     }
 }
 
@@ -44,7 +45,9 @@ type Loader<T> =
     | { type: "loading"; id: Id }
     | { type: "loaded"; value: T; isUpdating: boolean };
 
+/*
 export const selectors = {
     currentCounter: (state: AppState) =>
         state.page.type === "counter" ? state.counters[state.page.id] : { type: "off" },
 };
+*/

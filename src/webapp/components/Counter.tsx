@@ -1,5 +1,5 @@
 import React from "react";
-import { Counter, counterReducer } from "../../domain/entities/Counter";
+import { Counter } from "../../domain/entities/Counter";
 
 interface CounterProps {
     counter: Counter;
@@ -13,11 +13,11 @@ const CounterComponent: React.FC<CounterProps> = props => {
     const { counter, onChange, onSave, onCancel, isSaving } = props;
 
     const increment = React.useCallback(() => {
-        onChange(counterReducer.add(+1)(counter));
+        onChange(counter.add(+1));
     }, [onChange, counter]);
 
     const decrement = React.useCallback(() => {
-        onChange(counterReducer.add(-1)(counter));
+        onChange(counter.add(-1));
     }, [onChange, counter]);
 
     const save = React.useCallback(() => {
