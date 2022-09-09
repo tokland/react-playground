@@ -1,3 +1,4 @@
+import { Struct } from "../../libs/struct";
 import { Id } from "./Base";
 
 interface CounterProperties {
@@ -11,22 +12,8 @@ export interface Counter extends CounterProperties {
 }
 */
 
-export class Counter extends struct<CounterProperties>() {
+export class Counter extends Struct<CounterProperties>() {
     add(n: number): Counter {
         return new Counter({ ...this, value: this.value + n });
     }
 }
-
-function struct<T>() {
-    return class {
-        constructor(values: T) {
-            Object.assign(this, values || {});
-        }
-    } as new (values: T) => T;
-}
-
-/*
-export const counterReducer = reducer<Counter>()({
-    add: (n: number) => state => ({ value: state.value + n }),
-});
-*/
