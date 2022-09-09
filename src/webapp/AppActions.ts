@@ -28,7 +28,7 @@ class BaseActions {
     }
 
     protected setState(state: Partial<AppState>) {
-        const newState: AppState = this.state.update(state);
+        const newState = this.state.update(state);
         return this.options.store.setState(newState);
     }
 
