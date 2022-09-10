@@ -19,6 +19,6 @@ type Page = { type: "home" } | { type: "counter"; id: Id };
 type Session = { type: "unauthenticated" } | { type: "loggedIn"; username: string };
 
 type Loader<T> =
-    | { type: "off" }
-    | { type: "loading"; id: Id }
-    | { type: "loaded"; value: T; isUpdating: boolean };
+    | { status: "off" }
+    | { status: "loading"; id: Id }
+    | { status: "loaded"; value: T; isUpdating: boolean };

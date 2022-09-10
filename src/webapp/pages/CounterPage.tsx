@@ -25,9 +25,9 @@ const CurrentCounter: React.FC = () => {
         cancelOnComponentUnmount: false,
     });
 
-    if (loader?.type === "loading") {
+    if (loader?.status === "loading") {
         return <div>Loading...</div>;
-    } else if (loader?.type !== "loaded") {
+    } else if (loader?.status !== "loaded") {
         return <div>Counter not loaded</div>;
     } else {
         return (

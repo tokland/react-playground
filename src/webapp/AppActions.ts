@@ -67,8 +67,9 @@ export class AppActions extends BaseActions {
 
         goToCounter: (id: Id) => {
             const counter = this.state.counters[id];
+            const status = counter?.status;
 
-            if (counter?.type === "loaded") {
+            if (status === "loading" || status === "loaded") {
                 return this.setState({
                     page: { type: "counter", id },
                 });
@@ -76,7 +77,7 @@ export class AppActions extends BaseActions {
                 return this.effect(async $ => {
                     this.setState({
                         page: { type: "counter", id },
-                        counters: { ...this.state.counters, [id]: { type: "loading", id } },
+                        counters: { ...this.state.counters, [id]: { status: "loading", id } },
                     });
 
                     const counter = await $(this.compositionRoot.counters.get(id));
@@ -104,14 +105,14 @@ export class AppActions extends BaseActions {
 
     private getCounter(id: Id): Maybe<Counter> {
         const loader = this.state.counters[id];
-        return loader && loader.type === "loaded" ? loader.value : undefined;
+        return loader && loader.status === "loaded" ? loader.value : undefined;
     }
 
     private setCounter(counter: Counter, options: { isUpdating: boolean }) {
         this.setState({
             counters: {
                 ...this.state.counters,
-                [counter.id]: { type: "loaded", value: counter, ...options },
+                [counter.id]: { status: "loaded", value: counter, ...options },
             },
         });
     }
