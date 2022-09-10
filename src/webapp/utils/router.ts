@@ -13,6 +13,7 @@ interface TypedRoute<State, Store, Path extends string, Params extends readonly 
     path: Path;
     pathRegExp: RegExp;
     onEnter: (options: {
+        state: State;
         store: Store;
         args: ExtractArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
@@ -30,13 +31,18 @@ type ExtractArgsFromPath<
     ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
-export async function runRouteOnEnterForPath<Store>(routes: Route[], store: Store, path: string) {
+export async function runRouteOnEnterForPath<State, Store>(
+    routes: Route[],
+    state: State,
+    store: Store,
+    path: string
+) {
     routes.forEach(route => {
         const match = path.match(route.pathRegExp);
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
-            route.onEnter({ store, args, params: {} });
+            route.onEnter({ state, store, args, params: {} });
         }
     });
 }

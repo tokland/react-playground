@@ -66,16 +66,24 @@ export class AppActions extends BaseActions {
         goToHome: () => this.setState({ page: { type: "home" } }),
 
         loadCounterAndGoToPage: (id: Id) => {
-            return this.effect(async $ => {
-                this.setState({
+            const counter = this.state.counters[id];
+
+            if (counter?.type === "loaded") {
+                return this.setState({
                     page: { type: "counter", id },
-                    counters: { ...this.state.counters, [id]: { type: "loading", id } },
                 });
+            } else {
+                return this.effect(async $ => {
+                    this.setState({
+                        page: { type: "counter", id },
+                        counters: { ...this.state.counters, [id]: { type: "loading", id } },
+                    });
 
-                const counter = await $(this.compositionRoot.counters.get(id));
+                    const counter = await $(this.compositionRoot.counters.get(id));
 
-                this.setCounter(counter, { isUpdating: false });
-            });
+                    this.setCounter(counter, { isUpdating: false });
+                });
+            }
         },
     };
 

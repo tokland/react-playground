@@ -16,8 +16,7 @@ export const routes = [
         fromState: state => state.page.type === "home",
     }),
     route("/counter/[id]", {
-        params: ["x", "y"] as const,
-        onEnter: ({ store, args, params: _params }) => {
+        onEnter: ({ store, args }) => {
             return store.routes.loadCounterAndGoToPage(args.id);
         },
         fromState: state => {

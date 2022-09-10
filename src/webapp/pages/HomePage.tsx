@@ -32,16 +32,12 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
     const session = useAppState(state => state.session);
     const username = session.type === "loggedIn" ? session.username : undefined;
-    const counterId = `${username}-${index}`;
-    const clickWithId = React.useCallback(() => onClick(counterId), [onClick, counterId]);
+    const id = `${username}-${index}`;
+    const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
 
-    const counters = useAppState(state => state.counters);
-    const counter = counters[counterId];
-    const text = _.compact([
-        "Counter",
-        counterId,
-        counter?.type === "loaded" ? ` (${counter.value.value})` : null,
-    ]).join(" ");
+    const loader = useAppState(state => state.counters[id]);
+    const value = loader?.type === "loaded" ? loader.value.value : undefined;
+    const text = _.compact(["Counter", id, value ? ` (${value})` : null]).join(" ");
 
     return <Button onClick={clickWithId} text={text} />;
 };
