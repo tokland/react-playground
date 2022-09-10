@@ -17,7 +17,7 @@ export const routes = [
     }),
     route("/counter/[id]", {
         onEnter: ({ store, args }) => {
-            return store.routes.loadCounterAndGoToPage(args.id);
+            return store.routes.goToCounter(args.id);
         },
         fromState: state => {
             if (state.page.type === "counter") {

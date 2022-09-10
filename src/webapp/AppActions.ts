@@ -65,7 +65,7 @@ export class AppActions extends BaseActions {
     routes = {
         goToHome: () => this.setState({ page: { type: "home" } }),
 
-        loadCounterAndGoToPage: (id: Id) => {
+        goToCounter: (id: Id) => {
             const counter = this.state.counters[id];
 
             if (counter?.type === "loaded") {

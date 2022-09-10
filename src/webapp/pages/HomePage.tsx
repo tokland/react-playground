@@ -15,8 +15,8 @@ const HomePage: React.FC = () => {
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index="1" onClick={actions.routes.loadCounterAndGoToPage} />
-                    <CounterButton index="2" onClick={actions.routes.loadCounterAndGoToPage} />
+                    <CounterButton index="1" onClick={actions.routes.goToCounter} />
+                    <CounterButton index="2" onClick={actions.routes.goToCounter} />
                 </>
             )}
         </>
