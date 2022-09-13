@@ -15,20 +15,20 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
     onEnter: (options: {
         state: State;
         actions: Actions;
-        args: ExtractArgsFromPath<Path>;
+        args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
     }) => unknown;
     params?: Params;
 }
 
-export type ExtractArgsFromPath<Path extends string> = ExtractArgsFromPath2<Path, {}>;
+export type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
 
-export type ExtractArgsFromPath2<
+type ExtractArgsFromPathRec<
     Path extends string,
-    Output = {}
+    AccArgs = {}
 > = Path extends `${string}[${infer Var}]${infer StringTail}`
-    ? ExtractArgsFromPath2<StringTail, Output & Record<Var, string>>
-    : { [K in keyof Output]: Output[K] };
+    ? ExtractArgsFromPathRec<StringTail, AccArgs & Record<Var, string>>
+    : { [K in keyof AccArgs]: AccArgs[K] };
 
 export type GenericRoute = TypedRoute<any, any, string, readonly string[]>;
 
@@ -37,7 +37,7 @@ export type Routes = Record<string, GenericRoute>;
 type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
 
 export type MkSelector<R extends Routes> = {
-    [K in keyof R]: { key: K } & GetArgs<ExtractArgsFromPath<R[K]["path"]>>;
+    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>>;
 }[keyof R];
 
 export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(
@@ -46,12 +46,11 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
 ): string {
     const route = routes[selector.key];
     if (!route) throw new Error("No route");
-    route.pathRegExp;
-    selector.key;
-    selector.args;
-    interpolate(route.path, selector.args);
-    // TODO
-    return `/`;
+
+    return route.path.replace(/\[(\w+)\]/g, (_match, name: string) => {
+        const args: Record<string, string> = selector.args || {};
+        return args[name] || "";
+    });
 }
 
 export async function runRouteOnEnterForPath<State, Actions>(

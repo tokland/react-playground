@@ -80,9 +80,11 @@ export class Store<State> {
 
 /* Generic hooks */
 
-function useLatestRef<Value>(value: Value): React.MutableRefObject<Value> {
+export function useLatestRef<Value>(value: Value): React.MutableRefObject<Value> {
     const ref = React.useRef(value);
-    React.useEffect(() => void (ref.current = value), [value]);
+    React.useEffect(() => {
+        ref.current = value;
+    }, [value]);
     return ref;
 }
 

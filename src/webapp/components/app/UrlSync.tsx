@@ -2,6 +2,7 @@ import React from "react";
 import { useAppState } from "./App";
 import { getPathFromRoute, runRouteOnEnterForPath, Routes } from "../../utils/router";
 import { routeFromState } from "../Router";
+import { useLatestRef } from "../../hooks/useStoreState";
 
 interface UrlSyncProps {
     store: unknown;
@@ -13,12 +14,7 @@ interface UrlSyncProps {
 const UrlSync: React.FC<UrlSyncProps> = props => {
     const { store, routes, isReady, setIsReady } = props;
     const state = useAppState(state => state);
-
-    // useLatest
-    const stateRef = React.useRef(state);
-    React.useEffect(() => {
-        stateRef.current = state;
-    }, [state]);
+    const stateRef = useLatestRef(state);
 
     // Set state from initial URL
     React.useEffect(() => {
@@ -29,7 +25,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
         }
 
         if (!isReady) run();
-    }, [store, routes, isReady, setIsReady]);
+    }, [store, routes, isReady, setIsReady, stateRef]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -50,7 +46,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
         window.addEventListener("popstate", handler);
 
         return () => window.removeEventListener("popstate", handler);
-    }, [store, routes]);
+    }, [store, routes, stateRef]);
 
     return null;
 };
