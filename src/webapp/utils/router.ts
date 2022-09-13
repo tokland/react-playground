@@ -21,19 +21,23 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
     params?: Params;
 }
 
-export type ExtractArgsFromPath<
+export type ExtractArgsFromPath<Path extends String> = ExtractArgsFromPath2<Path, {}>;
+
+export type ExtractArgsFromPath2<
     Path extends String,
     Output = {}
 > = Path extends `${string}[${infer Var}]${infer StringTail}`
-    ? ExtractArgsFromPath<StringTail, Output & Record<Var, string>>
+    ? ExtractArgsFromPath2<StringTail, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
 export type GenericRoute = TypedRoute<any, any, any, any>;
 
 export type Routes = Record<string, GenericRoute>;
 
+type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
+
 export type MkSelector<R extends Routes> = {
-    [K in keyof R]: { key: K; args: ExtractArgsFromPath<R[K]["path"]> };
+    [K in keyof R]: { key: K } & GetArgs<ExtractArgsFromPath<R[K]["path"]>>;
 }[keyof R];
 
 export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(

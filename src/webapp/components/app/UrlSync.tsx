@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppState } from "./App";
-import { getPathFromRoute, GenericRoute, runRouteOnEnterForPath, Routes } from "../../utils/router";
+import { getPathFromRoute, runRouteOnEnterForPath, Routes } from "../../utils/router";
 import { routeFromState } from "../Router";
 
 interface UrlSyncProps {

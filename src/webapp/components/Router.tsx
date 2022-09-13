@@ -25,7 +25,7 @@ export function routeFromState(state: AppState): MkSelector<typeof routes> {
 
     switch (page.type) {
         case "home":
-            return { key: "home", args: {} };
+            return { key: "home" };
         case "counter":
             return { key: "counterForm", args: { id: page.id } };
     }
