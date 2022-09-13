@@ -10,18 +10,39 @@ import HomePage from "../pages/HomePage";
 
 const route = getRouteBuilder<AppState, AppActions>();
 
-// const routes = { counterForm: { path: "/counter/[id]", params, onEnter }, ... }
+export const routes = {
+    home: route("/", {
+        onEnter: ({ actions }) => actions.routes.goToHome(),
+    }),
+
+    counterForm: route("/counter/[id]", {
+        onEnter: ({ actions, args }) => actions.routes.goToCounter(args.id),
+    }),
+};
+
+export function routeFromState(state: AppState): string {
+    const { page } = state;
+
+    switch (page.type) {
+        case "home":
+            return "/";
+        case "counter":
+            return `/counter/${page.id}`;
+    }
+}
+
 // function getFns<typeof routes>() =>
 //   routeFromState(state: State): { key, args, params }
 //   componentFromState ?
 
+/*
 export const routes = [
     route("/", {
-        onEnter: ({ store }) => store.routes.goToHome(),
+        onEnter: ({ actions: store }) => store.routes.goToHome(),
         fromState: state => state.page.type === "home",
     }),
     route("/counter/[id]", {
-        onEnter: ({ store, args }) => {
+        onEnter: ({ actions: store, args }) => {
             return store.routes.goToCounter(args.id);
         },
         fromState: state => {
@@ -33,6 +54,7 @@ export const routes = [
         },
     }),
 ];
+*/
 
 const Router: React.FC = () => {
     const page = useAppState(state => state.page);
