@@ -18,20 +18,19 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
         args: ExtractArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
     }) => unknown;
-    //fromState: (state: State) => string | boolean;
     params?: Params;
 }
-
-export type Route = TypedRoute<any, any, any, any>;
 
 export type ExtractArgsFromPath<
     Path extends String,
     Output = {}
-> = Path extends `${string}[${infer Var}]${infer S2}`
-    ? ExtractArgsFromPath<S2, Output & Record<Var, string>>
+> = Path extends `${string}[${infer Var}]${infer StringTail}`
+    ? ExtractArgsFromPath<StringTail, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
-type Routes = Record<string, Route>;
+export type GenericRoute = TypedRoute<any, any, any, any>;
+
+export type Routes = Record<string, GenericRoute>;
 
 export type MkSelector<R extends Routes> = {
     [K in keyof R]: { key: K; args: ExtractArgsFromPath<R[K]["path"]> };
@@ -42,6 +41,9 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
     selector: Selector
 ): string {
     const route = routes[selector.key];
+    route?.pathRegExp;
+    selector.key;
+    selector.args;
     return `/`;
 }
 

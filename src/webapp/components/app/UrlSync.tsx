@@ -1,11 +1,11 @@
 import React from "react";
 import { useAppState } from "./App";
-import { getPathFromRoute, Route, runRouteOnEnterForPath } from "../../utils/router";
+import { getPathFromRoute, GenericRoute, runRouteOnEnterForPath, Routes } from "../../utils/router";
 import { routeFromState } from "../Router";
 
 interface UrlSyncProps {
     store: unknown;
-    routes: Record<string, Route>;
+    routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
