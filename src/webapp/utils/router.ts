@@ -21,7 +21,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
     params?: Params;
 }
 
-export type ExtractArgsFromPath<Path extends String> = ExtractArgsFromPath2<Path, {}>;
+export type ExtractArgsFromPath<Path extends string> = ExtractArgsFromPath2<Path, {}>;
 
 export type ExtractArgsFromPath2<
     Path extends string,
@@ -30,7 +30,7 @@ export type ExtractArgsFromPath2<
     ? ExtractArgsFromPath2<StringTail, Output & Record<Var, string>>
     : { [K in keyof Output]: Output[K] };
 
-export type GenericRoute = TypedRoute<any, any, any, any>;
+export type GenericRoute = TypedRoute<any, any, string, readonly string[]>;
 
 export type Routes = Record<string, GenericRoute>;
 
