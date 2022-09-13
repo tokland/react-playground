@@ -24,7 +24,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
 export type ExtractArgsFromPath<Path extends String> = ExtractArgsFromPath2<Path, {}>;
 
 export type ExtractArgsFromPath2<
-    Path extends String,
+    Path extends string,
     Output = {}
 > = Path extends `${string}[${infer Var}]${infer StringTail}`
     ? ExtractArgsFromPath2<StringTail, Output & Record<Var, string>>
@@ -49,6 +49,7 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
     route.pathRegExp;
     selector.key;
     selector.args;
+    interpolate(route.path, selector.args);
     // TODO
     return `/`;
 }
