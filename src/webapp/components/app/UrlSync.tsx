@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppState } from "./App";
-import { Route, runRouteOnEnterForPath } from "../../utils/router";
+import { getPathFromRoute, Route, runRouteOnEnterForPath } from "../../utils/router";
 import { routeFromState } from "../Router";
 
 interface UrlSyncProps {
@@ -34,7 +34,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
     // Update URL from state changes
     React.useEffect(() => {
         const currentPath = window.location.pathname;
-        const pathFromState = routeFromState(state);
+        const pathFromState = getPathFromRoute(routeFromState(state));
 
         if (isReady && currentPath !== pathFromState) {
             window.history.pushState(state, "unused", pathFromState);

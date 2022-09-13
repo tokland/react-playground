@@ -3,7 +3,7 @@ import React from "react";
 import { AppState } from "../../domain/entities/AppState";
 import { useAppState } from "./app/App";
 import { AppActions } from "../AppActions";
-import { getRouteBuilder } from "../utils/router";
+import { getRouteBuilder, MkSelector } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
@@ -20,14 +20,16 @@ export const routes = {
     }),
 };
 
-export function routeFromState(state: AppState): string {
+type Selector = MkSelector<typeof routes>;
+
+export function routeFromState(state: AppState): Selector {
     const { page } = state;
 
     switch (page.type) {
         case "home":
-            return "/";
+            return { key: "home", args: {} };
         case "counter":
-            return `/counter/${page.id}`;
+            return { key: "counterForm", args: { id: page.id } };
     }
 }
 
