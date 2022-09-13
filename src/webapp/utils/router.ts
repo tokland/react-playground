@@ -45,9 +45,11 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
     selector: Selector
 ): string {
     const route = routes[selector.key];
-    route?.pathRegExp;
+    if (!route) throw new Error("No route");
+    route.pathRegExp;
     selector.key;
     selector.args;
+    // TODO
     return `/`;
 }
 
@@ -67,22 +69,3 @@ export async function runRouteOnEnterForPath<State, Actions>(
         }
     });
 }
-
-/*
-export function getRouterPathFromState<State>(routes: Route[], state: State): string {
-    for (const route of routes) {
-        const match = route.fromState(state);
-
-        switch (match) {
-            case true:
-                return route.path;
-            case false:
-                continue;
-            default:
-                return match;
-        }
-    }
-
-    return "/";
-}
-*/

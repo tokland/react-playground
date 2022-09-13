@@ -31,31 +31,6 @@ export function routeFromState(state: AppState): MkSelector<typeof routes> {
     }
 }
 
-// function getFns<typeof routes>() =>
-//   routeFromState(state: State): { key, args, params }
-//   componentFromState ?
-
-/*
-export const routes = [
-    route("/", {
-        onEnter: ({ actions: store }) => store.routes.goToHome(),
-        fromState: state => state.page.type === "home",
-    }),
-    route("/counter/[id]", {
-        onEnter: ({ actions: store, args }) => {
-            return store.routes.goToCounter(args.id);
-        },
-        fromState: state => {
-            if (state.page.type === "counter") {
-                return `/counter/${state.page.id}`;
-            } else {
-                return false;
-            }
-        },
-    }),
-];
-*/
-
 const Router: React.FC = () => {
     const page = useAppState(state => state.page);
 
