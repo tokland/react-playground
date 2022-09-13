@@ -10,6 +10,11 @@ import HomePage from "../pages/HomePage";
 
 const route = getRouteBuilder<AppState, AppActions>();
 
+// const routes = { counterForm: { path: "/counter/[id]", params, onEnter }, ... }
+// function getFns<typeof routes>() =>
+//   routeFromState(state: State): { key, args, params }
+//   componentFromState ?
+
 export const routes = [
     route("/", {
         onEnter: ({ store }) => store.routes.goToHome(),

@@ -30,11 +30,13 @@ interface CounterButtonProps {
 
 const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
+    // TODO: state.currentUsername
     const session = useAppState(state => state.session);
     const username = session.type === "loggedIn" ? session.username : undefined;
     const id = `${username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
 
+    // TODO: state.currentCounterValue
     const loader = useAppState(state => state.counters[id]);
     const value = loader?.status === "loaded" ? loader.value.value : undefined;
     const text = _.compact(["Counter", id, value ? ` (${value})` : null]).join(" ");

@@ -13,6 +13,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
     const { store, routes, isReady, setIsReady } = props;
     const state = useAppState(state => state);
 
+    // useLatest
     const stateRef = React.useRef(state);
     React.useEffect(() => {
         stateRef.current = state;

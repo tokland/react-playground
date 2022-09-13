@@ -1,19 +1,19 @@
 import { Struct } from "../../libs/struct";
 import { Id } from "./Base";
 
-interface CounterProperties {
+interface CounterAttrs {
     id: Id;
     value: number;
 }
 
 /*
-export interface Counter extends CounterProperties {
+export interface Counter extends CounterAttrs {
     add(n: number): Counter;
 }
 */
 
-export class Counter extends Struct<CounterProperties>() {
+export class Counter extends Struct<CounterAttrs>() {
     add(n: number): Counter {
-        return new Counter({ ...this, value: this.value + n });
+        return this.update({ value: this.value + n });
     }
 }

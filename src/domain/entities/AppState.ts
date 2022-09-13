@@ -1,4 +1,5 @@
 import { Struct } from "../../libs/struct";
+import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
@@ -9,7 +10,7 @@ export interface AppStateProperties {
 }
 
 export class AppState extends Struct<AppStateProperties>() {
-    get currentCounter() {
+    get currentCounterLoader(): Maybe<Loader<Counter>> {
         return this.page.type === "counter" ? this.counters[this.page.id] : undefined;
     }
 }

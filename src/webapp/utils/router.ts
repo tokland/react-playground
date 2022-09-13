@@ -42,6 +42,7 @@ export async function runRouteOnEnterForPath<State, Store>(
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
+            // TODO: params from query string
             route.onEnter({ state, store, args, params: {} });
         }
     });

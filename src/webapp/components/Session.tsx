@@ -6,6 +6,7 @@ import { useStateWithEventSetter } from "../hooks/useStateWithEventSetter";
 const SessionComponent: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
+
     const [username, setUsernameFromEv] = useStateWithEventSetter("");
     const login = React.useCallback(() => actions.session.login(username), [actions, username]);
 
