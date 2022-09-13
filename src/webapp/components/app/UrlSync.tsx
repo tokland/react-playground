@@ -34,7 +34,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
     // Update URL from state changes
     React.useEffect(() => {
         const currentPath = window.location.pathname;
-        const pathFromState = getPathFromRoute(routeFromState(state));
+        const pathFromState = getPathFromRoute(routes, routeFromState(state));
 
         if (isReady && currentPath !== pathFromState) {
             window.history.pushState(state, "unused", pathFromState);

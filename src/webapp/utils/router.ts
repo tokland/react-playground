@@ -37,13 +37,12 @@ export type MkSelector<R extends Routes> = {
     [K in keyof R]: { key: K; args: ExtractArgsFromPath<R[K]["path"]> };
 }[keyof R];
 
-interface Selector {
-    key: string;
-    args: Record<string, string>;
-    params?: Record<string, string>;
-}
-export function getPathFromRoute(selector: Selector): string {
-    return `${selector.key}/${selector.args}`;
+export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(
+    routes: R,
+    selector: Selector
+): string {
+    const route = routes[selector.key];
+    return `/`;
 }
 
 export async function runRouteOnEnterForPath<State, Actions>(

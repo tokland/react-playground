@@ -20,9 +20,7 @@ export const routes = {
     }),
 };
 
-type Selector = MkSelector<typeof routes>;
-
-export function routeFromState(state: AppState): Selector {
+export function routeFromState(state: AppState): MkSelector<typeof routes> {
     const { page } = state;
 
     switch (page.type) {
