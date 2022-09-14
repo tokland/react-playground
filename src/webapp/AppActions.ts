@@ -38,7 +38,7 @@ class BaseActions {
         try {
             return buildCancellablePromise(fn);
         } catch (err) {
-            // snackbar.error(err.message)
+            // TODO: snackbar.error(err.message)
             return CancellablePromise.resolve(undefined);
         }
     }

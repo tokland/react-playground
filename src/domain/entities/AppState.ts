@@ -3,13 +3,13 @@ import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
-export interface AppStateProperties {
+export interface AppStateAttrs {
     page: Page;
     session: Session;
     counters: Record<Id, Loader<Counter>>;
 }
 
-export class AppState extends Struct<AppStateProperties>() {
+export class AppState extends Struct<AppStateAttrs>() {
     get currentCounterLoader(): Maybe<Loader<Counter>> {
         return this.page.type === "counter" ? this.counters[this.page.id] : undefined;
     }

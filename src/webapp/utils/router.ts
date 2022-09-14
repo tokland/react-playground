@@ -5,7 +5,7 @@ export function getRouteBuilder<State, Actions>() {
     ): TypedRoute<State, Actions, Path, Params> {
         // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
         const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
-        return { path, pathRegExp, ...options, params: (options.params || []) as Params };
+        return { path, pathRegExp, ...options };
     };
 }
 
