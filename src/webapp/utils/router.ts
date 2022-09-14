@@ -18,7 +18,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
     }) => unknown;
-    params?: Params;
+    params: Params;
 }
 
 export type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
@@ -36,9 +36,9 @@ export type Routes = Record<string, GenericRoute>;
 
 type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
 
-type GetParams<T extends readonly string[] | undefined> = T extends undefined
+type GetParams<T extends readonly string[]> = T extends undefined
     ? { params?: T }
-    : { params: Partial<Record<Exclude<T, undefined>[number], string>> };
+    : { params: Partial<Record<T[number], string>> };
 
 export type MkSelector<R extends Routes> = {
     [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> & GetParams<R[K]["params"]>;

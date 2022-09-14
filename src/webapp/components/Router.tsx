@@ -17,20 +17,21 @@ export const routes = {
     }),
 
     counterForm: route("/counter/[id]", {
+        params: [] as const,
         onEnter: ({ actions, args }) => actions.routes.goToCounter(args.id),
     }),
 };
 
-type T1 = Extract<MkSelector<typeof routes>, { key: "home" }>["params"];
+type T1 = MkSelector<typeof routes>;
 
 export function routeFromState(state: AppState): MkSelector<typeof routes> {
     const { page } = state;
 
     switch (page.type) {
         case "home":
-            return { key: "home", params: { y: "1" } };
+            return { key: "home", params: { x: "1" } };
         case "counter":
-            return { key: "counterForm", args: { id: page.id } };
+            return { key: "counterForm", args: { id: page.id }, params: {} };
     }
 }
 
