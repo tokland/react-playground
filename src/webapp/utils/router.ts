@@ -1,18 +1,13 @@
 export function getRouteBuilder<State, Actions>() {
     return function route<Path extends string, Params extends readonly string[] = []>(
         path: Path,
-        options: PartialBy<
-            Omit<TypedRoute<State, Actions, Path, Params>, "path" | "pathRegExp">,
-            "params"
-        >
+        options: Omit<TypedRoute<State, Actions, Path, Params>, "path" | "pathRegExp">
     ): TypedRoute<State, Actions, Path, Params> {
         // Convert "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/?<value>[\w-_]+
         const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
         return { path, pathRegExp, ...options, params: (options.params || []) as Params };
     };
 }
-
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 interface TypedRoute<State, Actions, Path extends string, Params extends readonly string[]> {
     path: Path;
@@ -23,7 +18,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
     }) => unknown;
-    params: Params;
+    params?: Params;
 }
 
 export type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
@@ -46,7 +41,8 @@ type GetParams<T extends readonly string[]> = T["length"] extends 0
     : { params?: Partial<Record<T[number], string>> };
 
 export type MkSelector<R extends Routes> = {
-    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> & GetParams<R[K]["params"]>;
+    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> &
+        GetParams<Exclude<R[K]["params"], undefined>>;
 }[keyof R];
 
 export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(
