@@ -5,26 +5,26 @@ import { routeFromState } from "../Router";
 import { useLatestRef } from "../../hooks/useStoreState";
 
 interface UrlSyncProps {
-    store: unknown;
+    actions: unknown;
     routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UrlSync: React.FC<UrlSyncProps> = props => {
-    const { store, routes, isReady, setIsReady } = props;
+    const { actions, routes, isReady, setIsReady } = props;
     const state = useAppState(state => state);
     const stateRef = useLatestRef(state);
 
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {
-            await runRouteOnEnterForPath(routes, stateRef.current, store, window.location);
+            await runRouteOnEnterForPath(routes, stateRef.current, actions, window.location);
             setIsReady(true);
         }
 
         if (!isReady) run();
-    }, [store, routes, isReady, setIsReady, stateRef]);
+    }, [actions, routes, isReady, setIsReady, stateRef]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -39,12 +39,12 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
     // Update state on Back/Forward browser actions
     React.useEffect(() => {
         const handler = () => {
-            runRouteOnEnterForPath(routes, stateRef.current, store, window.location);
+            runRouteOnEnterForPath(routes, stateRef.current, actions, window.location);
         };
         window.addEventListener("popstate", handler);
 
         return () => window.removeEventListener("popstate", handler);
-    }, [store, routes, stateRef]);
+    }, [actions, routes, stateRef]);
 
     return null;
 };

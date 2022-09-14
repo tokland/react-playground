@@ -57,9 +57,8 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
         return args[name] || "";
     });
 
-    const search = new URLSearchParams(
-        (selector.params || {}) as Record<string, string>
-    ).toString();
+    const params = (selector.params || {}) as Record<string, string>;
+    const search = new URLSearchParams(params).toString();
 
     return pathname + (search ? "?" : "") + search;
 }

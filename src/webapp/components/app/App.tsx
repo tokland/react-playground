@@ -18,7 +18,7 @@ const App: React.FC = () => {
 
     return (
         <AppContext.Provider value={appContext}>
-            <UrlSync routes={routes} store={appContext.actions} {...urlSync} />
+            <UrlSync routes={routes} actions={appContext.actions} {...urlSync} />
             {urlSync.isReady && <Router />}
         </AppContext.Provider>
     );
