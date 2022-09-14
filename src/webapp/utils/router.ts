@@ -1,5 +1,5 @@
 export function getRouteBuilder<State, Actions>() {
-    return function route<Path extends string, Params extends readonly string[] = []>(
+    return function route<Path extends string, Params extends readonly string[]>(
         path: Path,
         options: Omit<TypedRoute<State, Actions, Path, Params>, "path" | "pathRegExp">
     ): TypedRoute<State, Actions, Path, Params> {
@@ -36,8 +36,12 @@ export type Routes = Record<string, GenericRoute>;
 
 type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
 
+type GetParams<T extends readonly string[] | undefined> = T extends undefined
+    ? { params?: T }
+    : { params: Partial<Record<Exclude<T, undefined>[number], string>> };
+
 export type MkSelector<R extends Routes> = {
-    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>>;
+    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> & GetParams<R[K]["params"]>;
 }[keyof R];
 
 export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(
@@ -47,25 +51,31 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
     const route = routes[selector.key];
     if (!route) throw new Error("No route");
 
-    return route.path.replace(/\[(\w+)\]/g, (_match, name: string) => {
+    const pathname = route.path.replace(/\[(\w+)\]/g, (_match, name: string) => {
         const args: Record<string, string> = selector.args || {};
         return args[name] || "";
     });
+
+    const search = new URLSearchParams(
+        (selector.params || {}) as Record<string, string>
+    ).toString();
+
+    return pathname + (search ? "?" : "") + search;
 }
 
 export async function runRouteOnEnterForPath<State, Actions>(
     routes: Routes,
     state: State,
     actions: Actions,
-    path: string
+    location: Location
 ) {
     Object.values(routes).forEach(route => {
-        const match = path.match(route.pathRegExp);
+        const match = location.pathname.match(route.pathRegExp);
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
-            // TODO: params from query string
-            route.onEnter({ state, actions, args, params: {} });
+            const params = Object.fromEntries(new URLSearchParams(window.location.search));
+            route.onEnter({ state, actions, args, params });
         }
     });
 }

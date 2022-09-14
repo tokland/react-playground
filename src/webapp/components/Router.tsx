@@ -12,6 +12,7 @@ const route = getRouteBuilder<AppState, AppActions>();
 
 export const routes = {
     home: route("/", {
+        params: ["x"] as const,
         onEnter: ({ actions }) => actions.routes.goToHome(),
     }),
 
@@ -20,12 +21,14 @@ export const routes = {
     }),
 };
 
+type T1 = Extract<MkSelector<typeof routes>, { key: "home" }>["params"];
+
 export function routeFromState(state: AppState): MkSelector<typeof routes> {
     const { page } = state;
 
     switch (page.type) {
         case "home":
-            return { key: "home" };
+            return { key: "home", params: { y: "1" } };
         case "counter":
             return { key: "counterForm", args: { id: page.id } };
     }
