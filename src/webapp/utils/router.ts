@@ -1,5 +1,5 @@
 export function getRouteBuilder<State, Actions>() {
-    return function route<Path extends string, Params extends readonly string[]>(
+    return function route<Path extends string, Params extends readonly string[] = []>(
         path: Path,
         options: PartialBy<
             Omit<TypedRoute<State, Actions, Path, Params>, "path" | "pathRegExp">,
@@ -41,9 +41,9 @@ export type Routes = Record<string, GenericRoute>;
 
 type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
 
-type GetParams<T extends readonly string[]> = [] extends T
-    ? { params?: {} }
-    : { params: Partial<Record<T[number], string>> };
+type GetParams<T extends readonly string[]> = T["length"] extends 0
+    ? { params?: never }
+    : { params?: Partial<Record<T[number], string>> };
 
 export type MkSelector<R extends Routes> = {
     [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> & GetParams<R[K]["params"]>;
