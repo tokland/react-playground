@@ -44,7 +44,7 @@ export function useStoreSetState<State>(store: Store<State>): SetState<State> {
 
 type ValueOrUpdater<State> = Partial<State> | ((state: State) => Partial<State>);
 
-export type SetState<State> = (updater: ValueOrUpdater<State>) => void;
+type SetState<State> = (updater: ValueOrUpdater<State>) => void;
 
 /* State store */
 

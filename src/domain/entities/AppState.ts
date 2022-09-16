@@ -3,15 +3,21 @@ import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
-export interface AppStateAttrs {
+interface AppStateAttrs {
     page: Page;
     session: Session;
     counters: Record<Id, Loader<Counter>>;
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
-    get currentCounterLoader(): Maybe<Loader<Counter>> {
-        return this.page.type === "counter" ? this.counters[this.page.id] : undefined;
+    get currentCounter(): { loader: Maybe<Loader<Counter>> } {
+        return this.page.type === "counter"
+            ? { loader: this.counters[this.page.id] }
+            : { loader: undefined };
+    }
+
+    get loggedSession(): Maybe<Extract<Session, { type: "loggedIn" }>> {
+        return this.session.type === "loggedIn" ? this.session : undefined;
     }
 }
 

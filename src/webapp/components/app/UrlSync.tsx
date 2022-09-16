@@ -36,7 +36,7 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
         }
     }, [state, routes, isReady]);
 
-    // Update state on Back/Forward browser actions
+    // Update state on popstate (back/forward) browser actions
     React.useEffect(() => {
         const handler = () => {
             runRouteOnEnterForPath(routes, stateRef.current, actions, window.location);

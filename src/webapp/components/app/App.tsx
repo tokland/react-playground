@@ -7,6 +7,14 @@ import Router, { routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 
+const initialAppState = new AppState({
+    page: { type: "home" },
+    session: { type: "loggedIn", username: "arnau" },
+    counters: {},
+});
+
+const [appStore, useAppState] = getStoreHooks<AppState>(initialAppState);
+
 const App: React.FC = () => {
     const urlSync = useUrlSync();
 
@@ -24,14 +32,6 @@ const App: React.FC = () => {
     );
 };
 
-const initialAppState = new AppState({
-    page: { type: "home" },
-    session: { type: "loggedIn", username: "arnau" },
-    counters: {},
-});
-
-const [appStore, useAppState] = getStoreHooks<AppState>(initialAppState);
-
-export { appStore, useAppState };
+export { useAppState };
 
 export default React.memo(App);

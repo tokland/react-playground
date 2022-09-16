@@ -20,7 +20,7 @@ const CounterPage: React.FC = () => {
 
 const CurrentCounter: React.FC = () => {
     const { actions } = useAppContext();
-    const loader = useAppState(state => state.currentCounterLoader);
+    const loader = useAppState(state => state.currentCounter.loader);
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save, {
         cancelOnComponentUnmount: false,
     });
