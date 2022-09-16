@@ -33,8 +33,6 @@ const App: React.FC = () => {
     );
 };
 
-export { useAppState };
-
 export function useAppStateOrFail<SelectedState>(
     selector: Selector<AppState, SelectedState | undefined>
 ): SelectedState {
@@ -43,4 +41,5 @@ export function useAppStateOrFail<SelectedState>(
     return value;
 }
 
+export { useAppState };
 export default React.memo(App);

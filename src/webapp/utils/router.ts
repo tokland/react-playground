@@ -59,7 +59,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
         actions: Actions;
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => unknown;
+    }) => void;
     params?: Params;
 }
 
