@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../components/app/AppContext";
-import { useAppState, useAppStateOrFail } from "../components/app/App";
+import { useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Counter from "../components/Counter";
 import Session from "../components/Session";
@@ -20,7 +20,7 @@ const CounterPage: React.FC = () => {
 
 const CurrentCounter: React.FC = () => {
     const { actions } = useAppContext();
-    const loader = useAppStateOrFail(state => state.currentCounter.loader);
+    const loader = useAppStateOrFail(state => state.currentCounter?.loader);
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save, {
         cancelOnComponentUnmount: false,
     });
