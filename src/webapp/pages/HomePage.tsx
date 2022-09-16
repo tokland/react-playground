@@ -15,8 +15,8 @@ const HomePage: React.FC = () => {
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index="1" onClick={actions.routes.goToCounter} />
-                    <CounterButton index="2" onClick={actions.routes.goToCounter} />
+                    <CounterButton index={1} onClick={actions.routes.goToCounter} />
+                    <CounterButton index={2} onClick={actions.routes.goToCounter} />
                 </>
             )}
         </>
@@ -25,13 +25,12 @@ const HomePage: React.FC = () => {
 
 interface CounterButtonProps {
     onClick: (counterId: string) => void;
-    index: string;
+    index: number;
 }
 
 const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
-    const session = useAppStateOrFail(state => state.loggedSession);
-    const id = `${session.username}-${index}`;
+    const id = useAppStateOrFail(state => state.counterIdFromIndex(index));
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
     const value = useAppState(state => state.currentCounter?.counter?.value);
     const text = _.compact(["Counter", id, value ? ` (${value})` : null]).join(" ");

@@ -8,6 +8,6 @@ interface CounterAttrs {
 
 export class Counter extends Struct<CounterAttrs>() {
     add(n: number): Counter {
-        return this.update({ value: this.value + n });
+        return this._update({ value: this.value + n });
     }
 }
