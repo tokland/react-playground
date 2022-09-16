@@ -6,6 +6,7 @@ import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
+import { Selector } from "../../hooks/useStoreState";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -33,5 +34,13 @@ const App: React.FC = () => {
 };
 
 export { useAppState };
+
+export function useAppStateOrFail<SelectedState>(
+    selector: Selector<AppState, SelectedState | undefined>
+): SelectedState {
+    const value = useAppState(selector);
+    if (!value) throw new Error("Cannot get value");
+    return value;
+}
 
 export default React.memo(App);

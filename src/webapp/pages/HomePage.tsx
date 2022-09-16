@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { useAppContext } from "../components/app/AppContext";
-import { useAppState } from "../components/app/App";
+import { useAppState, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
 
@@ -30,8 +30,8 @@ interface CounterButtonProps {
 
 const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
-    const session = useAppState(state => state.loggedSession);
-    const id = `${session?.username}-${index}`;
+    const session = useAppStateOrFail(state => state.loggedSession);
+    const id = `${session.username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
 
     // TODO: state.currentCounterValue
