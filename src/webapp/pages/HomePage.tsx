@@ -33,8 +33,6 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const session = useAppStateOrFail(state => state.loggedSession);
     const id = `${session.username}-${index}`;
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
-
-    // TODO: state.currentCounterValue
     const value = useAppState(state => state.currentCounter?.counter?.value);
     const text = _.compact(["Counter", id, value ? ` (${value})` : null]).join(" ");
 
