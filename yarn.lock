@@ -8345,6 +8345,11 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
+typed-react-form@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/typed-react-form/-/typed-react-form-2.2.3.tgz#b9822fcbe2d234e487f342c1edfb671f4ab32d31"
+  integrity sha512-KoS70ZCc2TGqvF0sdxsBXPo9PkB5aUdnFYu+2wbJ9vYOhF2zyW4L0Uo2jGRVWa6STaPV5LtaoQVRxvGnXt4M0g==
+
 typedarray-to-buffer@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/typedarray-to-buffer/-/typedarray-to-buffer-3.1.5.tgz#a97ee7a9ff42691b9f783ff1bc5112fe3fca9080"

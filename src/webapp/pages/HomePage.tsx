@@ -9,7 +9,6 @@ const HomePage: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "loggedIn";
-    console.log({ session });
 
     return (
         <>

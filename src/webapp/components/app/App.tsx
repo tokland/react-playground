@@ -11,7 +11,8 @@ import "./App.css";
 
 const initialAppState = new AppState({
     page: { type: "home" },
-    session: { type: "loggedIn", username: "arnau" },
+    //session: { type: "unauthenticated" },
+    session: { type: "loggedIn", username: "test" },
     counters: {},
 });
 

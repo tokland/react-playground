@@ -1,20 +1,18 @@
 import React from "react";
 import { useAppState } from "./app/App";
 import { useAppContext } from "./app/AppContext";
-import { useStateWithEventSetter } from "../hooks/useStateWithEventSetter";
+import { Field, useForm } from "typed-react-form";
 
 const SessionComponent: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
-    const [username, setUsernameFromEv] = useStateWithEventSetter("");
+    const form = useForm({ username: "" });
 
-    const login = React.useCallback<React.FormEventHandler<HTMLFormElement>>(
-        ev => {
-            ev.preventDefault();
-            actions.session.login(username);
-        },
-        [actions, username]
-    );
+    const login = React.useMemo(() => {
+        return form.handleSubmit(form_ => {
+            actions.session.login(form_.values.username);
+        });
+    }, [actions, form]);
 
     return (
         <div>
@@ -25,7 +23,7 @@ const SessionComponent: React.FC = () => {
                 </>
             ) : (
                 <form onSubmit={login}>
-                    <input onChange={setUsernameFromEv} placeholder="Username"></input>
+                    <Field form={form} name="username" />
                     <button type="submit">Login</button>
                 </form>
             )}
