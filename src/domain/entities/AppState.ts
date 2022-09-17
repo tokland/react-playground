@@ -18,10 +18,10 @@ export class AppState extends Struct<AppStateAttrs>() {
         return this.session.type === "loggedIn" ? this.session : undefined;
     }
 
-    get currentCounter(): Maybe<{ loader: Loader<Counter>; counter: Maybe<Counter> }> {
+    get currentCounter(): { loader: Maybe<Loader<Counter>>; counter: Maybe<Counter> } {
         const loader = this.page.type === "counter" ? this.counters[this.page.id] : undefined;
         const counter = loader?.status === "loaded" ? loader.value : undefined;
-        return loader ? { loader, counter } : undefined;
+        return { loader, counter };
     }
 
     counterIdFromIndex(index: number): Maybe<Id> {
