@@ -103,11 +103,6 @@ export class AppActions extends BaseActions {
 
     /* Private */
 
-    private getCounter(id: Id): Maybe<Counter> {
-        const loader = this.state.counters[id];
-        return loader && loader.status === "loaded" ? loader.value : undefined;
-    }
-
     private setCounter(counter: Counter, options: { isUpdating: boolean }) {
         this.setState({
             counters: {

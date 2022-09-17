@@ -1,8 +1,8 @@
 import React from "react";
 import { CancellablePromise } from "real-cancellable-promise";
 
-export function useCancellableEffect<T, Args extends any[]>(
-    effect: (...args: Args) => CancellablePromise<T>,
+export function useCancellableEffect<Args extends any[]>(
+    effect: (...args: Args) => CancellablePromise<unknown>,
     options: { cancelOnComponentUnmount?: boolean } = {}
 ): [(...args: Args) => void, boolean, Cancel] {
     const { cancelOnComponentUnmount = false } = options;
