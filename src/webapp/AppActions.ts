@@ -2,6 +2,7 @@ import _ from "lodash";
 import {
     buildCancellablePromise,
     CancellablePromise,
+    Cancellation,
     CaptureCancellablePromise,
 } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
@@ -35,20 +36,19 @@ class BaseActions {
     protected effect<U>(
         fn: (capture: CaptureCancellablePromise) => Promise<U>
     ): CancellablePromise<U | undefined> {
-        try {
-            return buildCancellablePromise(fn);
-        } catch (err) {
-            // TODO: snackbar.error(err.message)
-            return CancellablePromise.resolve(undefined);
-        }
+        return buildCancellablePromise(fn).catch(err => {
+            if (err instanceof Cancellation) {
+                console.log("Promise cancelled");
+            } else {
+                return Promise.reject(err);
+            }
+        });
     }
 }
 
 class SessionActions extends BaseActions {
     login = (username: string) => {
-        return this.setState({
-            session: { type: "loggedIn", username },
-        });
+        return this.setState({ session: { type: "loggedIn", username } });
     };
 
     logout = () => {
