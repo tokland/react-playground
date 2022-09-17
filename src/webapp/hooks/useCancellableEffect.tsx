@@ -1,19 +1,8 @@
 import React from "react";
-import { CancellablePromise } from "real-cancellable-promise";
-
-type Fn = () => void;
-
-export interface Effect<T> {
-    run(success: (data: T) => void, error: (err: string) => void): void;
-    cancel: Fn;
-}
-
-function toEffect<T>(cPromise: CancellablePromise<T>): Effect<T> {
-    return { run: cPromise.then, cancel: cPromise.cancel };
-}
+import { Cancel, Effect } from "../../libs/effect";
 
 export function useCancellableEffect<Args extends any[]>(
-    effect: (...args: Args) => CancellablePromise<unknown>,
+    getEffect: (...args: Args) => Effect<unknown>,
     options: { cancelOnComponentUnmount?: boolean } = {}
 ): [(...args: Args) => void, boolean, Cancel] {
     const { cancelOnComponentUnmount = false } = options;
@@ -29,16 +18,21 @@ export function useCancellableEffect<Args extends any[]>(
         if (cancelRef.current) cancelRef.current();
     }, []);
 
+    const clearArgs = React.useCallback(() => {
+        if (isMounted()) setArgs(undefined);
+    }, [isMounted, setArgs]);
+
     React.useEffect(() => {
         if (!args) return;
 
-        const promise = effect(...args).finally(() => {
-            if (isMounted()) setArgs(undefined);
-        });
-        cancelRef.current = promise.cancel;
+        const cancel = getEffect(...args).run(
+            _data => clearArgs(),
+            _err => clearArgs()
+        );
+        cancelRef.current = cancel;
 
-        if (cancelOnComponentUnmount) return promise.cancel;
-    }, [args, effect, cancelOnComponentUnmount, isMounted]);
+        if (cancelOnComponentUnmount) return cancel;
+    }, [args, getEffect, cancelOnComponentUnmount, clearArgs]);
 
     const isRunning = args !== undefined;
 
@@ -57,5 +51,3 @@ function useIsMounted() {
 
     return isMounted;
 }
-
-type Cancel = () => void;

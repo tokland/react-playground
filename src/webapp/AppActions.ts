@@ -1,15 +1,10 @@
 import _ from "lodash";
-import {
-    buildCancellablePromise,
-    CancellablePromise,
-    Cancellation,
-    CaptureCancellablePromise,
-} from "real-cancellable-promise";
+import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { Maybe } from "../libs/ts-utils";
+import { Effect, cancellablePromiseToEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -33,16 +28,8 @@ class BaseActions {
         return this.options.store.setState(newState);
     }
 
-    protected effect<U>(
-        fn: (capture: CaptureCancellablePromise) => Promise<U>
-    ): CancellablePromise<U | undefined> {
-        return buildCancellablePromise(fn).catch(err => {
-            if (err instanceof Cancellation) {
-                console.log("Promise cancelled");
-            } else {
-                return Promise.reject(err);
-            }
-        });
+    protected effect<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>): Effect<U> {
+        return cancellablePromiseToEffect(buildCancellablePromise(fn));
     }
 }
 
