@@ -6,9 +6,15 @@ import { useStateWithEventSetter } from "../hooks/useStateWithEventSetter";
 const SessionComponent: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
-
     const [username, setUsernameFromEv] = useStateWithEventSetter("");
-    const login = React.useCallback(() => actions.session.login(username), [actions, username]);
+
+    const login = React.useCallback<React.FormEventHandler<HTMLFormElement>>(
+        ev => {
+            ev.preventDefault();
+            actions.session.login(username);
+        },
+        [actions, username]
+    );
 
     return (
         <div>
@@ -18,10 +24,10 @@ const SessionComponent: React.FC = () => {
                     <button onClick={actions.session.logout}>Logout</button>
                 </>
             ) : (
-                <>
-                    <input onBlur={setUsernameFromEv} placeholder="Username"></input>
-                    <button onClick={login}>Login</button>
-                </>
+                <form onSubmit={login}>
+                    <input onChange={setUsernameFromEv} placeholder="Username"></input>
+                    <button type="submit">Login</button>
+                </form>
             )}
         </div>
     );

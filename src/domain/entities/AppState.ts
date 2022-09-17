@@ -26,7 +26,7 @@ export class AppState extends Struct<AppStateAttrs>() {
 
     counterIdFromIndex(index: number): Maybe<Id> {
         const username = this.loggedSession?.username;
-        return username ? `${username}-${index}` : undefined;
+        return username !== undefined ? `${username}-${index}` : undefined;
     }
 }
 
