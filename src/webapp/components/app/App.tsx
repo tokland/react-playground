@@ -7,6 +7,7 @@ import Router, { routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
+import "./App.css";
 
 const initialAppState = new AppState({
     page: { type: "home" },
