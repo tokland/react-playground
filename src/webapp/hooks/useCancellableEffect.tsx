@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { Cancel, Effect } from "../../libs/effect";
 
 export function useCancellableEffect<Args extends any[]>(
@@ -18,21 +19,18 @@ export function useCancellableEffect<Args extends any[]>(
         if (cancelRef.current) cancelRef.current();
     }, []);
 
-    const clearArgs = React.useCallback(() => {
-        if (isMounted()) setArgs(undefined);
-    }, [isMounted, setArgs]);
-
     React.useEffect(() => {
         if (!args) return;
 
-        const cancel = getEffect(...args).run(
-            _data => clearArgs(),
-            _err => clearArgs()
-        );
-        cancelRef.current = cancel;
+        const cancel = getEffect(...args).run(_.noop, _.noop);
+
+        cancelRef.current = () => {
+            if (isMounted()) setArgs(undefined);
+            cancel();
+        };
 
         if (cancelOnComponentUnmount) return cancel;
-    }, [args, getEffect, cancelOnComponentUnmount, clearArgs]);
+    }, [args, getEffect, cancelOnComponentUnmount, isMounted]);
 
     const isRunning = args !== undefined;
 
