@@ -66,31 +66,31 @@ export class AppActions extends BaseActions {
         goToHome: () => this.setState({ page: { type: "home" } }),
 
         goToCounter: (id: Id) => {
-            const counter = this.state.counters[id];
-            const status = counter?.status;
-
-            if (status === "loading" || status === "loaded") {
-                return this.setState({
-                    page: { type: "counter", id },
-                });
-            } else {
-                return this.effect(async $ => {
-                    this.setState({
-                        page: { type: "counter", id },
-                        counters: { ...this.state.counters, [id]: { status: "loading", id } },
-                    });
-
-                    const counter = await $(this.compositionRoot.counters.get(id));
-
-                    this.setCounter(counter, { isUpdating: false });
-                });
-            }
+            this.setState({ page: { type: "counter", id } });
+            return this.counter.load(id);
         },
     };
 
     counter = {
         set: (counter: Counter) => {
             this.setCounter(counter, { isUpdating: false });
+        },
+
+        load: (id: Id) => {
+            const counter = this.state.counters[id];
+            const status = counter?.status;
+
+            if (status === "loading" || status === "loaded") return;
+
+            return this.effect(async $ => {
+                this.setState({
+                    counters: { ...this.state.counters, [id]: { status: "loading", id } },
+                });
+
+                const counter = await $(this.compositionRoot.counters.get(id));
+
+                this.setCounter(counter, { isUpdating: false });
+            });
         },
 
         save: (counter: Counter) =>

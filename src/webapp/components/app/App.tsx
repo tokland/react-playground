@@ -37,7 +37,7 @@ export function useAppStateOrFail<SelectedState>(
     selector: Selector<AppState, SelectedState | undefined>
 ): SelectedState {
     const value = useAppState(selector);
-    if (!value) throw new Error("Cannot get value");
+    if (value === undefined) throw new Error("Cannot get value");
     return value;
 }
 

@@ -1,6 +1,17 @@
 import React from "react";
 import { CancellablePromise } from "real-cancellable-promise";
 
+type Fn = () => void;
+
+export interface Effect<T> {
+    run(success: (data: T) => void, error: (err: string) => void): void;
+    cancel: Fn;
+}
+
+function toEffect<T>(cPromise: CancellablePromise<T>): Effect<T> {
+    return { run: cPromise.then, cancel: cPromise.cancel };
+}
+
 export function useCancellableEffect<Args extends any[]>(
     effect: (...args: Args) => CancellablePromise<unknown>,
     options: { cancelOnComponentUnmount?: boolean } = {}
