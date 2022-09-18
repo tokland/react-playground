@@ -3,7 +3,7 @@ import { useAppState } from "./app/App";
 import { useAppContext } from "./app/AppContext";
 import { Field, useForm } from "typed-react-form";
 
-const SessionComponent: React.FC = () => {
+const Session: React.FC = () => {
     const { actions } = useAppContext();
     const session = useAppState(state => state.session);
     const form = useForm({ username: "" });
@@ -31,4 +31,4 @@ const SessionComponent: React.FC = () => {
     );
 };
 
-export default React.memo(SessionComponent);
+export default React.memo(Session);

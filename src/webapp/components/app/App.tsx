@@ -44,4 +44,5 @@ export function useAppStateOrFail<SelectedState>(
 }
 
 export { useAppState };
+
 export default React.memo(App);

@@ -18,7 +18,7 @@ const CounterPage: React.FC = () => {
     );
 };
 
-const CurrentCounter: React.FC = () => {
+const CurrentCounter_: React.FC = () => {
     const { actions } = useAppContext();
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save, {
@@ -41,5 +41,7 @@ const CurrentCounter: React.FC = () => {
         );
     }
 };
+
+const CurrentCounter = React.memo(CurrentCounter_);
 
 export default React.memo(CounterPage);
