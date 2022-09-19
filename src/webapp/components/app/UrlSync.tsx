@@ -7,7 +7,7 @@ import { useAppState } from "./App";
 import { AppActions } from "../../AppActions";
 
 interface UrlSyncProps {
-    actions: AppActions;
+    actions: AppActions; // TODO: Generic
     routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,7 +15,7 @@ interface UrlSyncProps {
 
 const UrlSync: React.FC<UrlSyncProps> = props => {
     const { actions, routes, isReady, setIsReady } = props;
-    const state = useAppState(state => state);
+    const state = useAppState(state => state); // TODO: Move to small parent component
     const stateRef = useLatestRef(state);
 
     // Set state from initial URL

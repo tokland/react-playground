@@ -1,10 +1,8 @@
 import React from "react";
-import { useAppState } from "./app/App";
-import { useAppContext } from "./app/AppContext";
+import { actions, useAppState } from "./app/App";
 import { Field, useForm } from "typed-react-form";
 
 const Session: React.FC = () => {
-    const { actions } = useAppContext();
     const session = useAppState(state => state.session);
     const form = useForm({ username: "" });
 
@@ -12,7 +10,7 @@ const Session: React.FC = () => {
         return form.handleSubmit(form_ => {
             actions.session.login(form_.values.username);
         });
-    }, [actions, form]);
+    }, [form]);
 
     return (
         <div>

@@ -1,12 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { useAppContext } from "../components/app/AppContext";
-import { useAppState, useAppStateOrFail } from "../components/app/App";
+import { actions, useAppState, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
 
 const HomePage: React.FC = () => {
-    const { actions } = useAppContext();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "loggedIn";
 

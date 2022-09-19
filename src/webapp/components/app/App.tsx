@@ -1,6 +1,5 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { AppContext, AppContextState } from "./AppContext";
 import { AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routes } from "../Router";
@@ -16,22 +15,19 @@ const initialAppState = new AppState({
     counters: {},
 });
 
-const [appStore, useAppState] = getStoreHooks<AppState>(initialAppState);
+const [useAppState, actions] = getStoreHooks<AppState, AppActions>(initialAppState, store => {
+    const compositionRoot = getCompositionRoot();
+    return new AppActions({ compositionRoot, store });
+});
 
 const App: React.FC = () => {
     const urlSync = useUrlSync();
 
-    const appContext = React.useMemo<AppContextState>(() => {
-        const compositionRoot = getCompositionRoot();
-        const actions = new AppActions({ compositionRoot, store: appStore });
-        return { compositionRoot, actions };
-    }, []);
-
     return (
-        <AppContext.Provider value={appContext}>
-            <UrlSync routes={routes} actions={appContext.actions} {...urlSync} />
+        <>
+            <UrlSync routes={routes} actions={actions} {...urlSync} />
             {urlSync.isReady && <Router />}
-        </AppContext.Provider>
+        </>
     );
 };
 
@@ -43,6 +39,6 @@ export function useAppStateOrFail<SelectedState>(
     return value;
 }
 
-export { useAppState };
+export { useAppState, actions };
 
 export default React.memo(App);
