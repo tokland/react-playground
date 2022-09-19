@@ -1,14 +1,14 @@
-export function Struct<T>() {
+export function Struct<Attributes>() {
     class BaseClass {
-        constructor(private _values: T) {
-            Object.assign(this, this._values);
+        constructor(private _attributes: Attributes) {
+            Object.assign(this, _attributes);
         }
 
-        protected _update(partialAttrs: Partial<T>): this {
-            const ParentClass = this.constructor as new (values: T) => typeof this;
-            return new ParentClass({ ...this._values, ...partialAttrs });
+        protected _update(partialAttrs: Partial<Attributes>): this {
+            const ParentClass = this.constructor as new (values: Attributes) => typeof this;
+            return new ParentClass({ ...this._attributes, ...partialAttrs });
         }
     }
 
-    return BaseClass as new (values: T) => T & BaseClass;
+    return BaseClass as new (values: Attributes) => Attributes & BaseClass;
 }

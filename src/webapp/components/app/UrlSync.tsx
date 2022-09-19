@@ -1,11 +1,13 @@
 import React from "react";
-import { useAppState } from "./App";
 import { getPathFromRoute, runRouteOnEnterForPath, Routes } from "../../utils/router";
 import { routeFromState } from "../Router";
 import { useLatestRef } from "../../hooks/useStoreState";
 
+import { useAppState } from "./App";
+import { AppActions } from "../../AppActions";
+
 interface UrlSyncProps {
-    actions: unknown;
+    actions: AppActions;
     routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;

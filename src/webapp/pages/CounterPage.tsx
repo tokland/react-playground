@@ -5,41 +5,15 @@ import Button from "../components/Button";
 import Counter from "../components/Counter";
 import Session from "../components/Session";
 import { useCancellableEffect } from "../hooks/useCancellableEffect";
-import create, { StoreApi } from "zustand";
-
-type StoreFrom<State, Actions> = State & { actions: { [K in keyof Actions]: Actions[K] } };
-type Api = StoreApi<CounterState>;
-
-type CounterState = { value: number };
-
-class CounterActions {
-    constructor(private get: Api["getState"], private set: Api["setState"]) {}
-
-    counter = {
-        addCounter: (n: number) => this.set(state => ({ value: state.value + n })),
-        incrementCounter: () => this.counter.addCounter(+1),
-        decrementCounter: () => this.counter.addCounter(-1),
-    };
-}
-
-const initialState: CounterState = { value: 0 };
-
-const useCounterStore = create<StoreFrom<CounterState, CounterActions>>((set, get) => {
-    return { ...initialState, actions: new CounterActions(get, set) };
-});
 
 const CounterPage: React.FC = () => {
     const { actions } = useAppContext();
-    const state = useCounterStore(state => state);
 
     return (
         <>
             <Session />
             <Button onClick={actions.routes.goToHome} text="Back to Home Page" />
             <CurrentCounter />
-            <div>{state.value}</div>
-            <button onClick={state.actions.counter.incrementCounter}>INC</button>
-            <button onClick={state.actions.counter.decrementCounter}>DEC</button>
         </>
     );
 };
