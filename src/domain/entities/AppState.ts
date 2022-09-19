@@ -1,3 +1,4 @@
+import { HashMap } from "@rimbu/hashed";
 import { Struct } from "../../libs/struct";
 import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
@@ -6,7 +7,7 @@ import { Counter } from "./Counter";
 export interface AppStateAttrs {
     page: Page;
     session: Session;
-    counters: Record<Id, Loader<Counter>>;
+    counters: HashMap<Id, Loader<Counter>>;
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
@@ -19,7 +20,7 @@ export class AppState extends Struct<AppStateAttrs>() {
     }
 
     get currentCounter(): { loader: Maybe<Loader<Counter>>; counter: Maybe<Counter> } {
-        const loader = this.page.type === "counter" ? this.counters[this.page.id] : undefined;
+        const loader = this.page.type === "counter" ? this.counters.get(this.page.id) : undefined;
         const counter = loader?.status === "loaded" ? loader.value : undefined;
         return { loader, counter };
     }

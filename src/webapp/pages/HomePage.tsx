@@ -30,7 +30,7 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
     const id = useAppStateOrFail(state => state.counterIdFromIndex(index));
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
-    const loader = useAppState(state => state.counters[id]);
+    const loader = useAppState(state => state.counters.get(id));
     const counter = loader?.status === "loaded" ? loader.value : undefined;
     const text = _.compact(["Counter", id, counter ? ` (${counter.value})` : null]).join(" ");
 

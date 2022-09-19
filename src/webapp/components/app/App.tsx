@@ -7,12 +7,13 @@ import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
 import "./App.css";
+import { HashMap } from "@rimbu/hashed";
 
 const initialAppState = new AppState({
     page: { type: "home" },
     //session: { type: "unauthenticated" },
     session: { type: "loggedIn", username: "test" },
-    counters: {},
+    counters: HashMap.empty(),
 });
 
 const [useAppState, actions] = getStoreHooks(initialAppState, store => {

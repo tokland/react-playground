@@ -1494,6 +1494,63 @@
     tiny-warning "^1.0.3"
     tslib "^2.3.0"
 
+"@rimbu/base@^0.9.5":
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@rimbu/base/-/base-0.9.5.tgz#510298fc8f3506ed33a6b1b3d36f3e43c2bcdef5"
+  integrity sha512-cy5iju3yygUF/ZWSbmUGPycmz/xaTHYqvkE8pISknMPOPXFZnJbWz7w4InS7RbbNLYiEdu6Vws93Fi3DuPWF4Q==
+  dependencies:
+    "@rimbu/common" "^0.10.3"
+    tslib "^2.4.0"
+
+"@rimbu/collection-types@^0.9.18":
+  version "0.9.18"
+  resolved "https://registry.yarnpkg.com/@rimbu/collection-types/-/collection-types-0.9.18.tgz#bf58bfbae09278a59ac641c3a246bae4aa961114"
+  integrity sha512-qZPrzvcDPsyb+zvRgeiaDh/ib+Hnv4ygwVpJWxQO87Vn0LghNOfrgyM4yYhvMVeR31py+rfzDdJ4jieY/aQYAQ==
+  dependencies:
+    "@rimbu/base" "^0.9.5"
+    "@rimbu/common" "^0.10.3"
+    "@rimbu/stream" "^0.12.4"
+    tslib "^2.4.0"
+
+"@rimbu/common@^0.10.3":
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/@rimbu/common/-/common-0.10.3.tgz#48de2c6dd0b20cca0da5bd5ac8f333c51b3b0b1f"
+  integrity sha512-Gl9F/QVGorluhZYTrF833l4WgMEg6WgVQHryL5CyLvzRjclTXiijMcu5qZmxzAoPNEuA6IslgksyXJTxUIdylA==
+  dependencies:
+    tslib "^2.4.0"
+
+"@rimbu/hashed@^0.8.20":
+  version "0.8.20"
+  resolved "https://registry.yarnpkg.com/@rimbu/hashed/-/hashed-0.8.20.tgz#df73a466d82f8afcc785bd806a3aa8f518c40a85"
+  integrity sha512-qOMnua69ndDGi6KRzdhRIXW2Tg12CPeFCmo3a444Omdoopot82Cs0fIQudzYyvFlK92CDWfjDNv2VNBwJX/Vcg==
+  dependencies:
+    "@rimbu/base" "^0.9.5"
+    "@rimbu/collection-types" "^0.9.18"
+    "@rimbu/common" "^0.10.3"
+    "@rimbu/list" "^0.10.20"
+    "@rimbu/stream" "^0.12.4"
+    tslib "^2.4.0"
+
+"@rimbu/list@^0.10.20":
+  version "0.10.20"
+  resolved "https://registry.yarnpkg.com/@rimbu/list/-/list-0.10.20.tgz#31efb2a4acb792e4aff3916a042250b1812079b5"
+  integrity sha512-gl0YZdEvWkTELXv3VIB5JXLAUk0JhhgojhIM2A3ufK9mTBmv+Wfszbbhms2FtxSiBQ7ObN3e4T4317K+xdW41A==
+  dependencies:
+    "@rimbu/base" "^0.9.5"
+    "@rimbu/collection-types" "^0.9.18"
+    "@rimbu/common" "^0.10.3"
+    "@rimbu/stream" "^0.12.4"
+    tslib "^2.4.0"
+
+"@rimbu/stream@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@rimbu/stream/-/stream-0.12.4.tgz#89d86b5c251e40746a40949510a303c41ffcf6d5"
+  integrity sha512-3AnSO1xjOHfBGRKeshcy/sUHFk4f12cWz9FSB7YwFi4bnPJgxkH27C65VBnpLhRrsndvlelSfcreKyHAVOoTuw==
+  dependencies:
+    "@rimbu/base" "^0.9.5"
+    "@rimbu/common" "^0.10.3"
+    tslib "^2.4.0"
+
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-babel/-/plugin-babel-5.3.1.tgz#04bc0608f4aa4b2e4b1aebf284344d0f68fda283"
@@ -8295,6 +8352,11 @@ tslib@^2.0.3, tslib@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
+  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 tsutils@^3.21.0:
   version "3.21.0"

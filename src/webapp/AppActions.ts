@@ -64,14 +64,14 @@ export class AppActions extends BaseActions {
         },
 
         load: (id: Id) => {
-            const counter = this.state.counters[id];
+            const counter = this.state.counters.get(id);
             const status = counter?.status;
 
             if (status === "loading" || status === "loaded") return;
 
             return this.effect(async $ => {
                 this.setState({
-                    counters: { ...this.state.counters, [id]: { status: "loading", id } },
+                    counters: this.state.counters.set(id, { status: "loading", id }),
                 });
 
                 const counter = await $(this.compositionRoot.counters.get(id));
@@ -92,12 +92,10 @@ export class AppActions extends BaseActions {
 
     private setCounter(counter: Counter, options?: { isUpdating: boolean }) {
         const { isUpdating = false } = options || {};
+        const { counters } = this.state;
 
         this.setState({
-            counters: {
-                ...this.state.counters,
-                [counter.id]: { status: "loaded", value: counter, isUpdating },
-            },
+            counters: counters.set(counter.id, { status: "loaded", value: counter, isUpdating }),
         });
     }
 }
