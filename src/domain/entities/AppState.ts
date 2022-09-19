@@ -3,15 +3,15 @@ import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
-interface AppStateAttrs {
+export interface AppStateAttrs {
     page: Page;
     session: Session;
     counters: Record<Id, Loader<Counter>>;
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
-    update(partial: Partial<AppStateAttrs>) {
-        return this._update(partial);
+    update(attributes: Partial<AppStateAttrs>) {
+        return this._update(attributes);
     }
 
     get loggedSession(): Maybe<Extract<Session, { type: "loggedIn" }>> {

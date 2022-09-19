@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
-import { AppState } from "../domain/entities/AppState";
+import { AppState, AppStateAttrs } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
 import { Effect, cancellablePromiseToEffect } from "../libs/effect";
@@ -23,8 +23,8 @@ class BaseActions {
         return this.options.store.state;
     }
 
-    protected setState(state: Partial<AppState>) {
-        const newState = this.state.update(state);
+    protected setState(attributes: Partial<AppStateAttrs>) {
+        const newState = this.state.update(attributes);
         return this.options.store.setState(newState);
     }
 
@@ -60,7 +60,7 @@ export class AppActions extends BaseActions {
 
     counter = {
         set: (counter: Counter) => {
-            this.setCounter(counter, { isUpdating: false });
+            this.setCounter(counter);
         },
 
         load: (id: Id) => {
@@ -76,7 +76,7 @@ export class AppActions extends BaseActions {
 
                 const counter = await $(this.compositionRoot.counters.get(id));
 
-                this.setCounter(counter, { isUpdating: false });
+                this.setCounter(counter);
             });
         },
 
@@ -84,17 +84,19 @@ export class AppActions extends BaseActions {
             this.effect(async $ => {
                 this.setCounter(counter, { isUpdating: true });
                 await $(this.compositionRoot.counters.save(counter));
-                this.setCounter(counter, { isUpdating: false });
+                this.setCounter(counter);
             }),
     };
 
     /* Private */
 
-    private setCounter(counter: Counter, options: { isUpdating: boolean }) {
+    private setCounter(counter: Counter, options?: { isUpdating: boolean }) {
+        const { isUpdating = false } = options || {};
+
         this.setState({
             counters: {
                 ...this.state.counters,
-                [counter.id]: { status: "loaded", value: counter, ...options },
+                [counter.id]: { status: "loaded", value: counter, isUpdating },
             },
         });
     }
