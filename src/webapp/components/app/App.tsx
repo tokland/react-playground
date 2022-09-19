@@ -15,7 +15,7 @@ const initialAppState = new AppState({
     counters: {},
 });
 
-const [useAppState, actions] = getStoreHooks<AppState, AppActions>(initialAppState, store => {
+const [useAppState, actions] = getStoreHooks(initialAppState, store => {
     const compositionRoot = getCompositionRoot();
     return new AppActions({ compositionRoot, store });
 });

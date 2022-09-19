@@ -8,8 +8,8 @@ import { Effect, cancellablePromiseToEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
-    compositionRoot: CompositionRoot;
     store: Store<AppState>;
+    compositionRoot: CompositionRoot;
 }
 
 class BaseActions {
