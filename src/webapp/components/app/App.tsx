@@ -11,7 +11,6 @@ import { HashMap } from "@rimbu/hashed";
 
 const initialAppState = new AppState({
     page: { type: "home" },
-    //session: { type: "unauthenticated" },
     session: { type: "loggedIn", username: "test" },
     counters: HashMap.empty(),
 });

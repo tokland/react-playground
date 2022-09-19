@@ -2,6 +2,7 @@ import React from "react";
 import { actions, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Counter from "../components/Counter";
+import Link from "../components/Link";
 import Session from "../components/Session";
 import { useCancellableEffect } from "../hooks/useCancellableEffect";
 
@@ -9,6 +10,7 @@ const CounterPage: React.FC = () => {
     return (
         <>
             <Session />
+            <Link to={{ key: "home" }} text={"home"} />
             <Button onClick={actions.routes.goToHome} text="Back to Home Page" />
             <CurrentCounter />
         </>
