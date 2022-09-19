@@ -21,7 +21,7 @@ const [useAppState, actions] = getStoreHooks(initialAppState, store => {
 });
 
 const App: React.FC = () => {
-    const urlSync = useUrlSync();
+    const urlSync = useUrlSync(); // routes, actions
 
     return (
         <>

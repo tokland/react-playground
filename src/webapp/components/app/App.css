@@ -6,3 +6,8 @@ body {
 button {
     margin: 5px;
 }
+
+a {
+    text-decoration: none;
+    color: #99f;
+}

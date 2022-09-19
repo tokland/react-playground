@@ -1,8 +1,8 @@
-export function getRouteBuilder<State, Actions>() {
+export function getRouteBuilder<Actions>() {
     return function route<Path extends string, Params extends readonly string[] = []>(
         path: Path,
-        options: Omit<TypedRoute<State, Actions, Path, Params>, "path" | "pathRegExp">
-    ): TypedRoute<State, Actions, Path, Params> {
+        options: Omit<TypedRoute<Actions, Path, Params>, "path" | "pathRegExp">
+    ): TypedRoute<Actions, Path, Params> {
         // Converts "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/(?<value>[\w-_]+)
         const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
         return { path, pathRegExp, ...options };
@@ -34,9 +34,8 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
     return pathname + (search ? "?" : "") + search;
 }
 
-export async function runRouteOnEnterForPath<State, Actions>(
+export async function runRouteOnEnterForPath<Actions>(
     routes: Routes,
-    state: State,
     actions: Actions,
     location: Location
 ) {
@@ -46,16 +45,15 @@ export async function runRouteOnEnterForPath<State, Actions>(
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
             const params = Object.fromEntries(new URLSearchParams(window.location.search));
-            route.onEnter({ state, actions, args, params });
+            route.onEnter({ actions, args, params });
         }
     });
 }
 
-interface TypedRoute<State, Actions, Path extends string, Params extends readonly string[]> {
+interface TypedRoute<Actions, Path extends string, Params extends readonly string[]> {
     path: Path;
     pathRegExp: RegExp;
     onEnter: (options: {
-        state: State;
         actions: Actions;
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
@@ -63,7 +61,7 @@ interface TypedRoute<State, Actions, Path extends string, Params extends readonl
     params?: Params;
 }
 
-type GenericRoute = TypedRoute<any, any, string, readonly string[]>;
+type GenericRoute = TypedRoute<any, string, readonly string[]>;
 
 type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
 

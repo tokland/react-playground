@@ -10,7 +10,7 @@ const CounterPage: React.FC = () => {
     return (
         <>
             <Session />
-            <Link to={{ key: "home" }} text={"home"} />
+            <Link to={{ key: "home" }}>Home</Link>
             <Button onClick={actions.routes.goToHome} text="Back to Home Page" />
             <CurrentCounter />
         </>
