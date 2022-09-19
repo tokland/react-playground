@@ -11,10 +11,6 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
-    update(attributes: Partial<AppStateAttrs>) {
-        return this._update(attributes);
-    }
-
     get loggedSession(): Maybe<Extract<Session, { type: "loggedIn" }>> {
         return this.session.type === "loggedIn" ? this.session : undefined;
     }
