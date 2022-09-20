@@ -11,7 +11,7 @@ import HomePage from "../pages/HomePage";
 const route = getRouteBuilder<AppActions>();
 
 export const routes = {
-    home: route("/", {
+    home: route("/home", {
         onEnter: ({ actions }) => actions.routes.goToHome(),
     }),
 
