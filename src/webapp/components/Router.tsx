@@ -47,8 +47,8 @@ type Routes = typeof routes;
 export function goTo<Selector extends MkSelector<Routes>>(to: Selector) {
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
-    const { onEnter } = routes[to.key];
-    onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
+    const route = routes[to.key];
+    route.onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
 }
 
 export default React.memo(Router);

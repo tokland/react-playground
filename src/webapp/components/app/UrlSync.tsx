@@ -38,18 +38,11 @@ const UrlSync: React.FC<UrlSyncProps> = props => {
         }
     }, [state, routes, isReady]);
 
-    // Update state on popstate (back/forward) browser actions and custom router:pushstate
+    // Update state on popstate (back/forward) browser actions
     React.useEffect(() => {
-        const handler = () => {
-            runRouteOnEnterForPath(routes, actions, window.location);
-        };
+        const handler = () => runRouteOnEnterForPath(routes, actions, window.location);
         window.addEventListener("popstate", handler);
-        window.addEventListener("router:pushstate", handler);
-
-        return () => {
-            window.removeEventListener("popstate", handler);
-            window.removeEventListener("router:pushstate", handler);
-        };
+        return () => window.removeEventListener("popstate", handler);
     }, [actions, routes, stateRef]);
 
     return null;
