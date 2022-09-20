@@ -16,5 +16,5 @@ export function getStoreHooks<State, Actions>(
 
     const actions = getActions(store);
 
-    return [useState, actions, useSetState] as const;
+    return [useState, actions, store, useSetState] as const;
 }

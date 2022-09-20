@@ -1,10 +1,10 @@
 import _ from "lodash";
 import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
-import { AppState, AppStateAttrs } from "../domain/entities/AppState";
+import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { Effect, cancellablePromiseToEffect } from "../libs/effect";
+import { Effect, toEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -29,21 +29,21 @@ class BaseActions {
     }
 
     protected effect<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>): Effect<U> {
-        return cancellablePromiseToEffect(buildCancellablePromise(fn));
+        return toEffect(buildCancellablePromise(fn));
     }
 }
 
 class SessionActions extends BaseActions {
-    login = (username: string) => {
-        return this.setState({ session: { type: "loggedIn", username } });
-    };
+    login = (username: string) =>
+        this.setState({
+            session: { type: "loggedIn", username },
+        });
 
-    logout = () => {
-        return this.setState({
+    logout = () =>
+        this.setState({
             page: { type: "home" },
             session: { type: "unauthenticated" },
         });
-    };
 }
 
 export class AppActions extends BaseActions {
@@ -69,15 +69,11 @@ export class AppActions extends BaseActions {
 
             if (status === "loading" || status === "loaded") return;
 
-            return this.effect(async $ => {
-                this.setState({
-                    counters: this.state.counters.set(id, { status: "loading", id }),
-                });
-
-                const counter = await $(this.compositionRoot.counters.get(id));
-
-                this.setCounter(counter);
+            this.setState({
+                counters: this.state.counters.set(id, { status: "loading", id }),
             });
+
+            return toEffect(this.compositionRoot.counters.get(id).then(this.setCounter));
         },
 
         save: (counter: Counter) =>
@@ -90,12 +86,11 @@ export class AppActions extends BaseActions {
 
     /* Private */
 
-    private setCounter(counter: Counter, options?: { isUpdating: boolean }) {
+    private setCounter = (counter: Counter, options?: { isUpdating: boolean }) => {
         const { isUpdating = false } = options || {};
         const { counters } = this.state;
+        const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating };
 
-        this.setState({
-            counters: counters.set(counter.id, { status: "loaded", value: counter, isUpdating }),
-        });
-    }
+        this.setState({ counters: counters.set(counter.id, loader) });
+    };
 }

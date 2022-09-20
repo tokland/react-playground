@@ -2,11 +2,11 @@ import { CancellablePromise, Cancellation } from "real-cancellable-promise";
 
 export type Cancel = () => void;
 
-export interface Effect<T> {
-    run(success: (data: T) => void, reject: (msg: string) => void): Cancel;
+export interface Effect<Data> {
+    run(success: (data: Data) => void, reject: (msg: string) => void): Cancel;
 }
 
-export function cancellablePromiseToEffect<T>(promise: CancellablePromise<T>): Effect<T> {
+export function toEffect<Data>(promise: CancellablePromise<Data>): Effect<Data> {
     return {
         run(success, reject) {
             return promise.then(success).catch(err => {

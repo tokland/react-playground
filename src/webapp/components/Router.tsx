@@ -42,9 +42,7 @@ const Router: React.FC = () => {
     }
 };
 
-type Routes = typeof routes;
-
-export function goTo<Selector extends MkSelector<Routes>>(to: Selector) {
+export function goTo<Selector extends MkSelector<typeof routes>>(to: Selector) {
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
     const route = routes[to.key];

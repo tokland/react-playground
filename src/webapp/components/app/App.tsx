@@ -1,12 +1,12 @@
 import React from "react";
+import "./App.css";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
-import Router, { routes } from "../Router";
+import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
-import "./App.css";
 import { HashMap } from "@rimbu/hashed";
 
 const initialAppState = new AppState({
@@ -15,17 +15,17 @@ const initialAppState = new AppState({
     counters: HashMap.empty(),
 });
 
-const [useAppState, actions] = getStoreHooks(initialAppState, store => {
+const [useAppState, actions, store] = getStoreHooks(initialAppState, store => {
     const compositionRoot = getCompositionRoot();
     return new AppActions({ compositionRoot, store });
 });
 
 const App: React.FC = () => {
-    const urlSync = useUrlSync(); // routes, actions
+    const urlSync = useUrlSync(store, routes, actions, routeFromState);
 
     return (
         <>
-            <UrlSync routes={routes} actions={actions} {...urlSync} />
+            <UrlSync {...urlSync} />
             {urlSync.isReady && <Router />}
         </>
     );
