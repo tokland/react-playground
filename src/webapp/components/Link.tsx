@@ -1,9 +1,9 @@
 import React from "react";
-import { getPathFromRoute, MkSelector } from "../utils/router";
+import { getPathFromRoute, RouteSelector } from "../utils/router";
 import { goTo, routes } from "./Router";
 
 interface LinkProps {
-    to: MkSelector<typeof routes>;
+    to: RouteSelector<typeof routes>;
     children: React.ReactNode;
 }
 

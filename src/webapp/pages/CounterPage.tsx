@@ -2,6 +2,7 @@ import React from "react";
 import { actions, useAppStateOrFail } from "../components/app/App";
 import Counter from "../components/Counter";
 import Link from "../components/Link";
+import { AppRoute } from "../components/Router";
 import Session from "../components/Session";
 import { useCancellableEffect } from "../hooks/useCancellableEffect";
 
@@ -15,7 +16,7 @@ const CounterPage: React.FC = () => {
     );
 };
 
-const homePageRoute = { key: "home" as const };
+const homePageRoute: AppRoute = { key: "home" };
 
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);

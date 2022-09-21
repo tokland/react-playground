@@ -2,7 +2,7 @@ import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
 import { actions, useAppState } from "./app/App";
-import { getPathFromRoute, MkSelector, route } from "../utils/router";
+import { getPathFromRoute, RouteSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
@@ -17,7 +17,9 @@ export const routes = {
     }),
 };
 
-export function routeFromState(state: AppState): MkSelector<typeof routes> {
+export type AppRoute = RouteSelector<typeof routes>;
+
+export function routeFromState(state: AppState): RouteSelector<typeof routes> {
     const { page } = state;
 
     switch (page.type) {
@@ -39,7 +41,7 @@ const Router: React.FC = () => {
     }
 };
 
-export function goTo<Selector extends MkSelector<typeof routes>>(to: Selector) {
+export function goTo<Selector extends RouteSelector<typeof routes>>(to: Selector) {
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
     const route = routes[to.key];

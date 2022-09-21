@@ -9,15 +9,15 @@ export function route<Path extends string, Params extends readonly string[] = []
 
 export type GenericRoutes = Record<string, GenericRoute>;
 
-export type MkSelector<Routes extends GenericRoutes> = {
+export type RouteSelector<Routes extends GenericRoutes> = {
     [K in keyof Routes]: { key: K } & GetArgs<ArgsFromPath<Routes[K]["path"]>> &
         GetParams<Exclude<Routes[K]["params"], undefined>>;
 }[keyof Routes];
 
-export function getPathFromRoute<Routes extends GenericRoutes, Selector extends MkSelector<Routes>>(
-    routes: Routes,
-    selector: Selector
-): string {
+export function getPathFromRoute<
+    Routes extends GenericRoutes,
+    Selector extends RouteSelector<Routes>
+>(routes: Routes, selector: Selector): string {
     const route = routes[selector.key];
     if (!route) throw new Error("No route");
 

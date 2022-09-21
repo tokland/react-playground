@@ -3,7 +3,7 @@ import {
     getPathFromRoute,
     runRouteOnEnterForPath,
     GenericRoutes,
-    MkSelector,
+    RouteSelector,
 } from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
 
@@ -12,7 +12,7 @@ interface UrlSyncProps<State> {
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
     store: Store<State>;
-    routeFromState(state: State): MkSelector<GenericRoutes>;
+    routeFromState(state: State): RouteSelector<GenericRoutes>;
 }
 
 function UrlSync<State>(props: UrlSyncProps<State>) {
@@ -54,7 +54,7 @@ function UrlSync<State>(props: UrlSyncProps<State>) {
 export function useUrlSync<State>(
     store: Store<State>,
     routes: GenericRoutes,
-    routeFromState: (state: State) => MkSelector<GenericRoutes>
+    routeFromState: (state: State) => RouteSelector<GenericRoutes>
 ) {
     const [isReady, setIsReady] = React.useState(false);
 
