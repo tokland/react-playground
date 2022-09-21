@@ -1,4 +1,9 @@
-import { CancellablePromise, Cancellation } from "real-cancellable-promise";
+import {
+    buildCancellablePromise,
+    CancellablePromise,
+    Cancellation,
+    CaptureCancellablePromise,
+} from "real-cancellable-promise";
 
 export type Cancel = () => void;
 
@@ -16,4 +21,8 @@ export function toEffect<Data>(promise: CancellablePromise<Data>): Effect<Data> 
             }).cancel;
         },
     };
+}
+
+export function effectBlock<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>): Effect<U> {
+    return toEffect(buildCancellablePromise(fn));
 }

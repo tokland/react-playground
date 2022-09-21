@@ -1,10 +1,9 @@
 import _ from "lodash";
-import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { Effect, toEffect } from "../libs/effect";
+import { effectBlock, toEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -26,10 +25,6 @@ class BaseActions {
     protected setState(attributes: Partial<AppStateAttrs>) {
         const newState = AppState.update(this.state, attributes);
         return this.options.store.setState(newState);
-    }
-
-    protected effect<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>): Effect<U> {
-        return toEffect(buildCancellablePromise(fn));
     }
 }
 
@@ -77,7 +72,7 @@ export class AppActions extends BaseActions {
         },
 
         save: (counter: Counter) =>
-            this.effect(async $ => {
+            effectBlock(async $ => {
                 this.setCounter(counter, { isUpdating: true });
                 await $(this.compositionRoot.counters.save(counter));
                 this.setCounter(counter);
