@@ -1,6 +1,5 @@
 import React from "react";
 import { actions, useAppStateOrFail } from "../components/app/App";
-import Button from "../components/Button";
 import Counter from "../components/Counter";
 import Link from "../components/Link";
 import Session from "../components/Session";
@@ -10,12 +9,13 @@ const CounterPage: React.FC = () => {
     return (
         <>
             <Session />
-            <Link to={{ key: "home" }}>Home</Link>
-            <Button onClick={actions.routes.goToHome} text="Back to Home Page" />
+            <Link to={homePageRoute}>Back to Home Page</Link>
             <CurrentCounter />
         </>
     );
 };
+
+const homePageRoute = { key: "home" as const };
 
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);

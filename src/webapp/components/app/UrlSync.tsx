@@ -12,7 +12,7 @@ interface UrlSyncProps<State, Actions> {
 }
 
 function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
-    const { actions, routes, isReady, setIsReady, store, routeFromState } = props;
+    const { actions, routes, store, routeFromState, isReady, setIsReady } = props;
     const [state, setState] = React.useState(store.state);
 
     React.useEffect(() => store.subscribe(setState), [store]);
