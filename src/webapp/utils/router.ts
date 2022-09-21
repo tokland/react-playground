@@ -1,12 +1,10 @@
-export function getRouteBuilder<Actions>() {
-    return function route<Path extends string, Params extends readonly string[] = []>(
-        path: Path,
-        options: Omit<TypedRoute<Actions, Path, Params>, "path" | "pathRegExp">
-    ): TypedRoute<Actions, Path, Params> {
-        // Converts "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/(?<value>[\w-_]+)
-        const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
-        return { path, pathRegExp, ...options };
-    };
+export function route<Path extends string, Params extends readonly string[] = []>(
+    path: Path,
+    options: Omit<TypedRoute<Path, Params>, "path" | "pathRegExp">
+): TypedRoute<Path, Params> {
+    // Converts "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/(?<value>[\w-_]+)
+    const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
+    return { path, pathRegExp, ...options };
 }
 
 export type Routes = Record<string, GenericRoute>;
@@ -45,23 +43,22 @@ export async function runRouteOnEnterForPath<Actions>(
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
             const params = Object.fromEntries(new URLSearchParams(window.location.search));
-            route.onEnter({ actions, args, params });
+            route.onEnter({ args, params });
         }
     });
 }
 
-interface TypedRoute<Actions, Path extends string, Params extends readonly string[]> {
+interface TypedRoute<Path extends string, Params extends readonly string[]> {
     path: Path;
     pathRegExp: RegExp;
     onEnter: (options: {
-        actions: Actions;
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
     }) => void;
     params?: Params;
 }
 
-type GenericRoute = TypedRoute<any, string, readonly string[]>;
+type GenericRoute = TypedRoute<string, readonly string[]>;
 
 type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
 

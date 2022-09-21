@@ -2,21 +2,18 @@ import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
 import { actions, useAppState } from "./app/App";
-import { AppActions } from "../AppActions";
-import { getPathFromRoute, getRouteBuilder, MkSelector } from "../utils/router";
+import { getPathFromRoute, MkSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
 
-const route = getRouteBuilder<AppActions>();
-
 export const routes = {
     home: route("/home", {
-        onEnter: ({ actions }) => actions.routes.goToHome(),
+        onEnter: () => actions.routes.goToHome(),
     }),
 
     counterForm: route("/counter/[id]", {
-        onEnter: ({ actions, args }) => actions.routes.goToCounter(args.id),
+        onEnter: ({ args }) => actions.routes.goToCounter(args.id),
     }),
 };
 
@@ -46,7 +43,7 @@ export function goTo<Selector extends MkSelector<typeof routes>>(to: Selector) {
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
     const route = routes[to.key];
-    route.onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
+    route.onEnter({ args: (to.args || {}) as any, params: to.params || {} });
 }
 
 export default React.memo(Router);
