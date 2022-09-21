@@ -7,8 +7,7 @@ import {
 } from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
 
-interface UrlSyncProps<State, Actions> {
-    actions: Actions;
+interface UrlSyncProps<State> {
     routes: GenericRoutes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,8 +15,8 @@ interface UrlSyncProps<State, Actions> {
     routeFromState(state: State): MkSelector<GenericRoutes>;
 }
 
-function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
-    const { actions, routes, store, routeFromState, isReady, setIsReady } = props;
+function UrlSync<State>(props: UrlSyncProps<State>) {
+    const { routes, store, routeFromState, isReady, setIsReady } = props;
     const [state, setState] = React.useState(store.state);
 
     React.useEffect(() => store.subscribe(setState), [store]);
@@ -25,12 +24,12 @@ function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {
-            await runRouteOnEnterForPath(routes, actions, window.location);
+            await runRouteOnEnterForPath(routes, window.location);
             setIsReady(true);
         }
 
         if (!isReady) run();
-    }, [actions, routes, isReady, setIsReady, store]);
+    }, [routes, isReady, setIsReady, store]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -42,25 +41,24 @@ function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
         }
     }, [state, routes, isReady, routeFromState]);
 
-    // Update state on popstate (back/forward) browser actions
+    // Update state on popstate (browser back/forward)
     React.useEffect(() => {
-        const handler = () => runRouteOnEnterForPath(routes, actions, window.location);
+        const handler = () => runRouteOnEnterForPath(routes, window.location);
         window.addEventListener("popstate", handler);
         return () => window.removeEventListener("popstate", handler);
-    }, [actions, routes]);
+    }, [routes]);
 
     return null;
 }
 
-export function useUrlSync<State, Actions>(
+export function useUrlSync<State>(
     store: Store<State>,
     routes: GenericRoutes,
-    actions: Actions,
     routeFromState: (state: State) => MkSelector<GenericRoutes>
 ) {
     const [isReady, setIsReady] = React.useState(false);
 
-    return { routes, actions, isReady, setIsReady, store, routeFromState };
+    return { routes, isReady, setIsReady, store, routeFromState };
 }
 
 export default UrlSync;

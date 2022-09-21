@@ -32,11 +32,7 @@ export function getPathFromRoute<Routes extends GenericRoutes, Selector extends 
     return pathname + (search ? "?" : "") + search;
 }
 
-export async function runRouteOnEnterForPath<Actions>(
-    routes: GenericRoutes,
-    actions: Actions,
-    location: Location
-) {
+export async function runRouteOnEnterForPath(routes: GenericRoutes, location: Location) {
     Object.values(routes).forEach(route => {
         const match = location.pathname.match(route.pathRegExp);
 

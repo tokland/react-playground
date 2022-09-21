@@ -15,11 +15,11 @@ const initialAppState = new AppState({
     counters: HashMap.empty(),
 });
 
-const [useAppState, store] = getStoreHooks(initialAppState);
+const [store, useAppState] = getStoreHooks(initialAppState);
 const actions = new AppActions({ compositionRoot: getCompositionRoot(), store });
 
 const App: React.FC = () => {
-    const urlSync = useUrlSync(store, routes, actions, routeFromState);
+    const urlSync = useUrlSync(store, routes, routeFromState);
 
     return (
         <>

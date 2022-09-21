@@ -1,6 +1,6 @@
 import { Selector, Store, useStoreSetState, useStoreState } from "./hooks/useStoreState";
 
-export function getStoreHooks<State, Actions>(initialState: State) {
+export function getStoreHooks<State>(initialState: State) {
     const store = new Store(initialState);
 
     function useState<SelectedState>(selector: Selector<State, SelectedState>) {
@@ -11,5 +11,5 @@ export function getStoreHooks<State, Actions>(initialState: State) {
         return useStoreSetState(store);
     }
 
-    return [useState, store, useSetState] as const;
+    return [store, useState, useSetState] as const;
 }
