@@ -1,14 +1,19 @@
 import React from "react";
-import { getPathFromRoute, runRouteOnEnterForPath, Routes, MkSelector } from "../../utils/router";
+import {
+    getPathFromRoute,
+    runRouteOnEnterForPath,
+    GenericRoutes,
+    MkSelector,
+} from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
 
 interface UrlSyncProps<State, Actions> {
     actions: Actions;
-    routes: Routes;
+    routes: GenericRoutes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
     store: Store<State>;
-    routeFromState(state: State): MkSelector<Routes>;
+    routeFromState(state: State): MkSelector<GenericRoutes>;
 }
 
 function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
@@ -49,9 +54,9 @@ function UrlSync<State, Actions>(props: UrlSyncProps<State, Actions>) {
 
 export function useUrlSync<State, Actions>(
     store: Store<State>,
-    routes: Routes,
+    routes: GenericRoutes,
     actions: Actions,
-    routeFromState: (state: State) => MkSelector<Routes>
+    routeFromState: (state: State) => MkSelector<GenericRoutes>
 ) {
     const [isReady, setIsReady] = React.useState(false);
 

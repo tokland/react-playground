@@ -7,15 +7,15 @@ export function route<Path extends string, Params extends readonly string[] = []
     return { path, pathRegExp, ...options };
 }
 
-export type Routes = Record<string, GenericRoute>;
+export type GenericRoutes = Record<string, GenericRoute>;
 
-export type MkSelector<R extends Routes> = {
-    [K in keyof R]: { key: K } & GetArgs<ArgsFromPath<R[K]["path"]>> &
-        GetParams<Exclude<R[K]["params"], undefined>>;
-}[keyof R];
+export type MkSelector<Routes extends GenericRoutes> = {
+    [K in keyof Routes]: { key: K } & GetArgs<ArgsFromPath<Routes[K]["path"]>> &
+        GetParams<Exclude<Routes[K]["params"], undefined>>;
+}[keyof Routes];
 
-export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R>>(
-    routes: R,
+export function getPathFromRoute<Routes extends GenericRoutes, Selector extends MkSelector<Routes>>(
+    routes: Routes,
     selector: Selector
 ): string {
     const route = routes[selector.key];
@@ -33,7 +33,7 @@ export function getPathFromRoute<R extends Routes, Selector extends MkSelector<R
 }
 
 export async function runRouteOnEnterForPath<Actions>(
-    routes: Routes,
+    routes: GenericRoutes,
     actions: Actions,
     location: Location
 ) {

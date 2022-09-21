@@ -17,6 +17,16 @@ export const routes = {
     }),
 };
 
+/*
+export type GetActions<Routes extends GenericRoutes> = Routes[keyof Routes] extends TypedRoute<
+    infer Actions,
+    any,
+    any
+>
+    ? Actions
+    : never;
+*/
+
 export function routeFromState(state: AppState): MkSelector<typeof routes> {
     const { page } = state;
 
