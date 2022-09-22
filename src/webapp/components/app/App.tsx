@@ -15,9 +15,6 @@ const initialAppState = new AppState({
     counters: HashMap.empty(),
 });
 
-const [store, useAppState] = getStoreHooks(initialAppState);
-const actions = new AppActions({ compositionRoot: getCompositionRoot(), store });
-
 const App: React.FC = () => {
     const urlSync = useUrlSync(store, routes, routeFromState);
 
@@ -29,6 +26,12 @@ const App: React.FC = () => {
     );
 };
 
+const [store, useAppState] = getStoreHooks(initialAppState);
+
+export const actions = new AppActions({ compositionRoot: getCompositionRoot(), store });
+
+export { useAppState };
+
 export function useAppStateOrFail<SelectedState>(
     selector: Selector<AppState, SelectedState | undefined>
 ): SelectedState {
@@ -36,7 +39,5 @@ export function useAppStateOrFail<SelectedState>(
     if (value === undefined) throw new Error("Cannot get value");
     return value;
 }
-
-export { useAppState, actions };
 
 export default React.memo(App);

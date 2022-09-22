@@ -3,7 +3,7 @@ import { CompositionRoot } from "../compositionRoot";
 import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { effectBlock, toEffect } from "../libs/effect";
+import { effectBlock, emptyEffect, toEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -62,7 +62,7 @@ export class AppActions extends BaseActions {
             const counter = this.state.counters.get(id);
             const status = counter?.status;
 
-            if (status === "loading" || status === "loaded") return;
+            if (status === "loading" || status === "loaded") return emptyEffect;
 
             this.setState({
                 counters: this.state.counters.set(id, { status: "loading", id }),

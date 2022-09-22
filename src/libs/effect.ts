@@ -26,3 +26,10 @@ export function toEffect<Data>(promise: CancellablePromise<Data>): Effect<Data> 
 export function effectBlock<U>(fn: (capture: CaptureCancellablePromise) => Promise<U>): Effect<U> {
     return toEffect(buildCancellablePromise(fn));
 }
+
+export const emptyEffect: Effect<void> = {
+    run: (success, _reject) => {
+        success(undefined);
+        return () => {};
+    },
+};

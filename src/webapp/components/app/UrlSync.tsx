@@ -7,15 +7,15 @@ import {
 } from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
 
-interface UrlSyncProps<State> {
-    routes: GenericRoutes;
+interface UrlSyncProps<State, Routes extends GenericRoutes> {
+    routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
     store: Store<State>;
-    routeFromState(state: State): RouteSelector<GenericRoutes>;
+    routeFromState(state: State): RouteSelector<Routes>;
 }
 
-function UrlSync<State>(props: UrlSyncProps<State>) {
+function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State, Routes>) {
     const { routes, store, routeFromState, isReady, setIsReady } = props;
     const [state, setState] = React.useState(store.state);
 
@@ -51,10 +51,10 @@ function UrlSync<State>(props: UrlSyncProps<State>) {
     return null;
 }
 
-export function useUrlSync<State>(
+export function useUrlSync<State, Routes extends GenericRoutes>(
     store: Store<State>,
-    routes: GenericRoutes,
-    routeFromState: (state: State) => RouteSelector<GenericRoutes>
+    routes: Routes,
+    routeFromState: (state: State) => RouteSelector<Routes>
 ) {
     const [isReady, setIsReady] = React.useState(false);
 

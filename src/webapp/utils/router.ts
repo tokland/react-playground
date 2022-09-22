@@ -9,15 +9,10 @@ export function route<Path extends string, Params extends readonly string[] = []
 
 export type GenericRoutes = Record<string, GenericRoute>;
 
-export type RouteSelector<Routes extends GenericRoutes> = {
-    [K in keyof Routes]: { key: K } & GetArgs<ArgsFromPath<Routes[K]["path"]>> &
-        GetParams<Exclude<Routes[K]["params"], undefined>>;
-}[keyof Routes];
-
-export function getPathFromRoute<
-    Routes extends GenericRoutes,
-    Selector extends RouteSelector<Routes>
->(routes: Routes, selector: Selector): string {
+export function getPathFromRoute<Routes extends GenericRoutes>(
+    routes: Routes,
+    selector: RouteSelector<Routes>
+): string {
     const route = routes[selector.key];
     if (!route) throw new Error("No route");
 
@@ -65,8 +60,33 @@ type ExtractArgsFromPathRec<
     ? ExtractArgsFromPathRec<StringTail, AccArgs & Record<Var, string>>
     : { [K in keyof AccArgs]: AccArgs[K] };
 
-type GetArgs<T> = {} extends T ? { args?: T } : { args: T };
+/* Selectors */
+
+type Expand<T> = {} & { [P in keyof T]: T[P] };
+
+export type RouteSelector<Routes extends GenericRoutes> = {
+    [K in keyof Routes]: Expand<
+        { key: K } & GetArgs<ArgsFromPath<Routes[K]["path"]>> &
+            GetParams<Exclude<Routes[K]["params"], undefined>>
+    >;
+}[keyof Routes];
+
+type GetArgs<T> = {} extends T ? { args?: never } : { args: T };
 
 type GetParams<T extends readonly string[]> = T["length"] extends 0
     ? { params?: never }
     : { params?: Partial<Record<T[number], string>> };
+
+/*
+type T1 = RouteSelector<typeof routes>;
+
+const routes = {
+    home: route("/home", {
+        onEnter: () => 1,
+    }),
+
+    counterForm: route("/counter/[id]", {
+        onEnter: ({ args }) => 1,
+    }),
+};
+*/
