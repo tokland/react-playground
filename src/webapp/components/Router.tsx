@@ -45,7 +45,7 @@ export function goTo<Selector extends RouteSelector<typeof routes>>(to: Selector
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
     const route = routes[to.key];
-    route.onEnter({ args: (to.args || {}) as any, params: to.params || {} });
+    return route.onEnter({ args: (to.args || {}) as any, params: to.params || {} });
 }
 
 export default React.memo(Router);

@@ -1,9 +1,5 @@
-import {
-    buildCancellablePromise,
-    CancellablePromise,
-    Cancellation,
-    CaptureCancellablePromise,
-} from "real-cancellable-promise";
+import { CancellablePromise, Cancellation } from "real-cancellable-promise";
+import { buildCancellablePromise, CaptureCancellablePromise } from "real-cancellable-promise";
 
 export type Cancel = () => void;
 

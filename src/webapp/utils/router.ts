@@ -1,3 +1,5 @@
+import { Expand } from "../../libs/ts-utils";
+
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
     options: Omit<TypedRoute<Path, Params>, "path" | "pathRegExp">
@@ -61,8 +63,6 @@ type ExtractArgsFromPathRec<
     : { [K in keyof AccArgs]: AccArgs[K] };
 
 /* Selectors */
-
-type Expand<T> = {} & { [P in keyof T]: T[P] };
 
 export type RouteSelector<Routes extends GenericRoutes> = {
     [K in keyof Routes]: Expand<

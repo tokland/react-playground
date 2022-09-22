@@ -1,6 +1,6 @@
 import { HashMap } from "@rimbu/hashed";
 import { Struct } from "../../libs/struct";
-import { Maybe } from "../../libs/ts-utils";
+import { Expand, Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
 
@@ -26,6 +26,8 @@ export class AppState extends Struct<AppStateAttrs>() {
         return username !== undefined ? `${username}-${index}` : undefined;
     }
 }
+
+export type IAppState = Expand<AppState>;
 
 type Page = { type: "home" } | { type: "counter"; id: Id };
 
