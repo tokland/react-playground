@@ -28,7 +28,10 @@ const App: React.FC = () => {
 
 const [store, useAppState] = getStoreHooks(initialAppState);
 
-export const actions = new AppActions({ compositionRoot: getCompositionRoot(), store });
+export const actions = new AppActions({
+    compositionRoot: getCompositionRoot(),
+    store,
+});
 
 export { useAppState };
 
@@ -36,7 +39,7 @@ export function useAppStateOrFail<SelectedState>(
     selector: Selector<AppState, SelectedState | undefined>
 ): SelectedState {
     const value = useAppState(selector);
-    if (value === undefined) throw new Error("Cannot get value");
+    if (value === undefined) throw new Error("[useAppStateOrFail] No value");
     return value;
 }
 
