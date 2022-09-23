@@ -1,4 +1,4 @@
-import { Struct } from "../../libs/struct";
+import { Struct } from "./Struct";
 import { Id } from "./Base";
 
 interface CounterAttrs {

@@ -1,4 +1,4 @@
-import { Struct } from "../../libs/struct";
+import { Struct } from "./Struct";
 import { Maybe } from "../../libs/ts-utils";
 import { Id } from "./Base";
 import { Counter } from "./Counter";
