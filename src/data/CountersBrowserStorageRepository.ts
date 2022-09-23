@@ -5,9 +5,10 @@ import { CountersRepository } from "../domain/repositories/CountersRepository";
 
 export class CountersBrowserStorageRepository implements CountersRepository {
     get(id: Id): Async<Counter> {
-        const value = window.localStorage.getItem(this.getKey(id));
+        const key = this.getKey(id);
+        const value = window.localStorage.getItem(key);
         const counter: Counter = new Counter({ id, value: value ? parseInt(value) : 0 });
-        return Async.delay(1000).map(() => counter);
+        return Async.delay(300).map(() => counter);
     }
 
     save(counter: Counter): Async<Counter> {
@@ -15,7 +16,7 @@ export class CountersBrowserStorageRepository implements CountersRepository {
             const key = this.getKey(counter.id);
             const value = counter.value.toString();
             await $(Async.delay(1000));
-            console.log("localStore.setItem", key, "=", value);
+            console.debug("localStore.setItem", key, "=", value);
             window.localStorage.setItem(key, value);
             return counter;
         });

@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import {
     getPathFromRoute,
     runRouteOnEnterForPath,
@@ -24,11 +25,10 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {
-            await runRouteOnEnterForPath(routes, window.location);
-            setIsReady(true);
+            const res = runRouteOnEnterForPath(routes, window.location);
+            return res ? res.run(() => setIsReady(true), _.noop) : setIsReady(true);
         }
-
-        if (!isReady) run();
+        run();
     }, [routes, isReady, setIsReady, store]);
 
     // Update URL from state changes

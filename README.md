@@ -14,26 +14,31 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### State management
 
-Custom: State + Actions + useStoreState (effitient subscription to the store via selectors)
+Custom: State + Actions + useStoreState (efficient subscription to the store via function selectors)
 
 ### Cancelable async effects
 
 https://github.com/srmagura/real-cancellable-promise
+Async
 
 ### Routing
 
 Custom:
 
--   URL from the app state.
--   Router definition.
--   Router renders component from the state.
--   You normally do not generate explicit routes from the app (you change the state and the URL updated accordingly), but if it's necessary to build a link, you can still generate them: `const urlPath = getPathFromRoute(routes, {type: "counter", id: "1"})`
+-   Declarative route definition (using an agnostic object, not a React component)
+-   URL is derived from the App state.
+-   The router renders some component derived from the App state.
+-   You normally do not generate explicit routes from the app (you change the state and the URL updated accordingly), but when you need build a link, an example: `const path = getPathFromRoute(routes, { type: "counter", id: "c1" })`
 
 ### Data structures
 
-Immutable @rimbu
+Immutable data structures with @rimbu
+
+### Internationalization (i18n)
 
 ### Testing
+
+if it's necessary to
 
 #### Unit testing
 

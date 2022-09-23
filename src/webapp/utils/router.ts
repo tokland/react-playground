@@ -1,4 +1,5 @@
 import { Expand } from "../../libs/ts-utils";
+import { Effect } from "../hooks/useCancellableEffect";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
@@ -29,16 +30,16 @@ export function getPathFromRoute<Routes extends GenericRoutes>(
     return pathname + (search ? "?" : "") + search;
 }
 
-export async function runRouteOnEnterForPath(routes: GenericRoutes, location: Location) {
-    Object.values(routes).forEach(route => {
+export function runRouteOnEnterForPath(routes: GenericRoutes, location: Location) {
+    for (const route of Object.values(routes)) {
         const match = location.pathname.match(route.pathRegExp);
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
             const params = Object.fromEntries(new URLSearchParams(window.location.search));
-            route.onEnter({ args, params });
+            return route.onEnter({ args, params });
         }
-    });
+    }
 }
 
 interface TypedRoute<Path extends string, Params extends readonly string[]> {
@@ -47,7 +48,7 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
     onEnter: (options: {
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => void;
+    }) => void | Effect<void>;
     params?: Params;
 }
 

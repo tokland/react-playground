@@ -23,7 +23,7 @@ export class Async<T> {
         return new Async(CancellablePromise.delay(ms));
     }
 
-    static empty(): Async<void> {
+    static void(): Async<void> {
         return new Async(CancellablePromise.resolve(undefined));
     }
 

@@ -62,7 +62,7 @@ export class AppActions extends BaseActions {
             const counter = this.state.counters.get(id);
             const status = counter?.status;
 
-            if (status === "loading" || status === "loaded") return Async.empty();
+            if (status === "loading" || status === "loaded") return Async.void();
 
             this.setState({
                 counters: this.state.counters.set(id, { status: "loading", id }),

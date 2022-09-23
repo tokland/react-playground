@@ -2,7 +2,7 @@ import React from "react";
 
 type Cancel = () => void;
 
-interface Effect<Data> {
+export interface Effect<Data> {
     run(success: (data: Data) => void, reject: (msg: string) => void): Cancel;
 }
 
