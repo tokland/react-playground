@@ -23,7 +23,7 @@ class BaseActions {
     }
 
     protected setState(attributes: Partial<AppStateAttrs>) {
-        const newState = AppState.update(this.state, attributes);
+        const newState = this.state._update(attributes);
         return this.options.store.setState(newState);
     }
 }

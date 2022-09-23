@@ -7,7 +7,7 @@ import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
-import { HashMap } from "@rimbu/hashed";
+import { HashMap } from "../../../domain/entities/HashMap";
 
 const initialAppState = new AppState({
     page: { type: "home" },
