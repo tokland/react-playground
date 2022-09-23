@@ -11,5 +11,3 @@ export class Counter extends Struct<CounterAttrs>() {
         return this._update({ value: this.value + n });
     }
 }
-
-console.log(new Counter({ id: "1", value: 3 }).add(5));

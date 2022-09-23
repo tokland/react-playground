@@ -1,5 +1,10 @@
 import React from "react";
-import { Cancel, Effect } from "../../libs/effect";
+
+type Cancel = () => void;
+
+interface Effect<Data> {
+    run(success: (data: Data) => void, reject: (msg: string) => void): Cancel;
+}
 
 export function useCancellableEffect<Args extends any[]>(
     getEffect: (...args: Args) => Effect<unknown>,

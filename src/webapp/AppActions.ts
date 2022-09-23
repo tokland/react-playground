@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
+import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { effectBlock, emptyEffect, toEffect } from "../libs/effect";
 import { Store } from "./hooks/useStoreState";
 
 interface Options {
@@ -58,21 +58,21 @@ export class AppActions extends BaseActions {
             this.setCounter(counter);
         },
 
-        load: (id: Id) => {
+        load: (id: Id): Async<void> => {
             const counter = this.state.counters.get(id);
             const status = counter?.status;
 
-            if (status === "loading" || status === "loaded") return emptyEffect;
+            if (status === "loading" || status === "loaded") return Async.empty();
 
             this.setState({
                 counters: this.state.counters.set(id, { status: "loading", id }),
             });
 
-            return toEffect(this.compositionRoot.counters.get(id).then(this.setCounter));
+            return this.compositionRoot.counters.get(id).map(this.setCounter);
         },
 
-        save: (counter: Counter) =>
-            effectBlock(async $ => {
+        save: (counter: Counter): Async<void> =>
+            Async.block(async $ => {
                 this.setCounter(counter, { isUpdating: true });
                 await $(this.compositionRoot.counters.save(counter));
                 this.setCounter(counter);
