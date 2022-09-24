@@ -5,7 +5,15 @@ import {
 } from "real-cancellable-promise";
 
 export class Async<T> {
-    constructor(private _promise: CancellablePromise<T>) {}
+    private constructor(private _promise: CancellablePromise<T>) {}
+
+    static of<T>(data: T): Async<T> {
+        return new Async(CancellablePromise.resolve(data));
+    }
+
+    toPromise(): Promise<T> {
+        return this._promise;
+    }
 
     run(success: (data: T) => void, reject: (msg: string) => void): Cancel {
         return this._promise.then(success).catch(err => {
