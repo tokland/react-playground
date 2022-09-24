@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import { actions, useAppState, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
@@ -32,7 +31,7 @@ const CounterButton: React.FC<CounterButtonProps> = props => {
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
     const loader = useAppState(state => state.counters.get(id));
     const counter = loader?.status === "loaded" ? loader.value : undefined;
-    const text = _.compact(["Counter", id, counter ? ` (${counter.value})` : null]).join(" ");
+    const text = ["Counter", id, counter ? ` (${counter.value})` : null].filter(Boolean).join(" ");
 
     return <Button onClick={clickWithId} text={text} />;
 };

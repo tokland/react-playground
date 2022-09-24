@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";

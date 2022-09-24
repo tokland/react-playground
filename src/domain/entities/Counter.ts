@@ -2,7 +2,7 @@ import { Struct } from "./Struct";
 import { Id } from "./Base";
 
 /**
- * Immutable identifiable counter.
+ * Immutable counter.
  *
  * @example
  * ```
