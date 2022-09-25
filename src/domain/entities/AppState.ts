@@ -11,8 +11,8 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
-    get loggedSession(): Maybe<Extract<Session, { type: "loggedIn" }>> {
-        return this.session.type === "loggedIn" ? this.session : undefined;
+    get loggedUsername(): Maybe<string> {
+        return this.session.type === "loggedIn" ? this.session.username : undefined;
     }
 
     get currentCounter(): { loader: Maybe<Loader<Counter>>; counter: Maybe<Counter> } {
@@ -22,8 +22,7 @@ export class AppState extends Struct<AppStateAttrs>() {
     }
 
     counterIdFromIndex(index: number): Maybe<Id> {
-        const username = this.loggedSession?.username;
-        return username !== undefined ? `${username}-${index}` : undefined;
+        return this.loggedUsername !== undefined ? `${this.loggedUsername}-${index}` : undefined;
     }
 }
 
@@ -34,4 +33,4 @@ type Session = { type: "unauthenticated" } | { type: "loggedIn"; username: strin
 export type Loader<T> =
     | { status: "off" }
     | { status: "loading"; id: Id }
-    | { status: "loaded"; value: T; isUpdating: boolean };
+    | { status: "loaded"; value: T; isUpdating?: boolean };
