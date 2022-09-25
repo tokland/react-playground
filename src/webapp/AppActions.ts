@@ -64,7 +64,7 @@ export class AppActions extends BaseActions {
             if (status === "loading" || status === "loaded") return Async.void();
 
             this.setState({
-                counters: this.state.counters.set(id, { status: "loading", id }),
+                counters: this.state.counters.set(id, { status: "loading" }),
             });
 
             return this.compositionRoot.counters.get(id).map(this.setCounter);

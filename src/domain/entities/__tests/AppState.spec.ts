@@ -11,7 +11,7 @@ const attrs1: AppStateAttrs = {
 const attrs2: AppStateAttrs = {
     page: { type: "counter", id: "c1" },
     session: { type: "loggedIn", username: "test" },
-    counters: attrs1.counters.set("c1", { status: "loading", id: "c1" }),
+    counters: attrs1.counters.set("c1", { status: "loading" }),
 };
 
 const state1 = new AppState(attrs1);
@@ -56,7 +56,7 @@ describe("loggedUserName", () => {
 
 describe("currentCounter", () => {
     it("returns the current page counter (loader and value) for empty values", () => {
-        const loader: Loader<Counter> = { status: "loading", id: "c1" };
+        const loader: Loader<Counter> = { status: "loading" };
 
         const state2 = state1._update({
             page: { type: "counter", id: "c1" },
