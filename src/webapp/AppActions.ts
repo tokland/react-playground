@@ -36,10 +36,10 @@ export class AppActions extends BaseActions {
     session = new SessionActions(this.options);
 
     routes = {
-        goToHome: () => this.setState({ page: { type: "home" } }),
+        goToHome: () => this.setState(this.state.goToHome()),
 
         goToCounter: (id: Id) => {
-            this.setState({ page: { type: "counter", id } });
+            this.setState(this.state.goToCounter(id));
             return this.counter.load(id);
         },
     };

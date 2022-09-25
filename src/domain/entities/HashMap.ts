@@ -1,5 +1,5 @@
-import { Maybe } from "../../libs/ts-utils";
 import { HashMap as RimbuHashMap } from "@rimbu/hashed";
+import { Maybe } from "../../libs/ts-utils";
 
 export class HashMap<K, V> {
     private constructor(private _map: RimbuHashMap<K, V>) {}

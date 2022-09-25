@@ -4,6 +4,7 @@ import { Id } from "./Base";
 import { Counter } from "./Counter";
 import { HashMap } from "./HashMap";
 
+// Implementation details, can be hidden
 export interface AppStateAttrs {
     page: Page;
     session: Session;
@@ -11,12 +12,21 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
+    // actions namespace?
     login(username: string): AppState {
         return this._update({ session: { type: "loggedIn", username } });
     }
 
     logout(): AppState {
         return this._update({ session: { type: "unauthenticated" } });
+    }
+
+    goToHome() {
+        return this._update({ page: { type: "home" } });
+    }
+
+    goToCounter(id: Id) {
+        return this._update({ page: { type: "counter", id } });
     }
 
     get loggedUsername(): Maybe<string> {
