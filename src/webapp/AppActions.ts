@@ -1,5 +1,5 @@
 import { CompositionRoot } from "../compositionRoot";
-import { AppState, AppStateAttrs, Loader } from "../domain/entities/AppState";
+import { AppState, AppStateAttrs } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
@@ -45,9 +45,7 @@ export class AppActions extends BaseActions {
     };
 
     counter = {
-        set: (counter: Counter) => {
-            this.setCounter(counter);
-        },
+        set: (counter: Counter) => this.setState(this.state.setCounter(counter)),
 
         load: (id: Id): Async<void> => {
             const counter = this.state.counters.get(id);
@@ -59,24 +57,16 @@ export class AppActions extends BaseActions {
                 counters: this.state.counters.set(id, { status: "loading" }),
             });
 
-            return this.compositionRoot.counters.get(id).map(this.setCounter);
+            return this.compositionRoot.counters
+                .get(id)
+                .map(counter => this.setState(this.state.setCounter(counter)));
         },
 
         save: (counter: Counter): Async<void> =>
             Async.block(async $ => {
-                this.setCounter(counter, { isUpdating: true });
+                this.setState(this.state.setCounter(counter, { isUpdating: true }));
                 await $(this.compositionRoot.counters.save(counter));
-                this.setCounter(counter);
+                this.setState(this.state.setCounter(counter));
             }),
-    };
-
-    /* Private */
-
-    private setCounter = (counter: Counter, options?: { isUpdating: boolean }) => {
-        const { isUpdating = false } = options || {};
-        const { counters } = this.state;
-        const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating };
-
-        this.setState({ counters: counters.set(counter.id, loader) });
     };
 }

@@ -29,6 +29,13 @@ export class AppState extends Struct<AppStateAttrs>() {
         return this._update({ page: { type: "counter", id } });
     }
 
+    setCounter(counter: Counter, options?: { isUpdating: boolean }) {
+        const { isUpdating = false } = options || {};
+        const { counters } = this;
+        const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating };
+        return this._update({ counters: counters.set(counter.id, loader) });
+    }
+
     get loggedUsername(): Maybe<string> {
         return this.session.type === "loggedIn" ? this.session.username : undefined;
     }
