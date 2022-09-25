@@ -36,7 +36,7 @@ describe("update", () => {
         expect(state2.page).toEqual({ type: "counter", id: "c1" });
         expect(state2.session).toEqual({ type: "loggedIn", username: "test" });
         expect(state2.counters.size).toEqual(1);
-        expect(state2.counters.get("c1")).toEqual({ status: "loading", id: "c1" });
+        expect(state2.counters.get("c1")).toEqual({ status: "loading" });
     });
 });
 
@@ -56,13 +56,15 @@ describe("loggedUserName", () => {
 
 describe("currentCounter", () => {
     it("returns the current page counter (loader and value) for empty values", () => {
-        const loader: Loader<Counter> = { status: "loading" };
-
         const state2 = state1._update({
             page: { type: "counter", id: "c1" },
-            counters: state1.counters.set("c1", loader),
+            counters: state1.counters.set("c1", { status: "loading" }),
         });
-        expect(state2.currentCounter).toEqual({ loader, counter: undefined });
+
+        expect(state2.currentCounter).toEqual({
+            loader: { status: "loading" },
+            counter: undefined,
+        });
     });
 
     it("returns the current page counter (loader and value)", () => {
@@ -73,6 +75,7 @@ describe("currentCounter", () => {
             page: { type: "counter", id: "c1" },
             counters: state1.counters.set("c1", loader),
         });
+
         expect(state2.currentCounter).toEqual({ loader, counter });
     });
 });

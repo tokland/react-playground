@@ -2,16 +2,17 @@ import { Maybe } from "../../libs/ts-utils";
 import { HashMap as RimbuHashMap } from "@rimbu/hashed";
 
 type Hash = string | number;
-type GetKey<V> = (set: IndexedSet<V>) => Hash;
 
-export class IndexedSet<V> {
-    private constructor(private hashMap: RimbuHashMap<Hash, V>, private getKey: GetKey<V>) {}
+type GetHask<T> = (set: IndexedSet<T>) => Hash;
 
-    get(key: Hash): Maybe<V> {
-        return this.hashMap.get(key);
+export class IndexedSet<T> {
+    private constructor(private hashMap: RimbuHashMap<Hash, T>, private getKey: GetHask<T>) {}
+
+    get(hash: Hash): Maybe<T> {
+        return this.hashMap.get(hash);
     }
 
-    add(value: V): IndexedSet<V> {
+    add(value: T): IndexedSet<T> {
         const key = this.getKey(this);
         const updated = this.hashMap.set(key, value);
         return new IndexedSet(updated, this.getKey);
@@ -21,7 +22,7 @@ export class IndexedSet<V> {
         return this.hashMap.size;
     }
 
-    static empty<V>(getKey: GetKey<V>): IndexedSet<V> {
-        return new IndexedSet(RimbuHashMap.empty(), getKey);
+    static empty<V>(getHash: GetHask<V>): IndexedSet<V> {
+        return new IndexedSet(RimbuHashMap.empty(), getHash);
     }
 }

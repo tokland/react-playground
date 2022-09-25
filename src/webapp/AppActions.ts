@@ -28,16 +28,8 @@ class BaseActions {
 }
 
 class SessionActions extends BaseActions {
-    login = (username: string) =>
-        this.setState({
-            session: { type: "loggedIn", username },
-        });
-
-    logout = () =>
-        this.setState({
-            page: { type: "home" },
-            session: { type: "unauthenticated" },
-        });
+    login = (username: string) => this.setState(this.state.login(username));
+    logout = () => this.setState(this.state.logout());
 }
 
 export class AppActions extends BaseActions {

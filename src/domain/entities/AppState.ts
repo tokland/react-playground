@@ -11,6 +11,14 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
+    login(username: string): AppState {
+        return this._update({ session: { type: "loggedIn", username } });
+    }
+
+    logout(): AppState {
+        return this._update({ session: { type: "unauthenticated" } });
+    }
+
     get loggedUsername(): Maybe<string> {
         return this.session.type === "loggedIn" ? this.session.username : undefined;
     }

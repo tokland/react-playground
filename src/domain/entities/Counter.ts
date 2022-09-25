@@ -6,8 +6,8 @@ import { Id } from "./Base";
  *
  * @example
  * ```
- * const counter = new Counter({ id: "c1", value: 1});
- * const counter2 = counter.add(1);
+ * const counter1 = new Counter({ id: "c1", value: 1 });
+ * const counter2 = counter1.add(1);
  * const counter2.value; // 2
  * ```
  */
