@@ -57,6 +57,7 @@ export class AppActions extends BaseActions {
                 counters: this.state.counters.set(id, { status: "loading" }),
             });
 
+            // this.setState inside a map is not ok
             return this.compositionRoot.counters
                 .get(id)
                 .map(counter => this.setState(this.state.setCounter(counter)));

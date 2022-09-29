@@ -20,4 +20,8 @@ export class HashMap<K, V> {
     static empty<K, V>(): HashMap<K, V> {
         return new HashMap(RimbuHashMap.empty());
     }
+
+    static fromPairs<K, V>(pairs: Array<[K, V]>) {
+        return RimbuHashMap.from(pairs);
+    }
 }

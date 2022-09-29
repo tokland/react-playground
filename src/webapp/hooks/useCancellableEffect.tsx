@@ -40,7 +40,7 @@ export function useCancellableEffect<Args extends any[]>(
             cancel();
         };
 
-        if (cancelOnComponentUnmount) return cancel;
+        return cancelOnComponentUnmount ? cancel : undefined;
     }, [args, getEffect, cancelOnComponentUnmount, clearArgs]);
 
     const isRunning = args !== undefined;
