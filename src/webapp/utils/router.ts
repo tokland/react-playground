@@ -1,5 +1,6 @@
 import { Expand } from "../../libs/ts-utils";
 import { Action } from "../AppActions";
+import { dispatch } from "../components/app/App";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
@@ -37,7 +38,8 @@ export function runRouteOnEnterForPath(routes: GenericRoutes, location: Location
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
             const params = Object.fromEntries(new URLSearchParams(window.location.search));
-            return route.onEnter({ args, params });
+            const action = route.onEnter({ args, params });
+            return action;
         }
     }
 

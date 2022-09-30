@@ -12,13 +12,12 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
-    // actions namespace?
     login(username: string): AppState {
         return this._update({ session: { type: "loggedIn", username } });
     }
 
     logout(): AppState {
-        return this._update({ session: { type: "unauthenticated" } });
+        return this._update({ session: { type: "unauthenticated" } }).goToHome();
     }
 
     goToHome() {

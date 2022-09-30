@@ -29,6 +29,8 @@ const App: React.FC = () => {
 
 const [store, useAppState] = getStoreHooks(initialAppState);
 
+(window as any).store = store;
+
 export const actions = new AppActions({
     compositionRoot: getCompositionRoot(),
     store,
@@ -76,7 +78,7 @@ export function* runGenerator(action: Action): RunGenerator {
                 break;
             }
             case "getState":
-                result = action.next(state as any);
+                result = action.next(state);
                 break;
 
             case "setStateFn": {
