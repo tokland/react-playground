@@ -39,8 +39,11 @@ export function useCancellableEffect<Args extends any[]>(
 
         const result = generator.value.next();
 
-        while (!result.done) {
-            const cancel = result.value.run(
+        if (result.done) {
+            setGenerator(undefined);
+            return () => {};
+        } else {
+            const cancelEffect = result.value.run(
                 _effectResult => {
                     setGenerator({ value: generator.value });
                 },
@@ -51,15 +54,11 @@ export function useCancellableEffect<Args extends any[]>(
 
             cancelRef.current = () => {
                 clearGenerator();
-                cancel();
+                cancelEffect();
             };
 
-            return cancelOnComponentUnmount ? cancel : undefined;
+            return cancelOnComponentUnmount ? cancelEffect : undefined;
         }
-
-        setGenerator(undefined);
-
-        return () => {};
     }, [generator, getAction, cancelOnComponentUnmount, clearGenerator]);
 
     const isRunning = generator !== undefined;
