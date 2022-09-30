@@ -37,6 +37,8 @@ export class AppActions extends BaseActions {
 
     routes = {
         goToHome: () => this.setState(this.state.goToHome()),
+        // goToH: () =>      set(state =>  state.goToHome()),
+        // loadC: () => runAsync(getCounter(), (state, counter) => state.setCounter(counter)),
 
         goToCounter: (id: Id) => {
             this.setState(this.state.goToCounter(id));
