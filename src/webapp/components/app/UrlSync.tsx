@@ -26,8 +26,7 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
     React.useEffect(() => {
         async function run() {
             const res = runRouteOnEnterForPath(routes, window.location);
-            if (res) dispatch(res);
-            // This should run after dispatch, how?
+            if (res) await dispatch(res);
             setIsReady(true);
         }
         run();

@@ -1,5 +1,5 @@
 import React from "react";
-import { actions, useAppState } from "./app/App";
+import { actions, dispatch, useAppState } from "./app/App";
 import { Field, useForm } from "typed-react-form";
 
 const Session: React.FC = () => {
@@ -8,7 +8,7 @@ const Session: React.FC = () => {
 
     const login = React.useMemo(() => {
         return form.handleSubmit(form_ => {
-            actions.session.login(form_.values.username);
+            dispatch(actions.session.login(form_.values.username));
         });
     }, [form]);
 
@@ -17,7 +17,7 @@ const Session: React.FC = () => {
             {session.type === "loggedIn" ? (
                 <>
                     <span>Logged in as {session.username}</span>&nbsp;
-                    <button onClick={actions.session.logout}>Logout</button>
+                    <button onClick={() => dispatch(actions.session.logout())}>Logout</button>
                 </>
             ) : (
                 <form onSubmit={login}>

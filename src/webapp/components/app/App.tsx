@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { Action, ActionYield, AppActions } from "../../AppActions";
+import { Action, AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
@@ -43,12 +43,7 @@ export function useAppStateOrFail<SelectedState>(
     return value;
 }
 
-export function dispatch(action: Generator<ActionYield, void, void>): void {
-    console.log("dispatch", action);
-    runGenerator(action);
-}
-
-async function runGenerator(gen: Action) {
+export async function dispatch(gen: Action) {
     let result = gen.next();
     let error;
 

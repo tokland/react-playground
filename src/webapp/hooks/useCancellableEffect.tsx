@@ -1,4 +1,6 @@
 import React from "react";
+import { Action } from "../AppActions";
+import { dispatch } from "../components/app/App";
 
 type Cancel = () => void;
 
@@ -7,7 +9,7 @@ export interface Effect<Data> {
 }
 
 export function useCancellableEffect<Args extends any[]>(
-    getEffect: (...args: Args) => Effect<unknown>,
+    getEffect: (...args: Args) => Action,
     options: { cancelOnComponentUnmount?: boolean } = {}
 ): [(...args: Args) => void, boolean, Cancel] {
     const { cancelOnComponentUnmount = false } = options;
@@ -30,10 +32,16 @@ export function useCancellableEffect<Args extends any[]>(
     React.useEffect(() => {
         if (!args) return;
 
-        const cancel = getEffect(...args).run(
+        const action = getEffect(...args);
+
+        dispatch(action).then(
             _data => clearArgs(),
             _err => clearArgs()
         );
+
+        const cancel = () => console.log("TODO:cancel");
+
+        /* const cancel = getEffect(...args).run(_data => clearArgs(), _err => clearArgs()); */
 
         cancelRef.current = () => {
             clearArgs();

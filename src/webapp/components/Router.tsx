@@ -1,7 +1,7 @@
 import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
-import { actions, useAppState } from "./app/App";
+import { actions, dispatch, useAppState } from "./app/App";
 import { getPathFromRoute, RouteSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
@@ -45,7 +45,8 @@ export function goTo<Selector extends RouteSelector<typeof routes>>(to: Selector
     const href = getPathFromRoute(routes, to);
     window.history.pushState({}, "", href);
     const route = routes[to.key];
-    return route.onEnter({ args: (to.args || {}) as any, params: to.params || {} });
+    const action = route.onEnter({ args: (to.args || {}) as any, params: to.params || {} });
+    dispatch(action);
 }
 
 export default React.memo(Router);
