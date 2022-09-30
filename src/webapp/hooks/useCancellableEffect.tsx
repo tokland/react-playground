@@ -71,7 +71,7 @@ function useIsMounted() {
     const isMounted = React.useCallback(() => isMountedRef.current, []);
 
     React.useEffect(() => {
-        return function cancel() {
+        return () => {
             isMountedRef.current = false;
         };
     }, []);
