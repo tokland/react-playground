@@ -29,7 +29,7 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
             if (res) await dispatch(res);
             setIsReady(true);
         }
-        run();
+        if (!isReady) run();
     }, [routes, isReady, setIsReady, store]);
 
     // Update URL from state changes

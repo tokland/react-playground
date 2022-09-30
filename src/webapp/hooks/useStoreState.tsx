@@ -16,7 +16,9 @@ export function useStoreState<State, SelectedState>(
         newState => {
             const prevSelection = selectionRef.current;
             const newSelection = selectorRef.current(newState);
-            if (prevSelection !== newSelection) rerender();
+            if (prevSelection !== newSelection) {
+                rerender();
+            }
         },
         [rerender, selectorRef, selectionRef]
     );

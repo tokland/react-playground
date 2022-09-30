@@ -64,24 +64,25 @@ export function* runGenerator(action: Action): RunGenerator {
     let error;
 
     while (!result.done && !error) {
-        const state = store.state;
-
         switch (result.value.type) {
             case "effect": {
                 try {
                     const val = yield result.value.value$;
                     result = action.next(val);
                 } catch (err: any) {
-                    console.log("Error-catch:", err.message);
+                    console.error("Error-catch:", err.message);
                     error = err;
                 }
                 break;
             }
-            case "getState":
+            case "getState": {
+                const state = store.state;
                 result = action.next(state);
                 break;
+            }
 
             case "setStateFn": {
+                const state = store.state;
                 const state2 = result.value.fn(state);
                 store.setState(state2);
                 result = action.next();

@@ -1,6 +1,5 @@
 import { Expand } from "../../libs/ts-utils";
 import { Action } from "../AppActions";
-import { dispatch } from "../components/app/App";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
