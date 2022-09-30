@@ -13,7 +13,7 @@ export const routes = {
     }),
 
     counterForm: route("/counter/[id]", {
-        onEnter: ({ args }) => actions.counter.goToCounter(args.id),
+        onEnter: ({ args }) => actions.counter.loadCounterAndSetAsCurrentPage(args.id),
     }),
 };
 

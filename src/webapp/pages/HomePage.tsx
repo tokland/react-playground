@@ -14,11 +14,15 @@ const HomePage: React.FC = () => {
                 <>
                     <CounterButton
                         index={1}
-                        onClick={index => dispatch(actions.counter.goToCounter(index))}
+                        onClick={index =>
+                            dispatch(actions.counter.loadCounterAndSetAsCurrentPage(index))
+                        }
                     />
                     <CounterButton
                         index={2}
-                        onClick={index => dispatch(actions.counter.goToCounter(index))}
+                        onClick={index =>
+                            dispatch(actions.counter.loadCounterAndSetAsCurrentPage(index))
+                        }
                     />
                 </>
             )}

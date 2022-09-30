@@ -34,7 +34,6 @@ class BaseActions {
 
 export type ActionYield =
     | { type: "getState" }
-    //| { type: "setState"; state: State }
     | { type: "setStateFn"; fn: (state: AppState) => AppState }
     | { type: "effect"; value$: Async<any> };
 
@@ -65,11 +64,13 @@ class CounterActions extends BaseActions {
 
     *save(counter: Counter) {
         yield* this.setState(state => state.setCounter(counter, { isUpdating: true }));
+        yield* this.effect(this.compositionRoot.counters.save(counter.add(1)));
+        yield* this.setState(state => state.setCounter(counter, { isUpdating: true }));
         yield* this.effect(this.compositionRoot.counters.save(counter));
         yield* this.setState(state => state.setCounter(counter));
     }
 
-    *goToCounter(id: Id) {
+    *loadCounterAndSetAsCurrentPage(id: Id) {
         yield* this.setState(state => state.goToCounter(id));
         yield* this.load(id);
     }
@@ -80,8 +81,6 @@ export class AppActions extends BaseActions {
 
     routes = {
         goToHome: () => this.setState(state => state.goToHome()),
-        // goToH: () =>      set(state =>  state.goToHome()),
-        // loadC: () => runAsync(getCounter(), (state, counter) => state.setCounter(counter)),
     };
 
     counter = new CounterActions(this.options);

@@ -1,6 +1,6 @@
 import React from "react";
 import { Action } from "../AppActions";
-import { dispatch } from "../components/app/App";
+import { RunGenerator, runGenerator } from "../components/app/App";
 
 type Cancel = () => void;
 
@@ -9,51 +9,62 @@ export interface Effect<Data> {
 }
 
 export function useCancellableEffect<Args extends any[]>(
-    getEffect: (...args: Args) => Action,
+    getAction: (...args: Args) => Action,
     options: { cancelOnComponentUnmount?: boolean } = {}
 ): [(...args: Args) => void, boolean, Cancel] {
     const { cancelOnComponentUnmount = false } = options;
-    const [args, setArgs] = React.useState<Args>();
     const isMounted = useIsMounted();
     const cancelRef = React.useRef<Cancel>();
+    const [generator, setGenerator] = React.useState<{ value: RunGenerator }>();
 
-    const run = React.useCallback((...args: Args) => {
-        setArgs(args);
-    }, []);
+    const runEffect = React.useCallback(
+        (...args: Args) => {
+            const action = getAction(...args);
+            const generator = runGenerator(action);
+            setGenerator({ value: generator });
+        },
+        [getAction]
+    );
 
     const cancel = React.useCallback(() => {
-        if (cancelRef.current) cancelRef.current();
+        cancelRef.current?.();
     }, []);
 
-    const clearArgs = React.useCallback(() => {
-        if (isMounted()) setArgs(undefined);
-    }, [isMounted, setArgs]);
+    const clearGenerator = React.useCallback(() => {
+        if (isMounted()) setGenerator(undefined);
+    }, [isMounted]);
 
     React.useEffect(() => {
-        if (!args) return;
+        if (!generator) return;
 
-        const action = getEffect(...args);
+        const result = generator.value.next();
 
-        dispatch(action).then(
-            _data => clearArgs(),
-            _err => clearArgs()
-        );
+        while (!result.done) {
+            const cancel = result.value.run(
+                _effectResult => {
+                    setGenerator({ value: generator.value });
+                },
+                err => {
+                    console.error(err);
+                }
+            );
 
-        const cancel = () => console.log("TODO:cancel");
+            cancelRef.current = () => {
+                clearGenerator();
+                cancel();
+            };
 
-        /* const cancel = getEffect(...args).run(_data => clearArgs(), _err => clearArgs()); */
+            return cancelOnComponentUnmount ? cancel : undefined;
+        }
 
-        cancelRef.current = () => {
-            clearArgs();
-            cancel();
-        };
+        setGenerator(undefined);
 
-        return cancelOnComponentUnmount ? cancel : undefined;
-    }, [args, getEffect, cancelOnComponentUnmount, clearArgs]);
+        return () => {};
+    }, [generator, getAction, cancelOnComponentUnmount, clearGenerator]);
 
-    const isRunning = args !== undefined;
+    const isRunning = generator !== undefined;
 
-    return [run, isRunning, cancel];
+    return [runEffect, isRunning, cancel];
 }
 
 function useIsMounted() {

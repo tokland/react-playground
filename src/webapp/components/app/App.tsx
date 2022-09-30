@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { Action, AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
@@ -8,6 +7,8 @@ import { AppState } from "../../../domain/entities/AppState";
 import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
+import "./App.css";
+import { Async } from "../../../domain/entities/Async";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -43,22 +44,31 @@ export function useAppStateOrFail<SelectedState>(
     return value;
 }
 
-export async function dispatch(gen: Action) {
+export async function dispatch(action: Action) {
+    const gen = runGenerator(action);
     let result = gen.next();
+
+    while (!result.done) {
+        const value$ = result.value;
+        const value = await value$.toPromise();
+        result = gen.next(value);
+    }
+}
+
+export type RunGenerator = Generator<Async<any>, void, void>;
+
+export function* runGenerator(action: Action): RunGenerator {
+    let result = action.next();
     let error;
 
     while (!result.done && !error) {
-        /* console.log(state, result); */
-
         const state = store.state;
 
         switch (result.value.type) {
             case "effect": {
-                let val;
-
                 try {
-                    val = await result.value.value$.toPromise(); // TOFIX
-                    result = gen.next(val);
+                    const val = yield result.value.value$;
+                    result = action.next(val);
                 } catch (err: any) {
                     console.log("Error-catch:", err.message);
                     error = err;
@@ -66,26 +76,17 @@ export async function dispatch(gen: Action) {
                 break;
             }
             case "getState":
-                result = gen.next(state as any);
+                result = action.next(state as any);
                 break;
-
-            /*
-            case "setState":
-                state = result.value.state;
-                result = gen.next();
-                break;
-            */
 
             case "setStateFn": {
                 const state2 = result.value.fn(state);
                 store.setState(state2);
-                result = gen.next();
+                result = action.next();
                 break;
             }
         }
     }
-
-    //return error ? { type: "error", state, error } : { type: "success", state };
 }
 
 export default React.memo(App);
