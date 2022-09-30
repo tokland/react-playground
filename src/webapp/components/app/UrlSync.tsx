@@ -6,6 +6,7 @@ import {
     RouteSelector,
 } from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
+import { dispatch } from "./App";
 
 interface UrlSyncProps<State, Routes extends GenericRoutes> {
     routes: Routes;
@@ -25,7 +26,9 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
     React.useEffect(() => {
         async function run() {
             const res = runRouteOnEnterForPath(routes, window.location);
-            return res ? res.run(() => setIsReady(true), noop) : setIsReady(true);
+            if (res) dispatch(res);
+            // This should run after dispatch, how?
+            setIsReady(true);
         }
         run();
     }, [routes, isReady, setIsReady, store]);
@@ -59,7 +62,5 @@ export function useUrlSync<State, Routes extends GenericRoutes>(
 
     return { routes, isReady, setIsReady, store, routeFromState };
 }
-
-const noop = () => {};
 
 export default UrlSync;

@@ -36,6 +36,12 @@ export class AppState extends Struct<AppStateAttrs>() {
         return this._update({ counters: counters.set(counter.id, loader) });
     }
 
+    setCounterAsLoading(id: Id) {
+        return this._update({
+            counters: this.counters.set(id, { status: "loading" }),
+        });
+    }
+
     get loggedUsername(): Maybe<string> {
         return this.session.type === "loggedIn" ? this.session.username : undefined;
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import { actions, useAppState, useAppStateOrFail } from "../components/app/App";
+import { actions, dispatch, useAppState, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
 
@@ -12,8 +12,14 @@ const HomePage: React.FC = () => {
             <Session />
             {userLoggedIn && (
                 <>
-                    <CounterButton index={1} onClick={actions.routes.goToCounter} />
-                    <CounterButton index={2} onClick={actions.routes.goToCounter} />
+                    <CounterButton
+                        index={1}
+                        onClick={index => dispatch(actions.counter.goToCounter(index))}
+                    />
+                    <CounterButton
+                        index={2}
+                        onClick={index => dispatch(actions.counter.goToCounter(index))}
+                    />
                 </>
             )}
         </>

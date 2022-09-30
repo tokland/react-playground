@@ -1,10 +1,9 @@
 import React from "react";
-import { actions, useAppStateOrFail } from "../components/app/App";
+import { actions, dispatch, useAppStateOrFail } from "../components/app/App";
 import Counter from "../components/Counter";
 import Link from "../components/Link";
 import { AppRoute } from "../components/Router";
 import Session from "../components/Session";
-import { useCancellableEffect } from "../hooks/useCancellableEffect";
 
 const CounterPage: React.FC = () => {
     return (
@@ -20,9 +19,11 @@ const homePageRoute: AppRoute = { key: "home" };
 
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
+    /*
     const [save, isSaving, cancelSave] = useCancellableEffect(actions.counter.save, {
         cancelOnComponentUnmount: false,
     });
+    */
 
     if (loader.status === "loading") {
         return <div>Loading...</div>;
@@ -32,10 +33,10 @@ const CurrentCounter_: React.FC = () => {
         return (
             <Counter
                 counter={loader.value}
-                onChange={actions.counter.set}
-                isSaving={isSaving}
-                onSave={save}
-                onCancel={cancelSave}
+                onChange={counter => dispatch(actions.counter.set(counter))}
+                isSaving={false}
+                onSave={counter => dispatch(actions.counter.save(counter))}
+                onCancel={console.log}
             />
         );
     }

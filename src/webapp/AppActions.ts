@@ -1,5 +1,5 @@
 import { CompositionRoot } from "../compositionRoot";
-import { AppState, AppStateAttrs } from "../domain/entities/AppState";
+import { AppState } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
@@ -17,59 +17,72 @@ class BaseActions {
         this.compositionRoot = options.compositionRoot;
     }
 
-    protected get state() {
-        return this.options.store.state;
+    protected *getState(): Generator<ActionYield, AppState, AppState> {
+        const res = yield { type: "getState" };
+        return res;
     }
 
-    protected setState(attributes: Partial<AppStateAttrs>) {
-        const newState = this.state._update(attributes);
-        return this.options.store.setState(newState);
+    protected *setState(setter: (state: AppState) => AppState): Generator<ActionYield, void, void> {
+        yield { type: "setStateFn", fn: setter };
+    }
+
+    protected *effect<T>(value$: Async<T>): Generator<ActionYield, T, T> {
+        const res = yield { type: "effect", value$ };
+        return res;
     }
 }
 
+export type ActionYield =
+    | { type: "getState" }
+    //| { type: "setState"; state: State }
+    | { type: "setStateFn"; fn: (state: AppState) => AppState }
+    | { type: "effect"; value$: Async<any> };
+
+export type Action = Generator<ActionYield, void, any>;
+
 class SessionActions extends BaseActions {
-    login = (username: string) => this.setState(this.state.login(username));
-    logout = () => this.setState(this.state.logout());
+    login = (username: string) => this.setState(state => state.login(username));
+    logout = () => this.setState(state => state.logout());
+}
+
+class CounterActions extends BaseActions {
+    set(counter: Counter) {
+        return this.setState(state => state.setCounter(counter));
+    }
+
+    *load(id: Id) {
+        const state = yield* this.getState();
+        const status = state.counters.get(id)?.status;
+
+        if (status === "loading" || status === "loaded") return;
+
+        yield* this.setState(state => state.setCounterAsLoading(id));
+
+        const counter = yield* this.effect(this.compositionRoot.counters.get(id));
+
+        yield* this.setState(state => state.setCounter(counter));
+    }
+
+    *save(counter: Counter) {
+        yield* this.setState(state => state.setCounter(counter, { isUpdating: true }));
+        yield* this.effect(this.compositionRoot.counters.save(counter));
+        yield* this.setState(state => state.setCounter(counter));
+    }
+
+    *goToCounter(id: Id) {
+        yield* this.setState(state => state.goToCounter(id));
+        yield* this.load(id);
+    }
 }
 
 export class AppActions extends BaseActions {
     session = new SessionActions(this.options);
 
     routes = {
-        goToHome: () => this.setState(this.state.goToHome()),
+        goToHome: () => this.setState(state => state.goToHome()),
         // goToH: () =>      set(state =>  state.goToHome()),
         // loadC: () => runAsync(getCounter(), (state, counter) => state.setCounter(counter)),
-
-        goToCounter: (id: Id) => {
-            this.setState(this.state.goToCounter(id));
-            return this.counter.load(id);
-        },
     };
 
-    counter = {
-        set: (counter: Counter) => this.setState(this.state.setCounter(counter)),
-
-        load: (id: Id): Async<void> => {
-            const counter = this.state.counters.get(id);
-            const status = counter?.status;
-
-            if (status === "loading" || status === "loaded") return Async.void();
-
-            this.setState({
-                counters: this.state.counters.set(id, { status: "loading" }),
-            });
-
-            // this.setState inside a map is not ok
-            return this.compositionRoot.counters
-                .get(id)
-                .map(counter => this.setState(this.state.setCounter(counter)));
-        },
-
-        save: (counter: Counter): Async<void> =>
-            Async.block(async $ => {
-                this.setState(this.state.setCounter(counter, { isUpdating: true }));
-                await $(this.compositionRoot.counters.save(counter));
-                this.setState(this.state.setCounter(counter));
-            }),
-    };
+    counter = new CounterActions(this.options);
 }

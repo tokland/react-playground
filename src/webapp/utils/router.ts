@@ -1,5 +1,5 @@
 import { Expand } from "../../libs/ts-utils";
-import { Effect } from "../hooks/useCancellableEffect";
+import { Action } from "../AppActions";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
@@ -40,6 +40,8 @@ export function runRouteOnEnterForPath(routes: GenericRoutes, location: Location
             return route.onEnter({ args, params });
         }
     }
+
+    return;
 }
 
 interface TypedRoute<Path extends string, Params extends readonly string[]> {
@@ -48,7 +50,7 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
     onEnter: (options: {
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => void | Effect<void>;
+    }) => Action;
     params?: Params;
 }
 
