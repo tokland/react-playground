@@ -4,10 +4,6 @@ import { RunGenerator, runGenerator } from "../components/app/App";
 
 type Cancel = () => void;
 
-export interface Effect<Data> {
-    run(success: (data: Data) => void, reject: (msg: string) => void): Cancel;
-}
-
 export function useCancellableEffect<Args extends any[]>(
     getAction: (...args: Args) => Action,
     options: { cancelOnComponentUnmount?: boolean } = {}
@@ -30,10 +26,6 @@ export function useCancellableEffect<Args extends any[]>(
         cancelRef.current?.();
     }, []);
 
-    const clearGenerator = React.useCallback(() => {
-        if (isMounted()) setGenerator(undefined);
-    }, [isMounted]);
-
     React.useEffect(() => {
         if (!generator) return;
 
@@ -48,18 +40,19 @@ export function useCancellableEffect<Args extends any[]>(
                     setGenerator({ value: generator.value });
                 },
                 err => {
+                    setGenerator(undefined);
                     console.error(err);
                 }
             );
 
             cancelRef.current = () => {
-                clearGenerator();
+                if (isMounted()) setGenerator(undefined);
                 cancelEffect();
             };
 
             return cancelOnComponentUnmount ? cancelEffect : undefined;
         }
-    }, [generator, getAction, cancelOnComponentUnmount, clearGenerator]);
+    }, [generator, getAction, cancelOnComponentUnmount, isMounted]);
 
     const isRunning = generator !== undefined;
 
@@ -67,10 +60,11 @@ export function useCancellableEffect<Args extends any[]>(
 }
 
 function useIsMounted() {
-    const isMountedRef = React.useRef(true);
+    const isMountedRef = React.useRef(false);
     const isMounted = React.useCallback(() => isMountedRef.current, []);
 
     React.useEffect(() => {
+        isMountedRef.current = true;
         return () => {
             isMountedRef.current = false;
         };

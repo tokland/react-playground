@@ -56,9 +56,7 @@ class CounterActions extends BaseActions {
         if (status === "loading" || status === "loaded") return;
 
         yield* this.setState(state => state.setCounterAsLoading(id));
-
         const counter = yield* this.effect(this.compositionRoot.counters.get(id));
-
         yield* this.setState(state => state.setCounter(counter));
     }
 
