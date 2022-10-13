@@ -11,8 +11,8 @@ export class Async<T> {
         return new Async(() => CancellablePromise.resolve(data));
     }
 
-    static error<T>(message: string, name = "GenericError"): Async<T> {
-        return new Async(() => CancellablePromise.reject(buildError(name, message)));
+    static error<T>(message: string): Async<T> {
+        return new Async(() => CancellablePromise.reject(buildError(message)));
     }
 
     static fromComputation<T>(computation: Computation<T>): Async<T> {
@@ -27,14 +27,14 @@ export class Async<T> {
         });
     }
 
-    run(onSuccess: (data: T) => void, onError: (msg: string) => void): Cancel {
+    run(onSuccess: (data: T) => void, onError: (error: AsyncError) => void): Cancel {
         return this._promise().then(onSuccess, err => {
             if (err instanceof Cancellation) {
                 // noop
-            } else if (err instanceof Error) {
-                onError(err.message);
+            } else if (err instanceof AsyncError) {
+                onError(err);
             } else {
-                onError("Unknown error");
+                onError(buildError("Unknown error"));
             }
         }).cancel;
     }
@@ -51,7 +51,7 @@ export class Async<T> {
         return this._promise();
     }
 
-    static delay(ms: number) {
+    static delay(ms: number): Async<void> {
         return new Async(() => CancellablePromise.delay(ms));
     }
 
@@ -63,22 +63,19 @@ export class Async<T> {
         return new Async((): CancellablePromise<U> => {
             return buildCancellablePromise(capturePromise => {
                 const captureAsync: CaptureAsync = async => capturePromise(async._promise());
-                captureAsync.error = (msg, name) =>
-                    capturePromise(CancellablePromise.reject(new Error(msg)));
+                captureAsync.error = message =>
+                    capturePromise(CancellablePromise.reject(buildError(message)));
+
                 return blockFn(captureAsync);
             });
         });
     }
 }
 
-function buildError(name: string, message: string): AsyncError {
-    return { name, message, stack: new Error().stack || "" };
-}
+export class AsyncError extends Error {}
 
-interface AsyncError {
-    name: string;
-    message: string;
-    stack: string;
+function buildError(message: string): AsyncError {
+    return new AsyncError(message);
 }
 
 export type Computation<Data> = (
@@ -88,7 +85,7 @@ export type Computation<Data> = (
 
 interface CaptureAsync {
     <T>(async: Async<T>): Promise<T>;
-    error: <T>(message: string, name?: string) => Promise<T>;
+    error: <T>(message: string) => Promise<T>;
 }
 
 type Cancel = () => void;

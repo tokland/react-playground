@@ -1,97 +1,120 @@
-import { Async } from "../Async";
+import { Async, AsyncError } from "../Async";
 
-test("success", async () => {
-    const value = await successOf(Async.success(10));
-    expect(value).toEqual(10);
-});
-
-test("run with success", async () => {
-    const asyncValue = Async.success(1);
-    const success = jest.fn();
-    const reject = jest.fn();
-
-    asyncValue.run(success, reject);
-    await new Promise(process.nextTick);
-
-    expect(success).toHaveBeenCalledTimes(1);
-    expect(reject).not.toHaveBeenCalled();
-    expect(success.mock.calls).toEqual([[1]]);
-});
-
-test("run with error", async () => {
-    const asyncValue = Async.error("err");
-    const success = jest.fn();
-    const reject = jest.fn();
-    asyncValue.run(success, reject);
-    await new Promise(process.nextTick);
-
-    expect(success).not.toHaveBeenCalled();
-    expect(reject).toHaveBeenCalledTimes(1);
-    expect(reject.mock.calls).toEqual([["err"]]);
-});
-
-test("void", async () => {
-    const asyncVoid = Async.void();
-    const value1 = await successOf(asyncVoid);
-    expect(value1).toBeUndefined();
-});
-
-test("delay", async () => {
-    const asyncDelay = Async.delay(1);
-    const value1 = await successOf(asyncDelay);
-    expect(value1).toBeUndefined();
-});
-
-test("map", async () => {
-    const async1 = Async.success(1);
-    const async4 = async1.map(x => x + 3);
-    const value4 = await successOf(async4);
-
-    expect(value4).toEqual(4);
-});
-
-test("flatMap", async () => {
-    const value1$ = Async.success(1);
-    const value2$ = value1$
-        .flatMap(value => Async.success(value + 2))
-        .flatMap(value => Async.success(value + 3));
-
-    expect(value2$.toPromise()).resolves.toEqual(6);
-});
-
-describe(".block", () => {
-    test("returns successful async value", async () => {
-        const asyncValue = Async.block(async $ => {
-            const value1 = await $(Async.success(1));
-            const value2 = await $(Async.success(2));
-            const value3 = await $(Async.success(3));
-            return value1 + value2 + value3;
-        });
-
-        expect(asyncValue.toPromise()).resolves.toEqual(6);
+describe("Basic builders", () => {
+    test("Async.success", async () => {
+        const value$ = Async.success(10);
+        expect(value$.toPromise()).resolves.toEqual(10);
     });
 
-    test("returns an async error if an intermediate awaited value fails", async () => {
-        const asyncValue = Async.block(async $ => {
-            const value1 = await $(Async.success(1));
-            const value2 = await $(Async.error<number>("Error message"));
-            const value3 = await $(Async.success(3));
-            return value1 + value2 + value3;
-        });
-
-        expect(asyncValue.toPromise()).rejects.toThrow("Error message");
-    });
-
-    test("returns an async error if $.error is returned in the block", async () => {
-        const asyncValue = Async.block(async ($): Promise<number> => {
-            if (1 + 2 > 1) return $.error("Error message");
-            return $(Async.success(1));
-        });
-
-        expect(asyncValue.toPromise()).rejects.toThrow("Error message");
+    test("Async.error", async () => {
+        const value$ = Async.error("message");
+        expect(value$.toPromise()).rejects.toEqual(new AsyncError("message"));
     });
 });
 
-async function successOf<T>(asyncValue: Async<T>): Promise<T> {
-    return asyncValue.toPromise();
+describe("run", () => {
+    it("calls the sucess branch with the value", async () => {
+        const success = jest.fn();
+        const reject = jest.fn();
+
+        Async.success(1).run(success, reject);
+        await nextTick();
+
+        expect(success).toHaveBeenCalledTimes(1);
+        expect(reject).not.toHaveBeenCalled();
+        expect(success.mock.calls).toEqual([[1]]);
+    });
+
+    it("calls the error branch with the error", async () => {
+        const success = jest.fn();
+        const reject = jest.fn();
+
+        Async.error("message").run(success, reject);
+        await nextTick();
+
+        expect(success).not.toHaveBeenCalled();
+        expect(reject).toHaveBeenCalledTimes(1);
+        expect(reject.mock.calls).toEqual([[new AsyncError("message")]]);
+    });
+});
+
+describe("toPromise", () => {
+    it("convert an Async to a normal Promise", () => {
+        expect(Async.success(1).toPromise()).resolves.toEqual(1);
+    });
+});
+
+describe("helpers", () => {
+    test("Async.delay", async () => {
+        expect(Async.delay(1).toPromise()).resolves.toBeUndefined();
+    });
+
+    test("Async.void", async () => {
+        expect(Async.void().toPromise()).resolves.toBeUndefined();
+    });
+});
+
+describe("transformers", () => {
+    describe("map", () => {
+        it("transforms the async value with a plain function mapper", async () => {
+            const value1$ = Async.success(1);
+            const value2$ = value1$.map(x => x.toString());
+
+            expect(value2$.toPromise()).resolves.toEqual("1");
+        });
+    });
+
+    describe("flatMap", () => {
+        it("transform the async value with a function mapper that returns another async", async () => {
+            const value1$ = Async.success(1);
+            const value2$ = value1$
+                .flatMap(value => Async.success(value + 2))
+                .flatMap(value => Async.success(value + 3));
+
+            expect(value2$.toPromise()).resolves.toEqual(6);
+        });
+    });
+});
+
+describe("Async.block", () => {
+    describe("when all awaited values in the block are successful", () => {
+        it("returns the resulting value", async () => {
+            const result$ = Async.block(async $ => {
+                const value1 = await $(Async.success(1));
+                const value2 = await $(Async.success(2));
+                const value3 = await $(Async.success(3));
+                return value1 + value2 + value3;
+            });
+
+            expect(result$.toPromise()).resolves.toEqual(6);
+        });
+    });
+
+    describe("when any the awaited values in the block is an error", () => {
+        it("returns that error as the result", async () => {
+            const result$ = Async.block(async $ => {
+                const value1 = await $(Async.success(1));
+                const value2 = await $(Async.error<number>("message"));
+                const value3 = await $(Async.success(3));
+                return value1 + value2 + value3;
+            });
+
+            expect(result$.toPromise()).rejects.toThrow(new AsyncError("message"));
+        });
+    });
+
+    describe("when the helper $.error is called", () => {
+        it("returns that async error as the result", async () => {
+            const result$ = Async.block(async ($): Promise<number> => {
+                if (parseInt("2") > 1) return $.error("message");
+                return $(Async.success(1));
+            });
+
+            expect(result$.toPromise()).rejects.toThrow(new AsyncError("message"));
+        });
+    });
+});
+
+function nextTick() {
+    return new Promise(process.nextTick);
 }
