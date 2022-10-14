@@ -57,7 +57,7 @@ export async function dispatch(action: ActionGenerator) {
     }
 }
 
-export type RunGenerator = Generator<Async<any>, void, void>;
+export type RunGenerator = Generator<Async<any>, void, unknown>;
 
 export function* runAction(action: ActionGenerator): RunGenerator {
     let result = action.next();
@@ -67,6 +67,7 @@ export function* runAction(action: ActionGenerator): RunGenerator {
         switch (result.value.type) {
             case "effect": {
                 const val = yield result.value.value$;
+                console.log({ val });
                 result = action.next(val);
                 break;
             }
