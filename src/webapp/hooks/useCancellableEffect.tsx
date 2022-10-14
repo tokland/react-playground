@@ -11,13 +11,13 @@ export function useCancellableEffect<Args extends any[]>(
     const { cancelOnComponentUnmount = false } = options;
     const isMounted = useIsMounted();
     const cancelRef = React.useRef<Cancel>();
-    const [generator, setGenerator] = React.useState<{ value: RunGenerator }>();
+    const [state, setGenerator] = React.useState<{ generator: RunGenerator; value: any }>();
 
     const runEffect = React.useCallback(
         (...args: Args) => {
             const action = getAction(...args);
             const generator = runAction(action);
-            setGenerator({ value: generator });
+            setGenerator({ generator: generator, value: undefined });
         },
         [getAction]
     );
@@ -27,17 +27,17 @@ export function useCancellableEffect<Args extends any[]>(
     }, []);
 
     React.useEffect(() => {
-        if (!generator) return;
+        if (!state) return;
 
-        const result = generator.value.next();
+        const result = state.generator.next(state.value);
 
         if (result.done) {
             setGenerator(undefined);
             return () => {};
         } else {
             const cancelEffect = result.value.run(
-                _effectResult => {
-                    setGenerator({ value: generator.value });
+                result => {
+                    setGenerator({ generator: state.generator, value: result });
                 },
                 err => {
                     setGenerator(undefined);
@@ -52,9 +52,9 @@ export function useCancellableEffect<Args extends any[]>(
 
             return cancelOnComponentUnmount ? cancelEffect : undefined;
         }
-    }, [generator, getAction, cancelOnComponentUnmount, isMounted]);
+    }, [state, getAction, cancelOnComponentUnmount, isMounted]);
 
-    const isRunning = generator !== undefined;
+    const isRunning = state !== undefined;
 
     return [runEffect, isRunning, cancel];
 }

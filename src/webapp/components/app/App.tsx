@@ -61,13 +61,11 @@ export type RunGenerator = Generator<Async<any>, void, unknown>;
 
 export function* runAction(action: ActionGenerator): RunGenerator {
     let result = action.next();
-    let error;
 
-    while (!result.done && !error) {
+    while (!result.done) {
         switch (result.value.type) {
             case "effect": {
                 const val = yield result.value.value$;
-                console.log({ val });
                 result = action.next(val);
                 break;
             }
