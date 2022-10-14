@@ -62,8 +62,6 @@ class CounterActions extends BaseActions {
 
     *save(counter: Counter) {
         yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
-        yield* this.effect(this.compositionRoot.counters.save(counter.add(1)));
-        yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
         yield* this.effect(this.compositionRoot.counters.save(counter));
         yield* this.set(state => state.setCounter(counter));
     }

@@ -1,7 +1,7 @@
 import React from "react";
 import {
     getPathFromRoute,
-    runRouteOnEnterForPath,
+    runRouteOnEnterForPath as getActionOnEnterForPath,
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
@@ -25,8 +25,8 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {
-            const res = runRouteOnEnterForPath(routes, window.location);
-            if (res) await dispatch(res);
+            const action = getActionOnEnterForPath(routes, window.location);
+            if (action) await dispatch(action);
             setIsReady(true);
         }
         if (!isReady) run();
@@ -44,7 +44,7 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
 
     // Update state on popstate (browser back/forward)
     React.useEffect(() => {
-        const handler = () => runRouteOnEnterForPath(routes, window.location);
+        const handler = () => getActionOnEnterForPath(routes, window.location);
         window.addEventListener("popstate", handler);
         return () => window.removeEventListener("popstate", handler);
     }, [routes]);

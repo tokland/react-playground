@@ -31,8 +31,6 @@ const App: React.FC = () => {
 
 const [store, useAppState] = getStoreHooks(initialAppState);
 
-(window as any).store = store;
-
 export const actions = new AppActions({ compositionRoot: getCompositionRoot() });
 
 export { useAppState };
@@ -75,15 +73,13 @@ export function* runGenerator(action: Action): RunGenerator {
                 break;
             }
             case "getState": {
-                const state = store.state;
-                result = action.next(state);
+                result = action.next(store.state);
                 break;
             }
 
             case "setStateFn": {
-                const state = store.state;
-                const state2 = result.value.fn(state);
-                store.setState(state2);
+                const newState = result.value.fn(store.state);
+                store.setState(newState);
                 result = action.next();
                 break;
             }
