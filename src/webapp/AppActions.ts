@@ -37,9 +37,13 @@ class BaseActions {
         yield { type: "setStateFn", fn: setter };
     }
 
-    protected *effect<T>(value$: Async<T>): Generator<ActionCommand, T, EffectResult<T>> {
+    protected *effect<T>(
+        value$: Async<T>
+    ): Generator<ActionCommand, EffectResult<T>, EffectResult<T>> {
         const res = yield { type: "effect", value$ };
-        //return res;
+        return res;
+
+        /*
 
         if (res.type === "success") {
             return res.value;
@@ -47,6 +51,7 @@ class BaseActions {
             this.options.feedback.error(`[feedback] ${res.error.message}`);
             throw new Error("Stop");
         }
+        */
     }
 }
 
@@ -70,16 +75,19 @@ class CounterActions extends BaseActions {
         if (status === "loading") return;
 
         yield* this.set(state => state.setCounterAsLoading(id));
-        const counter = yield* this.effect(this.compositionRoot.counters.get(id));
-        yield* this.set(state => state.setCounter(counter));
+        const res = yield* this.effect(this.compositionRoot.counters.get(id));
+        if (res.type === "success") {
+            yield* this.set(state => state.setCounter(res.value));
+        }
     }
 
     *save(counter: Counter) {
         yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
-        const counter2 = yield* this.effect(this.compositionRoot.counters.get("test-1"));
-        console.log({ counter2 });
-        yield* this.effect(this.compositionRoot.counters.save(counter));
+        const res = yield* this.effect(this.compositionRoot.counters.save(counter));
         yield* this.set(state => state.setCounter(counter, { isUpdating: false }));
+        if (res.type === "error") {
+            this.options.feedback.error(`[feedback] ${res.error.message}`);
+        }
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {

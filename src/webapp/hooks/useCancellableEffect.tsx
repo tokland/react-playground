@@ -27,35 +27,33 @@ export function useCancellableEffect<Args extends any[]>(
     }, []);
 
     React.useEffect(() => {
-        if (!state) return;
+        function run() {
+            if (!state) return;
 
-        const result = state.generator.next(state.value);
+            const result = state.generator.next(state.value);
 
-        if (result.done) {
+            if (result.done) {
+                setGenerator(undefined);
+                return () => {};
+            } else {
+                const cancelEffect = result.value.run(
+                    value => setGenerator({ ...state, value: { type: "success", value } }),
+                    error => setGenerator({ ...state, value: { type: "error", error } })
+                );
+
+                cancelRef.current = () => {
+                    if (isMounted()) setGenerator(undefined);
+                    cancelEffect();
+                };
+
+                return cancelOnComponentUnmount ? cancelEffect : undefined;
+            }
+        }
+
+        try {
+            run();
+        } catch {
             setGenerator(undefined);
-            return () => {};
-        } else {
-            const cancelEffect = result.value.run(
-                result => {
-                    setGenerator({
-                        generator: state.generator,
-                        value: { type: "success", value: result },
-                    });
-                },
-                err => {
-                    setGenerator({
-                        generator: state.generator,
-                        value: { type: "error", error: err },
-                    });
-                }
-            );
-
-            cancelRef.current = () => {
-                if (isMounted()) setGenerator(undefined);
-                cancelEffect();
-            };
-
-            return cancelOnComponentUnmount ? cancelEffect : undefined;
         }
     }, [state, getAction, cancelOnComponentUnmount, isMounted]);
 

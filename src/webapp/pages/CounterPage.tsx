@@ -33,13 +33,16 @@ const CurrentCounter_: React.FC = () => {
         return <div>Counter not loaded</div>;
     } else {
         return (
-            <Counter
-                counter={loader.value}
-                onChange={counter => dispatch(actions.counter.setCounter(counter))}
-                isSaving={isSaving}
-                onSave={save}
-                onCancel={cancelSave}
-            />
+            <>
+                <Counter
+                    counter={loader.value}
+                    onChange={counter => dispatch(actions.counter.setCounter(counter))}
+                    isSaving={isSaving}
+                    onSave={save}
+                    onCancel={cancelSave}
+                />
+                Updating: {JSON.stringify(loader)}
+            </>
         );
     }
 };
