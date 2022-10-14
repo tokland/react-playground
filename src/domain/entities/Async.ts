@@ -4,6 +4,8 @@ import {
     Cancellation,
 } from "real-cancellable-promise";
 
+export class AsyncError extends Error {}
+
 export class Async<T> {
     private constructor(private _promise: () => CancellablePromise<T>) {}
 
@@ -16,12 +18,14 @@ export class Async<T> {
         return new Async(() => CancellablePromise.reject(error));
     }
 
-    static fromComputation<T>(computation: Computation<T>): Async<T> {
+    static fromComputation<T>(
+        computation: (resolve: (value: T) => void, reject: (message: string) => void) => Cancel
+    ): Async<T> {
         let cancel: Cancel;
 
         return new Async(() => {
             const promise = new Promise<T>((resolve, reject) => {
-                cancel = computation(resolve, reject);
+                cancel = computation(resolve, message => reject(new AsyncError(message)));
             });
 
             return new CancellablePromise(promise, cancel);
@@ -48,12 +52,14 @@ export class Async<T> {
         return new Async(() => this._promise().then(data => fn(data)._promise()));
     }
 
+    chain = this.flatMap;
+
     toPromise(): Promise<T> {
         return this._promise();
     }
 
-    static delay(ms: number): Async<void> {
-        return new Async(() => CancellablePromise.delay(ms));
+    static delay(ms: number): Async<number> {
+        return new Async(() => CancellablePromise.delay(ms)).map(() => ms);
     }
 
     static void(): Async<void> {
@@ -73,16 +79,9 @@ export class Async<T> {
     }
 }
 
-export class AsyncError extends Error {}
-
 function buildError(message: string): AsyncError {
     return new AsyncError(message);
 }
-
-export type Computation<Data> = (
-    resolve: (value: Data) => void,
-    reject: (error: AsyncError) => void
-) => Cancel;
 
 interface CaptureAsync {
     <T>(async: Async<T>): Promise<T>;

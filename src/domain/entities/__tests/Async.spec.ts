@@ -1,3 +1,4 @@
+import { CancellablePromise } from "real-cancellable-promise";
 import { Async, AsyncError } from "../Async";
 
 describe("Basic builders", () => {
@@ -8,7 +9,7 @@ describe("Basic builders", () => {
 
     test("Async.error", async () => {
         const value$ = Async.error("message");
-        expect(value$.toPromise()).rejects.toEqual(new AsyncError("message"));
+        expect(value$.toPromise()).rejects.toThrow("message");
     });
 });
 
@@ -21,8 +22,8 @@ describe("run", () => {
         await nextTick();
 
         expect(success).toHaveBeenCalledTimes(1);
+        expect(success.mock.calls[0]).toEqual([1]);
         expect(reject).not.toHaveBeenCalled();
-        expect(success.mock.calls).toEqual([[1]]);
     });
 
     it("calls the error branch with the error", async () => {
@@ -34,7 +35,7 @@ describe("run", () => {
 
         expect(success).not.toHaveBeenCalled();
         expect(reject).toHaveBeenCalledTimes(1);
-        expect(reject.mock.calls).toEqual([[new AsyncError("message")]]);
+        expect(reject.mock.calls[0]).toEqual([new AsyncError("message")]);
     });
 });
 
@@ -46,7 +47,7 @@ describe("toPromise", () => {
 
 describe("helpers", () => {
     test("Async.delay", async () => {
-        expect(Async.delay(1).toPromise()).resolves.toBeUndefined();
+        expect(Async.delay(1).toPromise()).resolves.toEqual(1);
     });
 
     test("Async.void", async () => {
@@ -64,7 +65,7 @@ describe("Transformation", () => {
         });
     });
 
-    describe("flatMap", () => {
+    describe("flatMap/chain", () => {
         it("builds an async value mapping to another async", async () => {
             const value1$ = Async.success(1);
             const value2$ = value1$
@@ -78,7 +79,7 @@ describe("Transformation", () => {
 
 describe("Async.block", () => {
     describe("when all awaited values in the block are successful", () => {
-        it("returns the resulting value", async () => {
+        it("returns the returned value as an async", async () => {
             const result$ = Async.block(async $ => {
                 const value1 = await $(Async.success(1));
                 const value2 = await $(Async.success(2));
@@ -91,7 +92,7 @@ describe("Async.block", () => {
     });
 
     describe("when any the awaited values in the block is an error", () => {
-        it("returns that error as the result", async () => {
+        it("returns that error as the async result", async () => {
             const result$ = Async.block(async $ => {
                 const value1 = await $(Async.success(1));
                 const value2 = await $(Async.error<number>("message"));
@@ -104,7 +105,7 @@ describe("Async.block", () => {
     });
 
     describe("when the helper $.error is called", () => {
-        it("returns that async error as the result", async () => {
+        it("returns that async error as the async result", async () => {
             const result$ = Async.block(async ($): Promise<number> => {
                 if (parseInt("2") > 1) return $.error("message");
                 return $(Async.success(1));
@@ -112,6 +113,44 @@ describe("Async.block", () => {
 
             expect(result$.toPromise()).rejects.toThrow(new AsyncError("message"));
         });
+    });
+});
+
+describe("fromComputation", () => {
+    describe("for a success computation", () => {
+        it("return a success async", async () => {
+            const value$ = Async.fromComputation((resolve, _reject) => {
+                resolve(1);
+                return () => {};
+            });
+
+            expect(value$.toPromise()).resolves.toEqual(1);
+        });
+    });
+
+    describe("for an error computation", () => {
+        it("return an error async", async () => {
+            const value$ = Async.fromComputation((_resolve, reject) => {
+                reject("message");
+                return () => {};
+            });
+
+            expect(value$.toPromise()).rejects.toThrow("message");
+        });
+    });
+});
+
+describe("cancel", () => {
+    it("cancels the async and the success/error branches are not called", async () => {
+        const success = jest.fn();
+        const reject = jest.fn();
+
+        const cancel = Async.delay(1).run(success, reject);
+        cancel();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(success).not.toHaveBeenCalled();
+        expect(reject).not.toHaveBeenCalled();
     });
 });
 
