@@ -37,7 +37,8 @@ class BaseActions {
     }
 
     protected *effect<T>(value$: Async<T>): Generator<ActionCommand, T, T> {
-        return yield { type: "effect", value$ };
+        const res = yield { type: "effect", value$ };
+        return res;
     }
 }
 

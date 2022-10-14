@@ -12,7 +12,8 @@ export class Async<T> {
     }
 
     static error<T>(message: string): Async<T> {
-        return new Async(() => CancellablePromise.reject(buildError(message)));
+        const error = buildError(message);
+        return new Async(() => CancellablePromise.reject(error));
     }
 
     static fromComputation<T>(computation: Computation<T>): Async<T> {

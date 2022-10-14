@@ -9,7 +9,6 @@ import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import { Async } from "../../../domain/entities/Async";
-import { Counter2 } from "../Counter2";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -24,7 +23,6 @@ const App: React.FC = () => {
         <>
             <UrlSync {...urlSync} />
             {urlSync.isReady && <Router />}
-            <Counter2 />
         </>
     );
 };
@@ -68,13 +66,8 @@ export function* runAction(action: ActionGenerator): RunGenerator {
     while (!result.done && !error) {
         switch (result.value.type) {
             case "effect": {
-                try {
-                    const val = yield result.value.value$;
-                    result = action.next(val);
-                } catch (err: any) {
-                    console.error("Error-catch:", err.message);
-                    error = err;
-                }
+                const val = yield result.value.value$;
+                result = action.next(val);
                 break;
             }
             case "getState": {
