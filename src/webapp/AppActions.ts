@@ -2,8 +2,10 @@ import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
-import { Counter } from "../domain/entities/Counter";
+import { buildReducer, Counter } from "../domain/entities/Counter";
 import { EffectResult } from "./components/app/App";
+
+const state$ = buildReducer(AppState);
 
 export type ActionCommand =
     | { type: "getState" }

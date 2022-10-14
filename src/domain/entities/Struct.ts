@@ -4,7 +4,7 @@ export function Struct<Attributes>() {
             Object.assign(this, _attributes);
         }
 
-        _update(partialAttrs: Partial<Attributes>): this {
+        protected _update(partialAttrs: Partial<Attributes>): this {
             const ParentClass = this.constructor as new (values: Attributes) => typeof this;
             return new ParentClass({ ...this, ...partialAttrs } as unknown as Attributes);
         }

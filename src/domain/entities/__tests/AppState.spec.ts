@@ -27,7 +27,7 @@ describe("attributes", () => {
 
 describe("update", () => {
     it("can be updated from full attributes", () => {
-        const state2 = state1._update(attrs2);
+        const state2 = state1.update(attrs2);
 
         expect(state1.page).toEqual({ type: "home" });
         expect(state1.session).toEqual({ type: "unauthenticated" });
@@ -48,7 +48,7 @@ describe("loggedUserName", () => {
 
     it("returns username of logged user", () => {
         expect(
-            state1._update({ session: { type: "unauthenticated" } }).loggedUsername
+            state1.update({ session: { type: "unauthenticated" } }).loggedUsername
         ).toBeUndefined();
         expect(state2.loggedUsername).toEqual("test");
     });
@@ -56,7 +56,7 @@ describe("loggedUserName", () => {
 
 describe("currentCounter", () => {
     it("returns the current page counter (loader and value) for empty values", () => {
-        const state2 = state1._update({
+        const state2 = state1.update({
             page: { type: "counter", id: "c1" },
             counters: state1.counters.set("c1", { status: "loading" }),
         });
@@ -71,7 +71,7 @@ describe("currentCounter", () => {
         const counter = new Counter({ id: "c1", value: 1 });
         const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating: false };
 
-        const state2 = state1._update({
+        const state2 = state1.update({
             page: { type: "counter", id: "c1" },
             counters: state1.counters.set("c1", loader),
         });
@@ -82,14 +82,14 @@ describe("currentCounter", () => {
 
 describe("counterIdFromIndex", () => {
     it("returns no value from unauthenticated session", () => {
-        const state2 = state1._update({
+        const state2 = state1.update({
             session: { type: "unauthenticated" },
         });
         expect(state2.counterIdFromIndex(1)).toEqual(undefined);
     });
 
     it("returns concatenation of logged username and index", () => {
-        const state2 = state1._update({
+        const state2 = state1.update({
             session: { type: "loggedIn", username: "test" },
         });
         expect(state2.counterIdFromIndex(1)).toEqual(`test-1`);

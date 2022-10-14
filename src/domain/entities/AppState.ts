@@ -12,6 +12,10 @@ export interface AppStateAttrs {
 }
 
 export class AppState extends Struct<AppStateAttrs>() {
+    update(attrs: Partial<AppStateAttrs>): AppState {
+        return this._update(attrs);
+    }
+
     login(username: string): AppState {
         return this._update({ session: { type: "loggedIn", username } });
     }
