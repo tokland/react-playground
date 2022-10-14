@@ -11,7 +11,7 @@ export class CounterUseCases {
     }
 
     save(counter: Counter): Async<Counter> {
-        //return Async.error("fail on save");
-        return this.countersRepository.save(counter);
+        return Async.error("fail on save");
+        //return this.countersRepository.save(counter);
     }
 }

@@ -3,6 +3,7 @@ import { AppState } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
+import { EffectResult } from "./components/app/App";
 
 export type ActionCommand =
     | { type: "getState" }
@@ -36,9 +37,16 @@ class BaseActions {
         yield { type: "setStateFn", fn: setter };
     }
 
-    protected *effect<T>(value$: Async<T>): Generator<ActionCommand, T, T> {
+    protected *effect<T>(value$: Async<T>): Generator<ActionCommand, T, EffectResult<T>> {
         const res = yield { type: "effect", value$ };
-        return res;
+        //return res;
+
+        if (res.type === "success") {
+            return res.value;
+        } else {
+            this.options.feedback.error(`[feedback] ${res.error.message}`);
+            throw new Error("Stop");
+        }
     }
 }
 

@@ -8,7 +8,7 @@ import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
-import { Async } from "../../../domain/entities/Async";
+import { Async, AsyncError } from "../../../domain/entities/Async";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -52,10 +52,22 @@ export async function dispatch(action: ActionGenerator) {
 
     while (!result.done) {
         const value$ = result.value;
-        const value = await value$.toPromise();
-        result = gen.next(value);
+        const promise = await value$.toPromise();
+
+        try {
+            const value = await promise;
+            result = gen.next({ type: "success", value });
+        } catch (err) {
+            try {
+                result = gen.next({ type: "error", error: err });
+            } catch {
+                // Action raised an exception to stop the generator, nothing to do here
+            }
+        }
     }
 }
+
+export type EffectResult<T> = { type: "success"; value: T } | { type: "error"; error: AsyncError };
 
 export type RunGenerator = Generator<Async<any>, void, unknown>;
 

@@ -37,11 +37,16 @@ export function useCancellableEffect<Args extends any[]>(
         } else {
             const cancelEffect = result.value.run(
                 result => {
-                    setGenerator({ generator: state.generator, value: result });
+                    setGenerator({
+                        generator: state.generator,
+                        value: { type: "success", value: result },
+                    });
                 },
                 err => {
-                    setGenerator(undefined);
-                    console.error(err);
+                    setGenerator({
+                        generator: state.generator,
+                        value: { type: "error", error: err },
+                    });
                 }
             );
 
