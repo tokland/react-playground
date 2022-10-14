@@ -44,7 +44,10 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
 
     // Update state on popstate (browser back/forward)
     React.useEffect(() => {
-        const handler = () => getActionOnEnterForPath(routes, window.location);
+        const handler = () => {
+            const action = getActionOnEnterForPath(routes, window.location);
+            if (action) dispatch(action);
+        };
         window.addEventListener("popstate", handler);
         return () => window.removeEventListener("popstate", handler);
     }, [routes]);

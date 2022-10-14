@@ -7,10 +7,11 @@ type Cancel = () => void;
 export function useCancellableEffect<Args extends any[]>(
     getAction: (...args: Args) => Action,
     options: { cancelOnComponentUnmount?: boolean } = {}
-): [(...args: Args) => void, boolean, Cancel] {
+): [(...args: Args) => void, Cancel, boolean] {
     const { cancelOnComponentUnmount = false } = options;
     const isMounted = useIsMounted();
     const cancelRef = React.useRef<Cancel>();
+
     const [state, setGenerator] = React.useState<{
         generator: RunGenerator;
         value: EffectResult<unknown> | undefined;
@@ -37,7 +38,7 @@ export function useCancellableEffect<Args extends any[]>(
 
             if (result.done) {
                 setGenerator(undefined);
-                return () => {};
+                return undefined;
             } else {
                 const cancelEffect = result.value.run(
                     value => setGenerator({ ...state, value: { type: "success", value } }),
@@ -54,16 +55,12 @@ export function useCancellableEffect<Args extends any[]>(
             }
         }
 
-        try {
-            run();
-        } catch {
-            setGenerator(undefined);
-        }
+        run();
     }, [state, getAction, cancelOnComponentUnmount, isMounted]);
 
-    const isRunning = state !== undefined;
+    const isActive = state !== undefined;
 
-    return [runEffect, isRunning, cancel];
+    return [runEffect, cancel, isActive];
 }
 
 function useIsMounted() {

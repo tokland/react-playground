@@ -69,7 +69,7 @@ describe("currentCounter", () => {
 
     it("returns the current page counter (loader and value)", () => {
         const counter = new Counter({ id: "c1", value: 1 });
-        const loader: Loader<Counter> = { status: "loaded", value: counter };
+        const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating: false };
 
         const state2 = state1._update({
             page: { type: "counter", id: "c1" },

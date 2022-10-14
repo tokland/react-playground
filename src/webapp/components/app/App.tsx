@@ -58,11 +58,7 @@ export async function dispatch(action: ActionGenerator) {
             const value = await promise;
             result = gen.next({ type: "success", value });
         } catch (err) {
-            try {
-                result = gen.next({ type: "error", error: err });
-            } catch {
-                // Action raised an exception to stop the generator, nothing to do here
-            }
+            result = gen.next({ type: "error", error: err });
         }
     }
 }

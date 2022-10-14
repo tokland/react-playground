@@ -22,7 +22,7 @@ const homePageRoute: AppRoute = { key: "home" };
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
 
-    const [save, isSaving, cancelSave] = useCancellableEffect(
+    const [save, cancelSave] = useCancellableEffect(
         React.useCallback((counter: CounterE) => actions.counter.save(counter), []),
         { cancelOnComponentUnmount: false }
     );
@@ -37,11 +37,10 @@ const CurrentCounter_: React.FC = () => {
                 <Counter
                     counter={loader.value}
                     onChange={counter => dispatch(actions.counter.setCounter(counter))}
-                    isSaving={isSaving}
+                    isSaving={loader.isUpdating}
                     onSave={save}
                     onCancel={cancelSave}
                 />
-                Updating: {JSON.stringify(loader)}
             </>
         );
     }

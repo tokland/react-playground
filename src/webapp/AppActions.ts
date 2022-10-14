@@ -40,18 +40,8 @@ class BaseActions {
     protected *effect<T>(
         value$: Async<T>
     ): Generator<ActionCommand, EffectResult<T>, EffectResult<T>> {
-        const res = yield { type: "effect", value$ };
-        return res;
-
-        /*
-
-        if (res.type === "success") {
-            return res.value;
-        } else {
-            this.options.feedback.error(`[feedback] ${res.error.message}`);
-            throw new Error("Stop");
-        }
-        */
+        const result = yield { type: "effect", value$ };
+        return result;
     }
 }
 
@@ -72,7 +62,7 @@ class CounterActions extends BaseActions {
     *load(id: Id) {
         const state = yield* this.getState();
         const status = state.counters.get(id)?.status;
-        if (status === "loading") return;
+        if (status === "loading" || status === "loaded") return;
 
         yield* this.set(state => state.setCounterAsLoading(id));
         const res = yield* this.effect(this.compositionRoot.counters.get(id));
@@ -93,6 +83,7 @@ class CounterActions extends BaseActions {
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
         yield* this.set(state => state.goToCounter(id));
+        // yield* this.set(state$.goToCounter(id));
         yield* this.load(id);
     }
 }
