@@ -84,8 +84,8 @@ class CounterActions extends BaseActions {
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
-        yield* this.set(state => state.goToCounter(id));
-        // yield* this.set(state$.goToCounter(id));
+        //yield* this.set(state => state.goToCounter(id));
+        yield* this.set(state$.goToCounter(id));
         yield* this.load(id);
     }
 }
