@@ -4,8 +4,21 @@ import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
 
+export type ActionCommand =
+    | { type: "getState" }
+    | { type: "setStateFn"; fn: (state: AppState) => AppState }
+    | { type: "effect"; value$: Async<unknown> };
+
+export type Action = Generator<ActionCommand, void, any>;
+
 interface Options {
     compositionRoot: CompositionRoot;
+    feedback: Feedback;
+}
+
+export interface Feedback {
+    success(msg: string): void;
+    error(msg: string): void;
 }
 
 class BaseActions {
@@ -15,25 +28,18 @@ class BaseActions {
         this.compositionRoot = options.compositionRoot;
     }
 
-    protected *getState(): Generator<ActionYield, AppState, AppState> {
+    protected *getState(): Generator<ActionCommand, AppState, AppState> {
         return yield { type: "getState" };
     }
 
-    protected *set(setter: (state: AppState) => AppState): Generator<ActionYield, void, void> {
+    protected *set(setter: (state: AppState) => AppState): Generator<ActionCommand, void, void> {
         yield { type: "setStateFn", fn: setter };
     }
 
-    protected *effect<T>(value$: Async<T>): Generator<ActionYield, T, T> {
+    protected *effect<T>(value$: Async<T>): Generator<ActionCommand, T, T> {
         return yield { type: "effect", value$ };
     }
 }
-
-export type ActionYield =
-    | { type: "getState" }
-    | { type: "setStateFn"; fn: (state: AppState) => AppState }
-    | { type: "effect"; value$: Async<unknown> };
-
-export type Action = Generator<ActionYield, void, any>;
 
 class SessionActions extends BaseActions {
     login = (username: string) => this.set(state => state.login(username));
@@ -52,8 +58,7 @@ class CounterActions extends BaseActions {
     *load(id: Id) {
         const state = yield* this.getState();
         const status = state.counters.get(id)?.status;
-
-        if (status === "loading" || status === "loaded") return;
+        if (status === "loading") return;
 
         yield* this.set(state => state.setCounterAsLoading(id));
         const counter = yield* this.effect(this.compositionRoot.counters.get(id));
@@ -63,7 +68,7 @@ class CounterActions extends BaseActions {
     *save(counter: Counter) {
         yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
         yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.set(state => state.setCounter(counter));
+        yield* this.set(state => state.setCounter(counter, { isUpdating: false }));
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {

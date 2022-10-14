@@ -1,6 +1,6 @@
 import React from "react";
 import { Action } from "../AppActions";
-import { RunGenerator, runGenerator } from "../components/app/App";
+import { RunGenerator, runAction } from "../components/app/App";
 
 type Cancel = () => void;
 
@@ -16,7 +16,7 @@ export function useCancellableEffect<Args extends any[]>(
     const runEffect = React.useCallback(
         (...args: Args) => {
             const action = getAction(...args);
-            const generator = runGenerator(action);
+            const generator = runAction(action);
             setGenerator({ value: generator });
         },
         [getAction]
