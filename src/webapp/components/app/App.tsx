@@ -9,6 +9,7 @@ import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import { Async } from "../../../domain/entities/Async";
+import { Counter2 } from "../Counter2";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -23,6 +24,7 @@ const App: React.FC = () => {
         <>
             <UrlSync {...urlSync} />
             {urlSync.isReady && <Router />}
+            <Counter2 />
         </>
     );
 };
@@ -31,10 +33,7 @@ const [store, useAppState] = getStoreHooks(initialAppState);
 
 (window as any).store = store;
 
-export const actions = new AppActions({
-    compositionRoot: getCompositionRoot(),
-    store,
-});
+export const actions = new AppActions({ compositionRoot: getCompositionRoot() });
 
 export { useAppState };
 

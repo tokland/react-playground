@@ -35,7 +35,7 @@ const CurrentCounter_: React.FC = () => {
         return (
             <Counter
                 counter={loader.value}
-                onChange={counter => dispatch(actions.counter.set(counter))}
+                onChange={counter => dispatch(actions.counter.setCounter(counter))}
                 isSaving={isSaving}
                 onSave={save}
                 onCancel={cancelSave}

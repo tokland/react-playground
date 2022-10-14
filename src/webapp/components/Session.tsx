@@ -7,8 +7,8 @@ const Session: React.FC = () => {
     const form = useForm({ username: "" });
 
     const login = React.useMemo(() => {
-        return form.handleSubmit(form_ => {
-            dispatch(actions.session.login(form_.values.username));
+        return form.handleSubmit(formState => {
+            dispatch(actions.session.login(formState.values.username));
         });
     }, [form]);
 

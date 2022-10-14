@@ -3,10 +3,8 @@ import { AppState } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
-import { Store } from "./hooks/useStoreState";
 
 interface Options {
-    store: Store<AppState>;
     compositionRoot: CompositionRoot;
 }
 
@@ -18,35 +16,37 @@ class BaseActions {
     }
 
     protected *getState(): Generator<ActionYield, AppState, AppState> {
-        const res = yield { type: "getState" };
-        return res;
+        return yield { type: "getState" };
     }
 
-    protected *setState(setter: (state: AppState) => AppState): Generator<ActionYield, void, void> {
+    protected *set(setter: (state: AppState) => AppState): Generator<ActionYield, void, void> {
         yield { type: "setStateFn", fn: setter };
     }
 
     protected *effect<T>(value$: Async<T>): Generator<ActionYield, T, T> {
-        const res = yield { type: "effect", value$ };
-        return res;
+        return yield { type: "effect", value$ };
     }
 }
 
 export type ActionYield =
     | { type: "getState" }
     | { type: "setStateFn"; fn: (state: AppState) => AppState }
-    | { type: "effect"; value$: Async<any> };
+    | { type: "effect"; value$: Async<unknown> };
 
 export type Action = Generator<ActionYield, void, any>;
 
 class SessionActions extends BaseActions {
-    login = (username: string) => this.setState(state => state.login(username));
-    logout = () => this.setState(state => state.logout());
+    login = (username: string) => this.set(state => state.login(username));
+    logout = () => this.set(state => state.logout());
+}
+
+class RouterActions extends BaseActions {
+    goToHome = () => this.set(state => state.goToHome());
 }
 
 class CounterActions extends BaseActions {
-    set(counter: Counter) {
-        return this.setState(state => state.setCounter(counter));
+    setCounter(counter: Counter) {
+        return this.set(state => state.setCounter(counter));
     }
 
     *load(id: Id) {
@@ -55,31 +55,27 @@ class CounterActions extends BaseActions {
 
         if (status === "loading" || status === "loaded") return;
 
-        yield* this.setState(state => state.setCounterAsLoading(id));
+        yield* this.set(state => state.setCounterAsLoading(id));
         const counter = yield* this.effect(this.compositionRoot.counters.get(id));
-        yield* this.setState(state => state.setCounter(counter));
+        yield* this.set(state => state.setCounter(counter));
     }
 
     *save(counter: Counter) {
-        yield* this.setState(state => state.setCounter(counter, { isUpdating: true }));
+        yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
         yield* this.effect(this.compositionRoot.counters.save(counter.add(1)));
-        yield* this.setState(state => state.setCounter(counter, { isUpdating: true }));
+        yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
         yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.setState(state => state.setCounter(counter));
+        yield* this.set(state => state.setCounter(counter));
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
-        yield* this.setState(state => state.goToCounter(id));
+        yield* this.set(state => state.goToCounter(id));
         yield* this.load(id);
     }
 }
 
 export class AppActions extends BaseActions {
     session = new SessionActions(this.options);
-
-    routes = {
-        goToHome: () => this.setState(state => state.goToHome()),
-    };
-
+    routes = new RouterActions(this.options);
     counter = new CounterActions(this.options);
 }

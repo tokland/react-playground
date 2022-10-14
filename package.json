@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@preact/signals-react": "^1.1.1",
         "@reach/menu-button": "^0.16.2",
         "@rimbu/hashed": "^0.8.20",
         "@testing-library/jest-dom": "^5.16.1",

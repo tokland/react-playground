@@ -54,9 +54,9 @@ describe("helpers", () => {
     });
 });
 
-describe("transformers", () => {
+describe("Transformation", () => {
     describe("map", () => {
-        it("transforms the async value with a plain function mapper", async () => {
+        it("transforms the async value", async () => {
             const value1$ = Async.success(1);
             const value2$ = value1$.map(x => x.toString());
 
@@ -65,7 +65,7 @@ describe("transformers", () => {
     });
 
     describe("flatMap", () => {
-        it("transform the async value with a function mapper that returns another async", async () => {
+        it("builds an async value mapping to another async", async () => {
             const value1$ = Async.success(1);
             const value2$ = value1$
                 .flatMap(value => Async.success(value + 2))

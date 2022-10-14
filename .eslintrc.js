@@ -36,6 +36,7 @@ module.exports = {
         "@typescript-eslint/no-redeclare": "off",
         "@typescript-eslint/no-empty-function": "off",
         "react-hooks/exhaustive-deps": "warn",
+        "react-hooks/rules-of-hooks": "warn",
     },
     plugins: [],
     settings: {
