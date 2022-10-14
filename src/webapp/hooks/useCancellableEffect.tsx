@@ -1,6 +1,6 @@
 import React from "react";
 import { Action } from "../AppActions";
-import { RunGenerator, runAction } from "../components/app/App";
+import { RunGenerator, runAction, EffectResult } from "../components/app/App";
 
 type Cancel = () => void;
 
@@ -11,7 +11,10 @@ export function useCancellableEffect<Args extends any[]>(
     const { cancelOnComponentUnmount = false } = options;
     const isMounted = useIsMounted();
     const cancelRef = React.useRef<Cancel>();
-    const [state, setGenerator] = React.useState<{ generator: RunGenerator; value: any }>();
+    const [state, setGenerator] = React.useState<{
+        generator: RunGenerator;
+        value: EffectResult<unknown> | undefined;
+    }>();
 
     const runEffect = React.useCallback(
         (...args: Args) => {
@@ -44,6 +47,7 @@ export function useCancellableEffect<Args extends any[]>(
                 cancelRef.current = () => {
                     if (isMounted()) setGenerator(undefined);
                     cancelEffect();
+                    setGenerator({ ...state, value: { type: "cancelled" } });
                 };
 
                 return cancelOnComponentUnmount ? cancelEffect : undefined;

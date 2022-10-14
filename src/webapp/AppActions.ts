@@ -85,6 +85,7 @@ class CounterActions extends BaseActions {
         yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
         yield* this.set(state => state.setCounter(counter, { isUpdating: false }));
+
         if (res.type === "error") {
             this.options.feedback.error(`[feedback] ${res.error.message}`);
         }

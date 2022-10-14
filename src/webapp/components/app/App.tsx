@@ -67,9 +67,12 @@ export async function dispatch(action: ActionGenerator) {
     }
 }
 
-export type EffectResult<T> = { type: "success"; value: T } | { type: "error"; error: AsyncError };
+export type EffectResult<T> =
+    | { type: "success"; value: T }
+    | { type: "error"; error: AsyncError }
+    | { type: "cancelled" };
 
-export type RunGenerator = Generator<Async<any>, void, unknown>;
+export type RunGenerator = Generator<Async<unknown>, void, unknown>;
 
 export function* runAction(action: ActionGenerator): RunGenerator {
     let result = action.next();
