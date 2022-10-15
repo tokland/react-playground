@@ -25,10 +25,3 @@ export function buildReducer<T>(
         .fromPairs()
         .value() as ReducerOf<T>;
 }
-
-/*
-const counter1 = new Counter({ id: "1", value: 1 });
-const counter$ = buildReducer(Counter);
-const counter2 = counter$.add(1)(counter1);
-console.log(counter2);
-*/

@@ -84,7 +84,6 @@ export function* runAction(action: ActionGenerator): RunGenerator {
                 result = action.next(store.state);
                 break;
             }
-
             case "setStateFn": {
                 const newState = result.value.fn(store.state);
                 store.setState(newState);
