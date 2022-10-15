@@ -1,6 +1,6 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { Action as ActionGenerator, AppActions } from "../../AppActions";
+import { ActionGenerator, AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";

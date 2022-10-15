@@ -1,5 +1,5 @@
 import { Expand } from "../../libs/ts-utils";
-import { Action } from "../AppActions";
+import { ActionGenerator } from "../AppActions";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
@@ -51,7 +51,7 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
     onEnter: (options: {
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => Action;
+    }) => ActionGenerator;
     params?: Params;
 }
 

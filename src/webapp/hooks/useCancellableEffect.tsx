@@ -1,11 +1,11 @@
 import React from "react";
-import { Action } from "../AppActions";
+import { ActionGenerator } from "../AppActions";
 import { RunGenerator, runAction, EffectResult } from "../components/app/App";
 
 type Cancel = () => void;
 
 export function useCancellableEffect<Args extends any[]>(
-    getAction: (...args: Args) => Action,
+    getAction: (...args: Args) => ActionGenerator,
     options: { cancelOnComponentUnmount?: boolean } = {}
 ): [(...args: Args) => void, Cancel, boolean] {
     const { cancelOnComponentUnmount = false } = options;

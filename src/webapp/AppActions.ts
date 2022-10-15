@@ -13,7 +13,7 @@ export type ActionCommand =
     | { type: "setStateFn"; fn: (state: AppState) => AppState }
     | { type: "effect"; value$: Async<unknown> };
 
-export type Action = Generator<ActionCommand, void, any>;
+export type ActionGenerator = Generator<ActionCommand, void, any>;
 
 interface Options {
     compositionRoot: CompositionRoot;
