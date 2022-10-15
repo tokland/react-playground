@@ -9,6 +9,7 @@ import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import { Async, AsyncError } from "../../../domain/entities/Async";
+import { assertUnreachable } from "../../../libs/ts-utils";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -74,7 +75,9 @@ export function* runAction(action: ActionGenerator): RunGenerator {
     let result = action.next();
 
     while (!result.done) {
-        switch (result.value.type) {
+        const { type } = result.value;
+
+        switch (type) {
             case "effect": {
                 const val = yield result.value.value$;
                 result = action.next(val);
@@ -90,6 +93,8 @@ export function* runAction(action: ActionGenerator): RunGenerator {
                 result = action.next();
                 break;
             }
+            default:
+                assertUnreachable(type);
         }
     }
 }
