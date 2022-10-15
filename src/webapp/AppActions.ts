@@ -48,11 +48,11 @@ class BaseActions {
     protected *setFeedbackFromEffectResult(res: EffectResult<unknown>) {
         switch (res.type) {
             case "success":
-                return yield* this.feedback({ success: "saved" });
+                return yield* this.feedback({ success: { message: "saved" } });
             case "error":
-                return yield* this.feedback({ error: res.error.message });
+                return yield* this.feedback({ error: { message: res.error.message } });
             case "cancelled":
-                return yield* this.feedback({ success: "cancelled" });
+                return yield* this.feedback({ success: { message: "cancelled" } });
         }
     }
 

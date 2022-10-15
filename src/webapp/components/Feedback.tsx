@@ -19,8 +19,8 @@ const Feedback: React.FC = () => {
 
     return (
         <>
-            {success && <div style={{ color: "green" }}>{success}</div>}
-            {error && <div style={{ color: "red" }}>{error}</div>}
+            {success && <div style={{ color: "green" }}>{success.message}</div>}
+            {error && <div style={{ color: "red" }}>{error.message}</div>}
         </>
     );
 };
