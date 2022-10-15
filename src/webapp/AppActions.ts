@@ -48,17 +48,17 @@ class BaseActions {
 }
 
 class SessionActions extends BaseActions {
-    login = (username: string) => this.set(state => state.login(username));
-    logout = () => this.set(state => state.logout());
+    login = (username: string) => this.set(state$.login(username));
+    logout = () => this.set(state$.logout());
 }
 
 class RouterActions extends BaseActions {
-    goToHome = () => this.set(state => state.goToHome());
+    goToHome = () => this.set(state$.goToHome());
 }
 
 class CounterActions extends BaseActions {
     setCounter(counter: Counter) {
-        return this.set(state => state.setCounter(counter));
+        return this.set(state$.setCounter(counter));
     }
 
     *load(id: Id) {
@@ -66,17 +66,17 @@ class CounterActions extends BaseActions {
         const status = state.counters.get(id)?.status;
         if (status === "loading" || status === "loaded") return;
 
-        yield* this.set(state => state.setCounterAsLoading(id));
+        yield* this.set(state$.setCounterAsLoading(id));
         const res = yield* this.effect(this.compositionRoot.counters.get(id));
         if (res.type === "success") {
-            yield* this.set(state => state.setCounter(res.value));
+            yield* this.set(state$.setCounter(res.value));
         }
     }
 
     *save(counter: Counter) {
-        yield* this.set(state => state.setCounter(counter, { isUpdating: true }));
+        yield* this.set(state$.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.set(state => state.setCounter(counter, { isUpdating: false }));
+        yield* this.set(state$.setCounter(counter, { isUpdating: false }));
 
         if (res.type === "error") {
             this.options.feedback.error(`[feedback] ${res.error.message}`);
@@ -84,7 +84,6 @@ class CounterActions extends BaseActions {
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
-        //yield* this.set(state => state.goToCounter(id));
         yield* this.set(state$.goToCounter(id));
         yield* this.load(id);
     }
