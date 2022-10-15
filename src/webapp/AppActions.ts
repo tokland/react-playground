@@ -31,7 +31,7 @@ class BaseActions {
         this.compositionRoot = options.compositionRoot;
     }
 
-    getSetter<Args extends any[]>(fn: (...args: Args) => (state: AppState) => AppState) {
+    setFrom<Args extends any[]>(fn: (...args: Args) => (state: AppState) => AppState) {
         return (...args: Args) => this.set(state => fn(...args)(state));
     }
 
@@ -52,22 +52,32 @@ class BaseActions {
 }
 
 class SessionActions extends BaseActions {
-    login = (username: string) => this.set(state$.login(username));
-    logout = () => this.set(state$.logout());
+    login = this.setFrom(state$.login);
+    logout = this.setFrom(state$.logout);
 }
 
 class RouterActions extends BaseActions {
-    goToHome = () => this.set(state$.goToHome());
+    goToHome = this.setFrom(state$.goToHome);
 }
 
 class CounterActions extends BaseActions {
-    setCounter2(counter: Counter) {
-        return this.set(state$.setCounter(counter));
+    setCounter = this.setFrom(state$.setCounter);
+
+    *save(counter: Counter) {
+        yield* this.set(state$.setCounter(counter, { isUpdating: true }));
+        const res = yield* this.effect(this.compositionRoot.counters.save(counter));
+        if (res.type === "error") {
+            this.options.feedback.error(`[feedback] ${res.error.message}`);
+        }
+        yield* this.set(state$.setCounter(counter, { isUpdating: false }));
     }
 
-    setCounter = this.getSetter(state$.setCounter);
+    *loadCounterAndSetAsCurrentPage(id: Id) {
+        yield* this.set(state$.goToCounter(id));
+        yield* this.load(id);
+    }
 
-    *load(id: Id) {
+    private *load(id: Id) {
         const state = yield* this.getState();
         const status = state.counters.get(id)?.status;
         if (status === "loading" || status === "loaded") return;
@@ -77,21 +87,6 @@ class CounterActions extends BaseActions {
         if (res.type === "success") {
             yield* this.set(state$.setCounter(res.value));
         }
-    }
-
-    *save(counter: Counter) {
-        yield* this.set(state$.setCounter(counter, { isUpdating: true }));
-        const res = yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.set(state$.setCounter(counter, { isUpdating: false }));
-
-        if (res.type === "error") {
-            this.options.feedback.error(`[feedback] ${res.error.message}`);
-        }
-    }
-
-    *loadCounterAndSetAsCurrentPage(id: Id) {
-        yield* this.set(state$.goToCounter(id));
-        yield* this.load(id);
     }
 }
 
