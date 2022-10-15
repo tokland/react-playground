@@ -12,7 +12,7 @@ export interface AppStateAttrs {
     feedback: Feedback;
 }
 
-type Feedback = Partial<Record<"success" | "error", string>>;
+export type Feedback = Partial<Record<"success" | "error", string>>;
 
 export class AppState extends Struct<AppStateAttrs>() {
     update(attrs: Partial<AppStateAttrs>): AppState {

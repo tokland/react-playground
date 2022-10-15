@@ -1,5 +1,5 @@
 import { CompositionRoot } from "../compositionRoot";
-import { AppState } from "../domain/entities/AppState";
+import { AppState, Feedback } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
@@ -13,7 +13,8 @@ export type ActionCommand =
     | { type: "setStateFn"; fn: (state: AppState) => AppState }
     | { type: "effect"; value$: Async<unknown> };
 
-export type ActionGenerator = Generator<ActionCommand, void, any>;
+export type ActionGenerator = Generator<ActionCommand, void, unknown>;
+export type BaseActionGenerator<T> = Generator<ActionCommand, T, T>;
 
 interface Options {
     compositionRoot: CompositionRoot;
@@ -30,19 +31,21 @@ class BaseActions {
         return (...args: Args) => this.set(state => fn(...args)(state));
     }
 
-    protected *getState(): Generator<ActionCommand, AppState, AppState> {
+    protected *get(): BaseActionGenerator<AppState> {
         return yield { type: "getState" };
     }
 
-    protected *set(setter: (state: AppState) => AppState): Generator<ActionCommand, void, void> {
+    protected *set(setter: (state: AppState) => AppState): BaseActionGenerator<void> {
         yield { type: "setStateFn", fn: setter };
     }
 
-    protected *effect<T>(
-        value$: Async<T>
-    ): Generator<ActionCommand, EffectResult<T>, EffectResult<T>> {
+    protected *effect<T>(value$: Async<T>): BaseActionGenerator<EffectResult<T>> {
         const result = yield { type: "effect", value$ };
         return result;
+    }
+
+    protected *feedback(value: Feedback): BaseActionGenerator<void> {
+        yield* this.set(state$.setFeedback(value));
     }
 }
 
@@ -61,12 +64,16 @@ class CounterActions extends BaseActions {
     *save(counter: Counter) {
         yield* this.set(state$.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
-        if (res.type === "error") {
-            yield* this.set(state$.setFeedback({ error: `Error: ${res.error.message}` }));
-        } else {
-            yield* this.set(state$.setFeedback({ success: `saved` }));
-        }
         yield* this.set(state$.setCounter(counter, { isUpdating: false }));
+
+        switch (res.type) {
+            case "success":
+                return yield* this.feedback({ success: "saved" });
+            case "error":
+                return yield* this.feedback({ error: res.error.message });
+            case "cancelled":
+                return yield* this.feedback({ success: "cancelled" });
+        }
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
@@ -75,7 +82,7 @@ class CounterActions extends BaseActions {
     }
 
     private *load(id: Id) {
-        const state = yield* this.getState();
+        const state = yield* this.get();
         const status = state.counters.get(id)?.status;
         if (status === "loading" || status === "loaded") return;
 
