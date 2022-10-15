@@ -73,11 +73,12 @@ export function* runAction(action: ActionGenerator): RunGenerator {
     let result = action.next();
 
     while (!result.done) {
-        const { type } = result.value;
+        const { value } = result;
+        const { type } = value;
 
         switch (type) {
             case "effect": {
-                const val = yield result.value.value$;
+                const val = yield value.value$;
                 result = action.next(val);
                 break;
             }
@@ -86,7 +87,7 @@ export function* runAction(action: ActionGenerator): RunGenerator {
                 break;
             }
             case "setStateFn": {
-                const newState = result.value.fn(store.state);
+                const newState = value.fn(store.state);
                 store.setState(newState);
                 result = action.next();
                 break;
