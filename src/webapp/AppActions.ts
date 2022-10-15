@@ -2,7 +2,8 @@ import { CompositionRoot } from "../compositionRoot";
 import { AppState } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
-import { buildReducer, Counter } from "../domain/entities/Counter";
+import { Counter } from "../domain/entities/Counter";
+import { buildReducer } from "../libs/reducer";
 import { EffectResult } from "./components/app/App";
 
 const state$ = buildReducer(AppState);
