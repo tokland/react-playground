@@ -9,11 +9,18 @@ export interface AppStateAttrs {
     page: Page;
     session: Session;
     counters: HashMap<Id, Loader<Counter>>;
+    feedback: Feedback;
 }
+
+type Feedback = Partial<Record<"success" | "error", string>>;
 
 export class AppState extends Struct<AppStateAttrs>() {
     update(attrs: Partial<AppStateAttrs>): AppState {
         return this._update(attrs);
+    }
+
+    setFeedback(msg: Feedback): AppState {
+        return this._update({ feedback: msg });
     }
 
     login(username: string): AppState {

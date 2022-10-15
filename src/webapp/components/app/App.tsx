@@ -1,6 +1,6 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { Action as ActionGenerator, AppActions, Feedback } from "../../AppActions";
+import { Action as ActionGenerator, AppActions } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
@@ -10,11 +10,13 @@ import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import { Async, AsyncError } from "../../../domain/entities/Async";
 import { assertUnreachable } from "../../../libs/ts-utils";
+import Feedback from "../Feedback";
 
 const initialAppState = new AppState({
     page: { type: "home" },
     session: { type: "loggedIn", username: "test" },
     counters: HashMap.empty(),
+    feedback: {},
 });
 
 const App: React.FC = () => {
@@ -24,18 +26,14 @@ const App: React.FC = () => {
         <>
             <UrlSync {...urlSync} />
             {urlSync.isReady && <Router />}
+            <Feedback />
         </>
     );
 };
 
 const [store, useAppState] = getStoreHooks(initialAppState);
 
-const feedback: Feedback = {
-    success: message => console.log(message),
-    error: message => console.error(message),
-};
-
-export const actions = new AppActions({ compositionRoot: getCompositionRoot(), feedback });
+export const actions = new AppActions({ compositionRoot: getCompositionRoot() });
 
 export { useAppState };
 

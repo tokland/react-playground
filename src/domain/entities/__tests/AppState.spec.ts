@@ -6,12 +6,14 @@ const attrs1: AppStateAttrs = {
     page: { type: "home" },
     session: { type: "unauthenticated" },
     counters: HashMap.empty(),
+    feedback: {},
 };
 
 const attrs2: AppStateAttrs = {
     page: { type: "counter", id: "c1" },
     session: { type: "loggedIn", username: "test" },
     counters: attrs1.counters.set("c1", { status: "loading" }),
+    feedback: {},
 };
 
 const state1 = new AppState(attrs1);

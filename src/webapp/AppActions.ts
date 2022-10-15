@@ -17,12 +17,6 @@ export type Action = Generator<ActionCommand, void, any>;
 
 interface Options {
     compositionRoot: CompositionRoot;
-    feedback: Feedback;
-}
-
-export interface Feedback {
-    success(msg: string): void;
-    error(msg: string): void;
 }
 
 class BaseActions {
@@ -68,7 +62,9 @@ class CounterActions extends BaseActions {
         yield* this.set(state$.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
         if (res.type === "error") {
-            this.options.feedback.error(`[feedback] ${res.error.message}`);
+            yield* this.set(state$.setFeedback({ error: `Error: ${res.error.message}` }));
+        } else {
+            yield* this.set(state$.setFeedback({ success: `saved` }));
         }
         yield* this.set(state$.setCounter(counter, { isUpdating: false }));
     }
