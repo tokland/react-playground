@@ -31,6 +31,10 @@ class BaseActions {
         this.compositionRoot = options.compositionRoot;
     }
 
+    getSetter<Args extends any[]>(fn: (...args: Args) => (state: AppState) => AppState) {
+        return (...args: Args) => this.set(state => fn(...args)(state));
+    }
+
     protected *getState(): Generator<ActionCommand, AppState, AppState> {
         return yield { type: "getState" };
     }
@@ -57,9 +61,11 @@ class RouterActions extends BaseActions {
 }
 
 class CounterActions extends BaseActions {
-    setCounter(counter: Counter) {
+    setCounter2(counter: Counter) {
         return this.set(state$.setCounter(counter));
     }
+
+    setCounter = this.getSetter(state$.setCounter);
 
     *load(id: Id) {
         const state = yield* this.getState();
