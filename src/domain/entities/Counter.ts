@@ -7,9 +7,10 @@ import _ from "lodash";
  *
  * @example
  * ```
- * const counter1 = new Counter({ id: "c1", value: 1 });
+ * const counter1 = new Counter({ id: "someCounter", value: 1 });
  * const counter2 = counter1.add(1);
- * const counter2.value; // 2
+ * console.log(counter1.value); // 1
+ * console.log(counter2.value); // 2
  * ```
  */
 
