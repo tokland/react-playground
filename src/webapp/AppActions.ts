@@ -45,14 +45,19 @@ class BaseActions {
         return result;
     }
 
-    protected *setFeedbackFromEffectResult(res: EffectResult<unknown>) {
+    protected *setFeedbackFromEffectResult(
+        res: EffectResult<unknown>,
+        options?: { successMessage: string }
+    ) {
         switch (res.type) {
             case "success":
-                return yield* this.feedback({ success: { message: "saved" } });
+                if (options?.successMessage)
+                    yield* this.feedback({ success: { message: options?.successMessage } });
+                return;
             case "error":
                 return yield* this.feedback({ error: { message: res.error.message } });
             case "cancelled":
-                return yield* this.feedback({ success: { message: "cancelled" } });
+                return yield* this.feedback({ error: { message: "cancelled" } });
         }
     }
 
@@ -84,7 +89,7 @@ class CounterActions extends BaseActions {
     *save(counter: Counter) {
         yield* this.set(state$.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.setFeedbackFromEffectResult(res);
+        yield* this.setFeedbackFromEffectResult(res, { successMessage: "saved" });
         yield* this.set(state$.setCounter(counter, { isUpdating: false }));
     }
 
