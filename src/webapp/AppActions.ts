@@ -44,6 +44,24 @@ class BaseActions {
         return result;
     }
 
+    protected *effectSuccess<T>(value$: Async<T>): Generator<ActionCommand, T, any> {
+        const res = yield* this.effect(value$);
+
+        switch (res.type) {
+            case "success":
+                yield* this.feedback({ success: "saved" });
+                return res.value;
+            case "error":
+                yield* this.feedback({ error: res.error.message });
+                break;
+            case "cancelled":
+                yield* this.feedback({ success: "cancelled" });
+                break;
+        }
+
+        throw new Error("stop");
+    }
+
     protected *feedback(value: Feedback): BaseActionGenerator<void> {
         yield* this.set(state$.setFeedback(value));
     }
@@ -87,10 +105,8 @@ class CounterActions extends BaseActions {
         if (status === "loading" || status === "loaded") return;
 
         yield* this.set(state$.setCounterAsLoading(id));
-        const res = yield* this.effect(this.compositionRoot.counters.get(id));
-        if (res.type === "success") {
-            yield* this.set(state$.setCounter(res.value));
-        }
+        const counter = yield* this.effectSuccess(this.compositionRoot.counters.get(id));
+        yield* this.set(state$.setCounter(counter));
     }
 }
 
