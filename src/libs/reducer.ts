@@ -4,15 +4,15 @@ type GetUpdaterMethods<T> = {
     [P in keyof T]: T[P] extends (...args: any[]) => T ? P : never;
 }[keyof T];
 
-type ReducerOf<T> = {
+type ReducerAll<T> = {
     [K in keyof T]: T[K] extends (...args: infer Args) => T
         ? (...args: Args) => (obj: T) => T
         : never;
 };
 
-export function buildReducer<T>(
-    ctor: new (...args: any[]) => T
-): Pick<ReducerOf<T>, GetUpdaterMethods<T>> {
+type Reducer<T> = Pick<ReducerAll<T>, GetUpdaterMethods<T>>;
+
+export function buildReducer<T>(ctor: new (...args: any[]) => T): Reducer<T> {
     const properties = Object.getOwnPropertyNames(ctor.prototype);
 
     return _(properties)
@@ -23,5 +23,5 @@ export function buildReducer<T>(
             return [property, fn] as const;
         })
         .fromPairs()
-        .value() as ReducerOf<T>;
+        .value() as ReducerAll<T>;
 }

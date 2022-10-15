@@ -14,6 +14,7 @@ export type ActionCommand =
     | { type: "effect"; value$: Async<unknown> };
 
 export type ActionGenerator = Generator<ActionCommand, void, unknown>;
+
 export type BaseActionGenerator<T> = Generator<ActionCommand, T, T>;
 
 interface Options {
@@ -44,22 +45,23 @@ class BaseActions {
         return result;
     }
 
-    protected *effectSuccess<T>(value$: Async<T>): Generator<ActionCommand, T, any> {
-        const res = yield* this.effect(value$);
-
+    protected *setFeedbackFromEffectResult(res: EffectResult<unknown>) {
         switch (res.type) {
             case "success":
-                yield* this.feedback({ success: "saved" });
-                return res.value;
+                return yield* this.feedback({ success: "saved" });
             case "error":
-                yield* this.feedback({ error: res.error.message });
-                break;
+                return yield* this.feedback({ error: res.error.message });
             case "cancelled":
-                yield* this.feedback({ success: "cancelled" });
-                break;
+                return yield* this.feedback({ success: "cancelled" });
         }
+    }
 
-        throw new Error("stop");
+    protected *effectWithFeedback<T>(
+        value$: Async<T>
+    ): Generator<ActionCommand, EffectResult<T>, any> {
+        const res = yield* this.effect(value$);
+        yield* this.setFeedbackFromEffectResult(res);
+        return res;
     }
 
     protected *feedback(value: Feedback): BaseActionGenerator<void> {
@@ -82,16 +84,8 @@ class CounterActions extends BaseActions {
     *save(counter: Counter) {
         yield* this.set(state$.setCounter(counter, { isUpdating: true }));
         const res = yield* this.effect(this.compositionRoot.counters.save(counter));
+        yield* this.setFeedbackFromEffectResult(res);
         yield* this.set(state$.setCounter(counter, { isUpdating: false }));
-
-        switch (res.type) {
-            case "success":
-                return yield* this.feedback({ success: "saved" });
-            case "error":
-                return yield* this.feedback({ error: res.error.message });
-            case "cancelled":
-                return yield* this.feedback({ success: "cancelled" });
-        }
     }
 
     *loadCounterAndSetAsCurrentPage(id: Id) {
@@ -105,8 +99,8 @@ class CounterActions extends BaseActions {
         if (status === "loading" || status === "loaded") return;
 
         yield* this.set(state$.setCounterAsLoading(id));
-        const counter = yield* this.effectSuccess(this.compositionRoot.counters.get(id));
-        yield* this.set(state$.setCounter(counter));
+        const res = yield* this.effectWithFeedback(this.compositionRoot.counters.get(id));
+        if (res.type === "success") yield* this.set(state$.setCounter(res.value));
     }
 }
 

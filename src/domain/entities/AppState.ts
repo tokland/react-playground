@@ -41,9 +41,10 @@ export class AppState extends Struct<AppStateAttrs>() {
 
     setCounter(counter: Counter, options?: { isUpdating: boolean }) {
         const { isUpdating = false } = options || {};
-        const { counters } = this;
         const loader: Loader<Counter> = { status: "loaded", value: counter, isUpdating };
-        return this._update({ counters: counters.set(counter.id, loader) });
+        return this._update({
+            counters: this.counters.set(counter.id, loader),
+        });
     }
 
     setCounterAsLoading(id: Id) {
