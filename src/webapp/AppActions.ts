@@ -41,8 +41,7 @@ class BaseActions {
     }
 
     protected *effect<T>(value$: Async<T>): BaseActionGenerator<EffectResult<T>> {
-        const result = yield { type: "effect", value$ };
-        return result;
+        return yield { type: "effect", value$ };
     }
 
     protected *setFeedbackFromEffectResult(
@@ -53,11 +52,12 @@ class BaseActions {
             case "success":
                 if (options?.successMessage)
                     yield* this.feedback({ success: { message: options?.successMessage } });
-                return;
+                break;
             case "error":
-                return yield* this.feedback({ error: { message: res.error.message } });
+                yield* this.feedback({ error: { message: res.error.message } });
+                break;
             case "cancelled":
-                return yield* this.feedback({ error: { message: "cancelled" } });
+                break;
         }
     }
 
