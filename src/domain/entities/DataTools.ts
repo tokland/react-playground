@@ -2,17 +2,19 @@ import _ from "lodash";
 import { HashMap } from "./HashMap";
 
 export class Collection<T> {
-    private constructor(private xs: T[]) {}
+    private xs: T[];
+
+    constructor(values: T[]) {
+        this.xs = values;
+    }
 
     /* Constructors */
 
-    static from<T>(xs: T[]): Collection<T> {
-        return new Collection(xs);
+    static from2<T>(xs: T[]) {
+        return new this(xs);
     }
 
-    static empty<T>(): Collection<T> {
-        return Collection.from([]);
-    }
+    // static range(start: number, end: number)
 
     /* Methods that return a Collection */
 
@@ -134,12 +136,17 @@ export class Collection<T> {
             .map(([i1, i2]) => build(this.xs.slice(i1, i2)));
     }
 
-    splitWhen(pred: (x: T) => boolean): Collection<Collection<T>> {
-        const indexes = this.enumerate()
-            .compactMap(([idx, x]) => (pred(x) ? idx + 1 : undefined))
-            .value();
-        return this.splitAt(indexes);
+    thru<U>(fn: (xs: Collection<T>) => Collection<U>) {
+        return fn(this);
     }
+
+    /*
+    splitWhen(pred: (x: T) => boolean): Collection<Collection<T>> {
+        return this.enumerate()
+            .compactMap(([idx, x]) => (pred(x) ? idx + 1 : undefined))
+            .thru(indexes => this.splitAt(indexes.value()));
+    }
+    */
 
     join(char: string): string {
         return this.xs.join(char);
@@ -190,7 +197,7 @@ export class Collection<T> {
 
         return this.xs.reduce((hashMapAcc, x) => {
             const key = grouperFn(x);
-            const valuesForKey = hashMapAcc.get(key) || Collection.from([]);
+            const valuesForKey = hashMapAcc.get(key) || new Collection([]);
             return hashMapAcc.set(key, valuesForKey.append(x));
         }, initialValue);
     }
@@ -210,5 +217,5 @@ function defaultCompareFn<A>(a: A, b: A): CompareRes {
 }
 
 function build<T>(xs: T[]): Collection<T> {
-    return Collection.from(xs);
+    return new Collection(xs);
 }

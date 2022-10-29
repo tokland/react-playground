@@ -1,31 +1,31 @@
-import { assertType } from "../../../libs/test-helpers";
+import { assertType as expectType } from "../../../libs/test-helpers";
 import { Collection } from "../DataTools";
+
+const _ = <T>(xs: T[]) => new Collection(xs);
 
 describe("Collection", () => {
     test("map", () => {
-        const values = Collection.from([1, 2, 3]).map(x => 2 * x);
+        const values = _([1, 2, 3]).map(x => 2 * x);
         expect(values.toArray()).toEqual([2, 4, 6]);
     });
 
     test("flatMap", () => {
-        const values = Collection.from([1, 2, 3]).flatMap(x => Collection.from([x, 2 * x]));
+        const values = _([1, 2, 3]).flatMap(x => _([x, 2 * x]));
         expect(values.toArray()).toEqual([1, 2, 2, 4, 3, 6]);
     });
 
     test("filter/select", () => {
-        const values = Collection.from([1, 2, 3]).select(x => x > 1);
+        const values = _([1, 2, 3]).select(x => x > 1);
         expect(values.toArray()).toEqual([2, 3]);
     });
 
     test("reject", () => {
-        const values = Collection.from([1, 2, 3]).reject(x => x > 1);
+        const values = _([1, 2, 3]).reject(x => x > 1);
         expect(values.toArray()).toEqual([1]);
     });
 
     test("enumerate", () => {
-        const values = Collection.from(["a", "b", "c"]).enumerate();
-
-        expect(values.toArray()).toEqual([
+        expect(_(["a", "b", "c"]).enumerate().toArray()).toEqual([
             [0, "a"],
             [1, "b"],
             [2, "c"],
@@ -33,35 +33,32 @@ describe("Collection", () => {
     });
 
     test("compact", () => {
-        const values = Collection.from([1, undefined, 2, null, 3]).compact();
+        const values = _([1, undefined, 2, null, 3]).compact();
 
         expect(values.toArray()).toEqual([1, 2, 3]);
-        assertType<Collection<number>>(values);
+        expectType<Collection<number>>(values);
     });
 
     test("compactMap", () => {
-        const values = Collection.from([1, 2, 3]).compactMap(x =>
-            x > 1 ? x.toString() : undefined
-        );
+        const values = _([1, 2, 3]).compactMap(x => (x > 1 ? x.toString() : undefined));
 
         expect(values.toArray()).toEqual(["2", "3"]);
-        assertType<Collection<string>>(values);
+        expectType<Collection<string>>(values);
     });
 
     test("append", () => {
-        const values = Collection.from([1, 2]).append(3);
-        expect(values.toArray()).toEqual([1, 2, 3]);
+        expect(_([1, 2]).append(3).toArray()).toEqual([1, 2, 3]);
     });
 
     test("includes", () => {
-        const values = Collection.from([1, 2, 3]);
+        const values = _([1, 2, 3]);
 
         expect(values.includes(2)).toEqual(true);
         expect(values.includes(4)).toEqual(false);
     });
 
     test("every/all", () => {
-        const values = Collection.from([1, 2, 3]);
+        const values = _([1, 2, 3]);
 
         expect(values.every(x => x > 0)).toEqual(true);
         expect(values.every(x => x > 1)).toEqual(false);
@@ -73,7 +70,7 @@ describe("Collection", () => {
     });
 
     test("some/any", () => {
-        const values = Collection.from([1, 2, 3]);
+        const values = _([1, 2, 3]);
 
         expect(values.some(x => x > 0)).toEqual(true);
         expect(values.some(x => x > 1)).toEqual(true);
@@ -85,14 +82,14 @@ describe("Collection", () => {
     });
 
     test("find", () => {
-        const values = Collection.from([1, 2, 3]);
+        const values = _([1, 2, 3]);
 
         expect(values.find(value => value === 2)).toEqual(2);
         expect(values.find(value => value === 4)).toEqual(undefined);
     });
 
     test("splitAt", () => {
-        const values = Collection.from([0, 1, 2, 3, 4, 5]);
+        const values = _([0, 1, 2, 3, 4, 5]);
 
         expect(
             values
@@ -103,11 +100,11 @@ describe("Collection", () => {
     });
 
     test("join", () => {
-        expect(Collection.from(["a", "b", "c"]).join(" - ")).toEqual("a - b - c");
+        expect(_(["a", "b", "c"]).join(" - ")).toEqual("a - b - c");
     });
 
     test("get", () => {
-        const xs = Collection.from(["a", "b"]);
+        const xs = _(["a", "b"]);
 
         expect(xs.get(0)).toEqual("a");
         expect(xs.get(1)).toEqual("b");
@@ -116,7 +113,7 @@ describe("Collection", () => {
     });
 
     test("getMany", () => {
-        const xs = Collection.from(["a", "b", "c"]);
+        const xs = _(["a", "b", "c"]);
 
         expect(xs.getMany([])).toEqual([]);
         expect(xs.getMany([0, 2])).toEqual(["a", "c"]);
@@ -124,16 +121,16 @@ describe("Collection", () => {
     });
 
     test("sort (strings)", () => {
-        expect(Collection.from(["a", "c", "b"]).sort().toArray()).toEqual(["a", "b", "c"]);
-        expect(Collection.from(["22", "3", "1"]).sort().toArray()).toEqual(["1", "22", "3"]);
+        expect(_(["a", "c", "b"]).sort().toArray()).toEqual(["a", "b", "c"]);
+        expect(_(["22", "3", "1"]).sort().toArray()).toEqual(["1", "22", "3"]);
     });
 
     test("sort (numbers)", () => {
-        expect(Collection.from([2, 33, 1, 4]).sort().toArray()).toEqual([1, 2, 4, 33]);
+        expect(_([2, 33, 1, 4]).sort().toArray()).toEqual([1, 2, 4, 33]);
     });
 
     test("sortBy", () => {
-        const values = Collection.from([2, 33, 1, 4]);
+        const values = _([2, 33, 1, 4]);
 
         expect(values.sortBy(x => x).toArray()).toEqual([1, 2, 4, 33]);
         expect(values.sortBy(x => -x).toArray()).toEqual([33, 4, 2, 1]);
@@ -141,7 +138,7 @@ describe("Collection", () => {
     });
 
     test("sortBy with custom compareFn", () => {
-        const values = Collection.from([2, 33, 1, 4]);
+        const values = _([2, 33, 1, 4]);
 
         expect(
             values
@@ -151,32 +148,32 @@ describe("Collection", () => {
     });
 
     test("first", () => {
-        expect(Collection.from([1, 2, 3]).first()).toEqual(1);
-        expect(Collection.from([]).first()).toEqual(undefined);
+        expect(_([1, 2, 3]).first()).toEqual(1);
+        expect(_([]).first()).toEqual(undefined);
     });
 
     test("last", () => {
-        expect(Collection.from([1, 2, 3]).last()).toEqual(3);
-        expect(Collection.from([]).last()).toEqual(undefined);
+        expect(_([1, 2, 3]).last()).toEqual(3);
+        expect(_([]).last()).toEqual(undefined);
     });
 
     test("take", () => {
-        expect(Collection.from([1, 2, 3]).take(0).toArray()).toEqual([]);
-        expect(Collection.from([1, 2, 3]).take(1).toArray()).toEqual([1]);
-        expect(Collection.from([1, 2, 3]).take(2).toArray()).toEqual([1, 2]);
-        expect(Collection.from([1, 2, 3]).take(3).toArray()).toEqual([1, 2, 3]);
-        expect(Collection.from([1, 2, 3]).take(10).toArray()).toEqual([1, 2, 3]);
+        expect(_([1, 2, 3]).take(0).toArray()).toEqual([]);
+        expect(_([1, 2, 3]).take(1).toArray()).toEqual([1]);
+        expect(_([1, 2, 3]).take(2).toArray()).toEqual([1, 2]);
+        expect(_([1, 2, 3]).take(3).toArray()).toEqual([1, 2, 3]);
+        expect(_([1, 2, 3]).take(10).toArray()).toEqual([1, 2, 3]);
     });
 
     test("drop", () => {
-        expect(Collection.from([1, 2, 3]).drop(0).toArray()).toEqual([1, 2, 3]);
-        expect(Collection.from([1, 2, 3]).drop(1).toArray()).toEqual([2, 3]);
-        expect(Collection.from([1, 2, 3]).drop(2).toArray()).toEqual([3]);
-        expect(Collection.from([1, 2, 3]).drop(3).toArray()).toEqual([]);
+        expect(_([1, 2, 3]).drop(0).toArray()).toEqual([1, 2, 3]);
+        expect(_([1, 2, 3]).drop(1).toArray()).toEqual([2, 3]);
+        expect(_([1, 2, 3]).drop(2).toArray()).toEqual([3]);
+        expect(_([1, 2, 3]).drop(3).toArray()).toEqual([]);
     });
 
     test("cons", () => {
-        expect(Collection.from([1, 2, 3, 4]).pairwise().toArray()).toEqual([
+        expect(_([1, 2, 3, 4]).pairwise().toArray()).toEqual([
             [1, 2],
             [2, 3],
             [3, 4],
@@ -185,8 +182,8 @@ describe("Collection", () => {
 
     test("zipLongest", () => {
         expect(
-            Collection.from([1, 2, 3])
-                .zipLongest(Collection.from(["a", "b"]))
+            _([1, 2, 3])
+                .zipLongest(_(["a", "b"]))
                 .toArray()
         ).toEqual([
             [1, "a"],
@@ -196,9 +193,9 @@ describe("Collection", () => {
     });
 
     test("zip", () => {
-        const zipped = Collection.from([1, 2, 3]).zip(Collection.from(["a", "b"]));
+        const zipped = _([1, 2, 3]).zip(_(["a", "b"]));
 
-        assertType<Collection<readonly [number, string]>>(zipped);
+        expectType<Collection<readonly [number, string]>>(zipped);
         expect(zipped.toArray()).toEqual([
             [1, "a"],
             [2, "b"],
@@ -206,11 +203,11 @@ describe("Collection", () => {
     });
 
     test("prepend", () => {
-        expect(Collection.from([2, 3]).prepend(1).toArray()).toEqual([1, 2, 3]);
+        expect(_([2, 3]).prepend(1).toArray()).toEqual([1, 2, 3]);
     });
 
     test("groupBy", () => {
-        const values = Collection.from([1, 2, 3]).groupBy(x => x > 1);
+        const values = _([1, 2, 3]).groupBy(x => x > 1);
 
         expect(values.size).toEqual(2);
         expect(values.get(false)?.toArray()).toEqual([1]);
@@ -218,7 +215,7 @@ describe("Collection", () => {
     });
 
     test("toHashMap from pairs", () => {
-        const hashMap = Collection.from([1, 2]).toHashMap(x => [x, x.toString()]);
+        const hashMap = _([1, 2]).toHashMap(x => [x, x.toString()]);
 
         expect(hashMap.size).toEqual(2);
         expect(hashMap.get(1)).toEqual("1");
