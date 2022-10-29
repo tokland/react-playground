@@ -86,6 +86,10 @@ describe("Collection", () => {
 
         expect(values.find(value => value === 2)).toEqual(2);
         expect(values.find(value => value === 4)).toEqual(undefined);
+
+        const defaultValue = values.find(value => value === 4, 10);
+        expectType<number>(defaultValue);
+        expect(defaultValue).toEqual(10);
     });
 
     test("splitAt", () => {
