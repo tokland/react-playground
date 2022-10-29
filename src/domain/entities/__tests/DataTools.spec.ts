@@ -91,8 +91,36 @@ describe("Collection", () => {
         expect(values.find(value => value === 4)).toEqual(undefined);
     });
 
+    test("splitAt", () => {
+        const values = Collection.from([0, 1, 2, 3, 4, 5]);
+
+        expect(
+            values
+                .splitAt([1, 3])
+                .value()
+                .map(xs => xs.value())
+        ).toEqual([[0], [1, 2], [3, 4, 5]]);
+    });
+
     test("join", () => {
         expect(Collection.from(["a", "b", "c"]).join(" - ")).toEqual("a - b - c");
+    });
+
+    test("get", () => {
+        const xs = Collection.from(["a", "b"]);
+
+        expect(xs.get(0)).toEqual("a");
+        expect(xs.get(1)).toEqual("b");
+        expect(xs.get(2)).toEqual(undefined);
+        expect(xs.get(-1)).toEqual(undefined);
+    });
+
+    test("getMany", () => {
+        const xs = Collection.from(["a", "b", "c"]);
+
+        expect(xs.getMany([])).toEqual([]);
+        expect(xs.getMany([0, 2])).toEqual(["a", "c"]);
+        expect(xs.getMany([1, 3])).toEqual(["b", undefined]);
     });
 
     test("sort (strings)", () => {

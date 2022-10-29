@@ -16,6 +16,10 @@ export class Collection<T> {
 
     /* Methods that return a Collection */
 
+    get size() {
+        return this.xs.length;
+    }
+
     map<U>(fn: (x: T) => U): Collection<U> {
         return build(this.xs.map(fn));
     }
@@ -122,25 +126,33 @@ export class Collection<T> {
         return this;
     }
 
-    splitWhen(pred: (x: T) => boolean): Collection<Collection<T>> {
-        return this.enumerate()
-            .compactMap(([idx, x]) => (pred(x) ? idx + 1 : undefined))
+    splitAt(idx: number[]): Collection<Collection<T>> {
+        return build(idx)
             .prepend(0)
             .append(this.xs.length)
             .pairwise()
             .map(([i1, i2]) => build(this.xs.slice(i1, i2)));
     }
 
+    splitWhen(pred: (x: T) => boolean): Collection<Collection<T>> {
+        const indexes = this.enumerate()
+            .compactMap(([idx, x]) => (pred(x) ? idx + 1 : undefined))
+            .value();
+        return this.splitAt(indexes);
+    }
+
     join(char: string): string {
         return this.xs.join(char);
     }
 
-    get size() {
-        return this.xs.length;
+    get(idx: number): T | undefined {
+        return this.xs[idx];
     }
 
-    // getAt
-    // getManyAt/at
+    getMany(idxs: number[]): Array<T | undefined> {
+        return idxs.map(idx => this.xs[idx]);
+    }
+
     // splitAtIndexes
     // intersperse
     // forEach
@@ -150,8 +162,6 @@ export class Collection<T> {
     // accumulate
     // cartesianProduct
     // orderBy([[x => x+1, "asc"], [x => 2*x, "desc"]])
-
-    /* Methods that return: Array */
 
     value(): T[] {
         return this.xs;
