@@ -72,11 +72,8 @@ export class Collection<T> {
 
     any = this.some;
 
-    find<DefaultValue extends T | undefined>(
-        pred: (x: T) => boolean,
-        defaultValue?: DefaultValue
-    ): T | DefaultValue {
-        return this.xs.find(pred) || (defaultValue as DefaultValue);
+    find<Args extends [] | [T]>(pred: (x: T) => boolean, ...[defaultValue]: Args): T | Args[0] {
+        return this.xs.find(pred) || defaultValue;
     }
 
     sort(): Collection<T> {
