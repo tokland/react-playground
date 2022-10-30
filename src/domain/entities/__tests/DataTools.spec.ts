@@ -1,5 +1,5 @@
-import { assertType as expectType } from "../../../libs/test-helpers";
 import { Collection } from "../DataTools";
+import { expectTypeOf } from "expect-type";
 
 const _ = <T>(xs: T[]) => new Collection(xs);
 
@@ -36,14 +36,14 @@ describe("Collection", () => {
         const values = _([1, undefined, 2, null, 3]).compact();
 
         expect(values.toArray()).toEqual([1, 2, 3]);
-        expectType<Collection<number>>(values);
+        expectTypeOf(values).toEqualTypeOf<Collection<number>>();
     });
 
     test("compactMap", () => {
         const values = _([1, 2, 3]).compactMap(x => (x > 1 ? x.toString() : undefined));
 
         expect(values.toArray()).toEqual(["2", "3"]);
-        expectType<Collection<string>>(values);
+        expectTypeOf(values).toEqualTypeOf<Collection<string>>();
     });
 
     test("append", () => {
@@ -84,12 +84,17 @@ describe("Collection", () => {
     test("find", () => {
         const values = _([1, 2, 3]);
 
-        expect(values.find(value => value === 2)).toEqual(2);
-        expect(values.find(value => value === 4)).toEqual(undefined);
+        const valueFound = values.find(value => value === 2);
+        expect(valueFound).toEqual(2);
+        expectTypeOf(valueFound).toEqualTypeOf<number | undefined>();
 
-        const defaultValue = values.find(value => value === 4, 10);
-        expectType<number>(defaultValue);
-        expect(defaultValue).toEqual(10);
+        const valueNotFound = values.find(value => value === 4);
+        expect(valueNotFound).toEqual(undefined);
+        expectTypeOf(valueNotFound).toEqualTypeOf<number | undefined>();
+
+        const valueDefault = values.find(value => value === 4, { or: 10 });
+        expect(valueDefault).toEqual(10);
+        expectTypeOf(valueDefault).toEqualTypeOf<number>();
     });
 
     test("splitAt", () => {
@@ -110,18 +115,18 @@ describe("Collection", () => {
     test("get", () => {
         const xs = _(["a", "b"]);
 
+        expect(xs.get(-1)).toEqual(undefined);
         expect(xs.get(0)).toEqual("a");
         expect(xs.get(1)).toEqual("b");
         expect(xs.get(2)).toEqual(undefined);
-        expect(xs.get(-1)).toEqual(undefined);
     });
 
     test("getMany", () => {
         const xs = _(["a", "b", "c"]);
 
-        expect(xs.getMany([])).toEqual([]);
-        expect(xs.getMany([0, 2])).toEqual(["a", "c"]);
-        expect(xs.getMany([1, 3])).toEqual(["b", undefined]);
+        expect(xs.getMany([]).toArray()).toEqual([]);
+        expect(xs.getMany([0, 2]).toArray()).toEqual(["a", "c"]);
+        expect(xs.getMany([1, 3]).toArray()).toEqual(["b", undefined]);
     });
 
     test("sort (strings)", () => {
@@ -199,7 +204,8 @@ describe("Collection", () => {
     test("zip", () => {
         const zipped = _([1, 2, 3]).zip(_(["a", "b"]));
 
-        expectType<Collection<readonly [number, string]>>(zipped);
+        expectTypeOf(zipped).toEqualTypeOf<Collection<readonly [number, string]>>();
+
         expect(zipped.toArray()).toEqual([
             [1, "a"],
             [2, "b"],

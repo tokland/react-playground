@@ -1,6 +1,10 @@
 import _ from "lodash";
 import { HashMap } from "./HashMap";
 
+type Opt<Args extends any[], K extends string> = Args extends [{ or: infer O }] ? O : undefined;
+type T1 = Opt<[], "a">;
+type T2 = Opt<[{ or: 2 }], "a">;
+
 export class Collection<T> {
     private xs: T[];
 
@@ -72,8 +76,8 @@ export class Collection<T> {
 
     any = this.some;
 
-    find<Args extends [] | [T]>(pred: (x: T) => boolean, ...[defaultValue]: Args): T | Args[0] {
-        return this.xs.find(pred) || defaultValue;
+    find<Or extends T | undefined>(pred: (x: T) => boolean, options: { or?: Or } = {}): T | Or {
+        return this.xs.find(pred) || (options?.or as Or);
     }
 
     sort(): Collection<T> {
@@ -156,8 +160,8 @@ export class Collection<T> {
         return this.xs[idx];
     }
 
-    getMany(idxs: number[]): Array<T | undefined> {
-        return idxs.map(idx => this.xs[idx]);
+    getMany(idxs: number[]): Collection<T | undefined> {
+        return build(idxs.map(idx => this.xs[idx]));
     }
 
     // splitAtIndexes
