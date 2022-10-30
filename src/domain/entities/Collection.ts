@@ -48,10 +48,7 @@ export class Collection<T> {
         return this.reject(x => x === undefined || x === null) as Collection<NonNullable<T>>;
     }
 
-    compactMap<C extends Collection<T>, U>(
-        this: C,
-        fn: (x: T) => U
-    ): Apply<new (...args: any[]) => C, NonNullable<U>> {
+    compactMap<C extends Collection<T>, U>(this: C, fn: (x: T) => U): Apply2<C, NonNullable<U>> {
         return this.map(fn).compact() as any;
     }
 
