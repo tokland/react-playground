@@ -129,6 +129,12 @@ describe("Collection", () => {
         expect(xs.getMany([1, 3]).toArray()).toEqual(["b", undefined]);
     });
 
+    test("intersperse", () => {
+        const xs = _(["a", "b", "c"]);
+
+        expect(xs.intersperse("x").toArray()).toEqual(["a", "x", "b", "x", "c"]);
+    });
+
     test("sort (strings)", () => {
         expect(_(["a", "c", "b"]).sort().toArray()).toEqual(["a", "b", "c"]);
         expect(_(["22", "3", "1"]).sort().toArray()).toEqual(["1", "22", "3"]);

@@ -156,8 +156,10 @@ export class Collection<T> {
         return build(idxs.map(idx => this.xs[idx]));
     }
 
-    // splitAtIndexes
-    // intersperse
+    intersperse(value: T): Collection<T> {
+        return this.flatMap(x => build([x, value])).thru(cs => cs.take(cs.size - 1));
+    }
+
     // forEach
     // uniq
     // uniqBy
