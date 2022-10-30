@@ -55,8 +55,8 @@ export class Collection<T> {
         return this.map(fn).compact() as any;
     }
 
-    append(x: T): Collection<T> {
-        return new Collection(this.xs.concat([x]));
+    append<C extends Collection<T>>(this: C, x: T): Apply2<C, T> {
+        return build(this.xs.concat([x])) as any;
     }
 
     includes(x: T): boolean {
@@ -218,7 +218,7 @@ function defaultCompareFn<T>(a: T, b: T): CompareRes {
 }
 
 function build<T>(xs: T[]): Collection<T> {
-    return new Collection(xs);
+    return Collection.from(xs);
 }
 
 declare global {
