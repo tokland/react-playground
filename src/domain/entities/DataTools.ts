@@ -144,14 +144,6 @@ export class Collection<T> {
         return fn(this);
     }
 
-    /*
-    splitWhen(pred: (x: T) => boolean): Collection<Collection<T>> {
-        return this.enumerate()
-            .compactMap(([idx, x]) => (pred(x) ? idx + 1 : undefined))
-            .thru(indexes => this.splitAt(indexes.value()));
-    }
-    */
-
     join(char: string): string {
         return this.xs.join(char);
     }

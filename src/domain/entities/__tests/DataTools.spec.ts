@@ -205,7 +205,6 @@ describe("Collection", () => {
         const zipped = _([1, 2, 3]).zip(_(["a", "b"]));
 
         expectTypeOf(zipped).toEqualTypeOf<Collection<readonly [number, string]>>();
-
         expect(zipped.toArray()).toEqual([
             [1, "a"],
             [2, "b"],

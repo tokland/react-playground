@@ -24,3 +24,6 @@ export class Counter extends Struct<CounterAttrs>() {
         return this._update({ value: this.value + n });
     }
 }
+
+const counter = Counter.create({ id: "k2", value: 2 });
+console.log(counter);
