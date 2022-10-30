@@ -1,17 +1,13 @@
 import { HashMap as RimbuHashMap } from "@rimbu/hashed";
 import { Maybe } from "../../libs/ts-utils";
 
-class HashMapB<K, V> {
+export class HashMap<K, V> {
+    /* Constructors */
     protected constructor(protected _map: RimbuHashMap<K, V>) {}
 
     static empty<K, V>() {
-        return new HashMapB<K, V>(RimbuHashMap.empty());
+        return new HashMap<K, V>(RimbuHashMap.empty());
     }
-}
-
-// extends HashMapBase<K, V>()
-export class HashMap<K, V> extends HashMapB<K, V> {
-    /* Constructors */
 
     static fromPairs<K, V>(pairs: Array<[K, V]>) {
         return new HashMap(RimbuHashMap.from(pairs));
