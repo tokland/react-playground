@@ -1,9 +1,15 @@
 import _ from "lodash";
 import { HashMap } from "./HashMap";
 
-type Opt<Args extends any[], K extends string> = Args extends [{ or: infer O }] ? O : undefined;
-type T1 = Opt<[], "a">;
-type T2 = Opt<[{ or: 2 }], "a">;
+interface CollectionHKT<T> {}
+
+type Apply<C extends new (...args: any) => any, T> = {
+    [K in keyof CollectionHKT<any>]: CollectionHKT<any>[K] extends InstanceType<C>
+        ? InstanceType<C> extends CollectionHKT<any>[K]
+            ? CollectionHKT<T>[K]
+            : never
+        : never;
+}[keyof CollectionHKT<any>];
 
 export class Collection<T> {
     private xs: T[];
@@ -14,8 +20,8 @@ export class Collection<T> {
 
     /* Constructors */
 
-    static from2<T>(xs: T[]) {
-        return new this(xs);
+    static from<C extends typeof Collection, T>(this: C, xs: T[]): Apply<C, T> {
+        return new this(xs) as Apply<C, T>;
     }
 
     // static range(start: number, end: number)
@@ -205,6 +211,14 @@ export class Collection<T> {
         return HashMap.fromPairs(pairs);
     }
 }
+
+interface CollectionHKT<T> {
+    ExtendedCollection: ExtendedCollection<T>;
+}
+
+class ExtendedCollection<T> extends Collection<T> {}
+
+const ec1 = ExtendedCollection.from([1, 2]);
 
 type CompareRes = -1 | 0 | 1;
 
