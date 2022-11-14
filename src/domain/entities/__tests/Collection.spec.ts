@@ -4,6 +4,10 @@ import { expectTypeOf } from "expect-type";
 const _ = <T>(xs: T[]) => new Collection(xs);
 
 describe("Collection", () => {
+    test("range", () => {
+        expect(Collection.range(2, 5).toArray()).toEqual([2, 3, 4]);
+    });
+
     test("map", () => {
         const values = _([1, 2, 3]).map(x => 2 * x);
         expect(values.toArray()).toEqual([2, 4, 6]);
@@ -12,6 +16,14 @@ describe("Collection", () => {
     test("flatMap", () => {
         const values = _([1, 2, 3]).flatMap(x => _([x, 2 * x]));
         expect(values.toArray()).toEqual([1, 2, 2, 4, 3, 6]);
+    });
+
+    test("flatten", () => {
+        expect(
+            _([[1, 2], [3], [4, 5]])
+                .flatten()
+                .toArray()
+        ).toEqual([1, 2, 3, 4, 5]);
     });
 
     test("filter/select", () => {
