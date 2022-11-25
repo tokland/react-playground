@@ -1,5 +1,8 @@
-import _ from "lodash";
 import { HashMap } from "./HashMap";
+
+export default function _c<T>(xs: T[]): Collection<T> {
+    return new Collection(xs);
+}
 
 export class Collection<T> {
     private xs: T[];
@@ -15,7 +18,11 @@ export class Collection<T> {
     }
 
     static range(start: number, end: number): Collection<number> {
-        return build(Array.from(new Array(end - start)).map((_x, idx) => start + idx));
+        const output = [];
+        for (let idx = start; idx < end; idx++) {
+            output.push(idx);
+        }
+        return Collection.from(output);
     }
 
     /* Unwrappers */
@@ -62,7 +69,7 @@ export class Collection<T> {
         return this.reject(x => x === undefined || x === null) as Collection<NonNullable<T>>;
     }
 
-    compactMap<C extends Collection<T>, U>(this: C, fn: (x: T) => U): Collection<NonNullable<U>> {
+    compactMap<U>(fn: (x: T) => U): Collection<NonNullable<U>> {
         return this.map(fn).compact() as Collection<NonNullable<U>>;
     }
 
@@ -171,9 +178,23 @@ export class Collection<T> {
         return this.flatMap(x => build([x, value])).thru(cs => cs.take(cs.size - 1));
     }
 
-    // forEach
-    // uniq
+    uniq(): Collection<T> {
+        const seen = new Set();
+        const output: Array<T> = [];
+
+        for (const item of this.xs) {
+            if (!seen.has(item)) {
+                output.push(item);
+                seen.add(item);
+            }
+        }
+
+        return Collection.from(output);
+    }
+
     // uniqBy
+
+    // forEach(fn: ([value: T]) => void): void
     // reduce
     // accumulate
     // cartesianProduct
@@ -181,13 +202,17 @@ export class Collection<T> {
 
     zipLongest<S>(xs: Collection<S>): Collection<readonly [T | undefined, S | undefined]> {
         const max = Math.max(this.size, xs.size);
-        const pairs = _.range(0, max).map(i => [this.xs[i], xs.xs[i]] as const);
+        const pairs = Collection.range(0, max)
+            .map(i => [this.xs[i], xs.xs[i]] as const)
+            .value();
         return build(pairs);
     }
 
     zip<S>(xs: Collection<S>): Collection<readonly [T, S]> {
         const min = Math.min(this.size, xs.size);
-        const pairs = _.range(0, min).map(i => [this.xs[i], xs.xs[i]] as [T, S]);
+        const pairs = Collection.range(0, min)
+            .map(i => [this.xs[i], xs.xs[i]] as [T, S])
+            .value();
         return build(pairs);
     }
 

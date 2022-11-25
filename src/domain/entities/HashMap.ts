@@ -13,7 +13,7 @@ export class HashMap<K, V> {
         return new HashMap(RimbuHashMap.from(pairs));
     }
 
-    /* Method */
+    /* Methods */
 
     get(key: K): Maybe<V> {
         return this._map.get(key);
@@ -46,12 +46,14 @@ export class HashMap<K, V> {
         return this._map.size;
     }
 
+    // toCollection(): Collection<[K, V]>
     // pickBy
     // omitBy
     // invert
-    // invertAsCollection
+    // invertMulti
     // hasKey
+    // hasValue
     // merge
     // mergeWith
-    // forEach
+    // forEach(fn: (pair: [K, V]) => void): void {}
 }

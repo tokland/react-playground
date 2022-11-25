@@ -1,3 +1,6 @@
+import { multiply } from "lodash";
+import React, { useContext } from "react";
+import create, { createStore, StoreApi, useStore } from "zustand";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState, Feedback } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
@@ -113,4 +116,58 @@ export class AppActions extends BaseActions {
     session = new SessionActions(this.options);
     routes = new RouterActions(this.options);
     counter = new CounterActions(this.options);
+}
+
+type State = { x: number };
+
+type Store = { get: () => State; set: (state: State) => void };
+
+class Actions {
+    constructor(private store: Store, private compositionRoot: CompositionRoot) {}
+
+    private get state() {
+        return this.store.get();
+    }
+
+    private set(state: State) {
+        this.store.set(state);
+    }
+
+    add(n: number) {
+        this.set({ ...this.state, x: this.state.x + n });
+    }
+}
+
+const initialState: State = { x: 1 };
+
+type ZustandStore = StoreApi<{
+    state: State;
+    actions: Actions;
+}>;
+
+export function getStore(compositionRoot: CompositionRoot) {
+    return createStore<{ state: State; actions: Actions }>((set, get) => ({
+        state: initialState,
+        actions: new Actions(
+            {
+                set: state => set({ state }),
+                get: () => get().state,
+            },
+            compositionRoot
+        ),
+    }));
+}
+
+const StoreContext = React.createContext<ZustandStore | null>(null);
+
+export const StoreWrapper = StoreContext.Provider;
+
+export function useStoreState<S>(selector: (state: State) => S) {
+    const store = useContext(StoreContext)!;
+    return useStore(store, obj => selector(obj.state));
+}
+
+export function useActions(): Actions {
+    const store = useContext(StoreContext)!;
+    return useStore(store).actions;
 }

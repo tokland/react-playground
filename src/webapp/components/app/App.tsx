@@ -1,6 +1,6 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { ActionGenerator, AppActions } from "../../AppActions";
+import { ActionGenerator, AppActions, getStore, StoreWrapper } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
@@ -21,12 +21,16 @@ const initialAppState = new AppState({
 
 const App: React.FC = () => {
     const urlSync = useUrlSync(store, routes, routeFromState);
+    const compositionRoot = getCompositionRoot();
+    const storeValue = getStore(compositionRoot);
 
     return (
         <>
             <UrlSync {...urlSync} />
-            {urlSync.isReady && <Router />}
-            <Feedback />
+            <StoreWrapper value={storeValue}>
+                {urlSync.isReady && <Router />}
+                <Feedback />
+            </StoreWrapper>
         </>
     );
 };

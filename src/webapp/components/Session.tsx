@@ -1,6 +1,7 @@
 import React from "react";
 import { actions, dispatch, useAppState } from "./app/App";
 import { Field, useForm } from "typed-react-form";
+import { useActions, useStoreState } from "../AppActions";
 
 const Session: React.FC = () => {
     const session = useAppState(state => state.session);
@@ -11,9 +12,13 @@ const Session: React.FC = () => {
             dispatch(actions.session.login(formState.values.username));
         });
     }, [form]);
+    const actions2 = useActions();
+    const value = useStoreState(state => state.x);
 
     return (
         <div>
+            <button onClick={() => actions2.add(1)}>Add</button>
+            value={value}
             {session.type === "loggedIn" ? (
                 <>
                     <span>Logged in as {session.username}</span>&nbsp;

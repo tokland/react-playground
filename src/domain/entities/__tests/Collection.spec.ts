@@ -6,6 +6,7 @@ const _ = <T>(xs: T[]) => new Collection(xs);
 describe("Collection", () => {
     test("range", () => {
         expect(Collection.range(2, 5).toArray()).toEqual([2, 3, 4]);
+        expect(Collection.range(2, -1).toArray()).toEqual([]);
     });
 
     test("map", () => {
@@ -14,8 +15,8 @@ describe("Collection", () => {
     });
 
     test("flatMap", () => {
-        const values = _([1, 2, 3]).flatMap(x => _([x, 2 * x]));
-        expect(values.toArray()).toEqual([1, 2, 2, 4, 3, 6]);
+        const values = _([1, 2, 3]).flatMap(x => _([x, -x]));
+        expect(values.toArray()).toEqual([1, -1, 2, -2, 3, -3]);
     });
 
     test("flatten", () => {
@@ -147,6 +148,11 @@ describe("Collection", () => {
         expect(xs.intersperse("x").toArray()).toEqual(["a", "x", "b", "x", "c"]);
     });
 
+    test("uniq", () => {
+        expect(_([1, 2, 3]).uniq().toArray()).toEqual([1, 2, 3]);
+        expect(_([1, 2, 2, 3, 1]).uniq().toArray()).toEqual([1, 2, 3]);
+    });
+
     test("sort (strings)", () => {
         expect(_(["a", "c", "b"]).sort().toArray()).toEqual(["a", "b", "c"]);
         expect(_(["22", "3", "1"]).sort().toArray()).toEqual(["1", "22", "3"]);
@@ -197,9 +203,10 @@ describe("Collection", () => {
         expect(_([1, 2, 3]).drop(1).toArray()).toEqual([2, 3]);
         expect(_([1, 2, 3]).drop(2).toArray()).toEqual([3]);
         expect(_([1, 2, 3]).drop(3).toArray()).toEqual([]);
+        expect(_([1, 2, 3]).drop(10).toArray()).toEqual([]);
     });
 
-    test("cons", () => {
+    test("pairwise", () => {
         expect(_([1, 2, 3, 4]).pairwise().toArray()).toEqual([
             [1, 2],
             [2, 3],

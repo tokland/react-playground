@@ -21,5 +21,6 @@
         "jsx": "react-jsx",
         "plugins": [{ "name": "typescript-expect-plugin" }]
     },
-    "include": ["src"]
+    "include": ["src"],
+    "exclude": ["src/playground"]
 }
