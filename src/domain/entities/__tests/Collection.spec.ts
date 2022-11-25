@@ -153,6 +153,14 @@ describe("Collection", () => {
         expect(_([1, 2, 2, 3, 1]).uniq().toArray()).toEqual([1, 2, 3]);
     });
 
+    test("uniqBy", () => {
+        expect(
+            _(["a", "ab", "b", "c", "abc", "de"])
+                .uniqBy(s => s.length)
+                .toArray()
+        ).toEqual(["a", "ab", "abc"]);
+    });
+
     test("sort (strings)", () => {
         expect(_(["a", "c", "b"]).sort().toArray()).toEqual(["a", "b", "c"]);
         expect(_(["22", "3", "1"]).sort().toArray()).toEqual(["1", "22", "3"]);

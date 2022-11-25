@@ -33,11 +33,11 @@ export class Collection<T> {
 
     toArray = this.value;
 
-    /* Methods that return a Collection */
-
     get size() {
         return this.xs.length;
     }
+
+    /* Methods that return a Collection */
 
     map<U>(fn: (x: T) => U): Collection<U> {
         return build(this.xs.map(fn));
@@ -69,8 +69,8 @@ export class Collection<T> {
         return this.reject(x => x === undefined || x === null) as Collection<NonNullable<T>>;
     }
 
-    compactMap<U>(fn: (x: T) => U): Collection<NonNullable<U>> {
-        return this.map(fn).compact() as Collection<NonNullable<U>>;
+    compactMap<U>(fn: (x: T) => U | undefined | null): Collection<U> {
+        return this.map(fn).compact();
     }
 
     append(x: T): Collection<T> {
@@ -108,7 +108,7 @@ export class Collection<T> {
     }
 
     sortWith(compareFn: CompareFn<T>): Collection<T> {
-        return build(this.xs.slice().sort((a, b) => compareFn(a, b)));
+        return build(this.xs.slice().sort(compareFn));
     }
 
     first(): T | undefined {
@@ -141,11 +141,11 @@ export class Collection<T> {
         );
     }
 
-    prepend(x: T): this {
-        return build([x, ...this.xs]) as this;
+    prepend(x: T) {
+        return build([x, ...this.xs]);
     }
 
-    tap(fn: (xs: Collection<T>) => void): this {
+    tap(fn: (xs: Collection<T>) => void) {
         fn(this);
         return this;
     }
@@ -179,20 +179,23 @@ export class Collection<T> {
     }
 
     uniq(): Collection<T> {
-        const seen = new Set();
+        return this.uniqBy(x => x);
+    }
+
+    uniqBy<U>(mapper: (value: T) => U): Collection<T> {
+        const seen = new Set<U>();
         const output: Array<T> = [];
 
         for (const item of this.xs) {
-            if (!seen.has(item)) {
+            const mapped = mapper(item);
+            if (!seen.has(mapped)) {
                 output.push(item);
-                seen.add(item);
+                seen.add(mapped);
             }
         }
 
         return Collection.from(output);
     }
-
-    // uniqBy
 
     // forEach(fn: ([value: T]) => void): void
     // reduce
