@@ -223,6 +223,40 @@ describe("Collection", () => {
         expect(_c([1, 2, 3, 4, 5]).chunk(2).toArray()).toEqual([[1, 2], [3, 4], [5]]);
     });
 
+    test("cartesian", () => {
+        expect(_c([[]]).cartesian().toArray()).toEqual([]);
+        expect(
+            _c([[1, 2]])
+                .cartesian()
+                .toArray()
+        ).toEqual([[1], [2]]);
+
+        expect(
+            _c([
+                [1, 2],
+                [3, 4],
+            ])
+                .cartesian()
+                .toArray()
+        ).toEqual([
+            [1, 3],
+            [1, 4],
+            [2, 3],
+            [2, 4],
+        ]);
+
+        expect(
+            _c([[1, 2], [3, 4], [5]])
+                .cartesian()
+                .toArray()
+        ).toEqual([
+            [1, 3, 5],
+            [1, 4, 5],
+            [2, 3, 5],
+            [2, 4, 5],
+        ]);
+    });
+
     test("zipLongest", () => {
         expect(
             _c([1, 2, 3])

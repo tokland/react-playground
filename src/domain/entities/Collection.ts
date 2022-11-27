@@ -5,7 +5,7 @@ export default function _c<T>(xs: T[]): Collection<T> {
 }
 
 export class Collection<T> {
-    private xs: T[];
+    protected xs: T[];
 
     protected constructor(values: T[]) {
         this.xs = values;
@@ -205,7 +205,20 @@ export class Collection<T> {
         );
     }
 
-    // cartesian
+    cartesian<U>(): T extends Array<U> ? Collection<U[]> : never {
+        const [ys, ...zss] = this.xs as unknown as Array<U[]>;
+
+        if (!ys) {
+            return _c([[]]) as any;
+        } else {
+            return _c(ys).flatMap(x =>
+                _c(zss)
+                    .cartesian()
+                    .map(zs => [x, ...zs])
+            ) as any;
+        }
+    }
+
     // orderBy([[x => x+1, "asc"], [x => 2*x, "desc"]])
     // forEach(fn: (value: T) => void): void
 
@@ -264,6 +277,11 @@ export class Collection<T> {
     }
 }
 
+export class FlattenableCollection<T extends U[], U> extends Collection<T> {
+    flatten_(): Collection<U> {
+        return _c(this.xs.flat());
+    }
+}
 type CompareRes = -1 | 0 | 1;
 
 export type CompareFn<T> = (a: T, b: T) => CompareRes;
