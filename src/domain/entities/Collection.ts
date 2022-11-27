@@ -1,27 +1,25 @@
 import { HashMap } from "./HashMap";
 
 export default function _c<T>(xs: T[]): Collection<T> {
-    return new Collection(xs);
+    return Collection.from(xs);
 }
 
 export class Collection<T> {
     private xs: T[];
 
-    constructor(values: T[]) {
+    protected constructor(values: T[]) {
         this.xs = values;
     }
 
-    /* Constructors */
+    /* Builders */
 
     static from<T>(xs: T[]): Collection<T> {
         return new Collection(xs);
     }
 
-    static range(start: number, end: number): Collection<number> {
+    static range(start: number, end: number, step = 1): Collection<number> {
         const output = [];
-        for (let idx = start; idx < end; idx++) {
-            output.push(idx);
-        }
+        for (let idx = start; idx < end; idx = idx + step) output.push(idx);
         return Collection.from(output);
     }
 
@@ -40,29 +38,29 @@ export class Collection<T> {
     /* Methods that return a Collection */
 
     map<U>(fn: (x: T) => U): Collection<U> {
-        return build(this.xs.map(fn));
+        return _c(this.xs.map(fn));
     }
 
     flatten(): T extends Array<infer U> ? Collection<U> : never {
-        return build(this.xs.flat()) as any;
+        return _c(this.xs.flat()) as any;
     }
 
     flatMap<U>(fn: (x: T) => Collection<U>): Collection<U> {
-        return new Collection(this.xs.flatMap(x => fn(x).toArray()));
+        return _c(this.xs.flatMap(x => fn(x).toArray()));
     }
 
     select(pred: (x: T) => boolean): Collection<T> {
-        return new Collection(this.xs.filter(pred));
+        return _c(this.xs.filter(pred));
     }
 
     filter = this.select;
 
     reject(pred: (x: T) => boolean): Collection<T> {
-        return build(this.xs.filter(x => !pred(x)));
+        return _c(this.xs.filter(x => !pred(x)));
     }
 
     enumerate(): Collection<[number, T]> {
-        return build(this.xs.map((x, idx) => [idx, x]));
+        return _c(this.xs.map((x, idx) => [idx, x]));
     }
 
     compact(): Collection<NonNullable<T>> {
@@ -74,7 +72,7 @@ export class Collection<T> {
     }
 
     append(x: T): Collection<T> {
-        return build(this.xs.concat([x]));
+        return _c(this.xs.concat([x]));
     }
 
     includes(x: T): boolean {
@@ -98,17 +96,17 @@ export class Collection<T> {
     }
 
     sort(): Collection<T> {
-        return build(this.xs.slice().sort(defaultCompareFn));
+        return _c(this.xs.slice().sort(defaultCompareFn));
     }
 
     sortBy<U>(fn: (x: T) => U, options: { compareFn?: CompareFn<U> } = {}): Collection<T> {
         const compareFn = options.compareFn || defaultCompareFn;
         // TODO: Schwartzian transform: decorate + sort tuple + undecorate
-        return build(this.xs.slice().sort((a, b) => compareFn(fn(a), fn(b))));
+        return _c(this.xs.slice().sort((a, b) => compareFn(fn(a), fn(b))));
     }
 
     sortWith(compareFn: CompareFn<T>): Collection<T> {
-        return build(this.xs.slice().sort(compareFn));
+        return _c(this.xs.slice().sort(compareFn));
     }
 
     first(): T | undefined {
@@ -124,25 +122,25 @@ export class Collection<T> {
     }
 
     take(n: number): Collection<T> {
-        return build(this.xs.slice(0, n));
+        return _c(this.xs.slice(0, n));
     }
 
     drop(n: number): Collection<T> {
-        return build(this.xs.slice(n));
+        return _c(this.xs.slice(n));
     }
 
     pairwise(): Collection<[T, T]> {
         const n = 2;
 
-        return build(
+        return _c(
             this.xs
                 .slice(0, this.xs.length - n + 1)
-                .map((_x, idx) => [this.xs[idx]!, this.xs[idx + 1]!])
+                .map((_x, idx) => [this.xs[idx], this.xs[idx + 1]] as [T, T])
         );
     }
 
     prepend(x: T) {
-        return build([x, ...this.xs]);
+        return _c([x, ...this.xs]);
     }
 
     tap(fn: (xs: Collection<T>) => void) {
@@ -151,11 +149,11 @@ export class Collection<T> {
     }
 
     splitAt(indexes: number[]): Collection<Collection<T>> {
-        return build(indexes)
+        return _c(indexes)
             .prepend(0)
             .append(this.xs.length)
             .pairwise()
-            .map(([i1, i2]) => build(this.xs.slice(i1, i2)));
+            .map(([i1, i2]) => _c(this.xs.slice(i1, i2)));
     }
 
     thru<U>(fn: (xs: Collection<T>) => Collection<U>) {
@@ -171,11 +169,11 @@ export class Collection<T> {
     }
 
     getMany(idxs: number[]): Collection<T | undefined> {
-        return build(idxs.map(idx => this.xs[idx]));
+        return _c(idxs.map(idx => this.xs[idx]));
     }
 
     intersperse(value: T): Collection<T> {
-        return this.flatMap(x => build([x, value])).thru(cs => cs.take(cs.size - 1));
+        return this.flatMap(x => _c([x, value])).thru(cs => cs.take(cs.size - 1));
     }
 
     uniq(): Collection<T> {
@@ -197,39 +195,66 @@ export class Collection<T> {
         return Collection.from(output);
     }
 
-    // forEach(fn: ([value: T]) => void): void
-    // reduce
-    // accumulate
-    // cartesianProduct
-    // orderBy([[x => x+1, "asc"], [x => 2*x, "desc"]])
-
-    zipLongest<S>(xs: Collection<S>): Collection<readonly [T | undefined, S | undefined]> {
-        const max = Math.max(this.size, xs.size);
-        const pairs = Collection.range(0, max)
-            .map(i => [this.xs[i], xs.xs[i]] as const)
-            .value();
-        return build(pairs);
+    reduce<U>(mapper: (acc: U, value: T) => U, initialAcc: U): U {
+        return this.xs.reduce(mapper, initialAcc);
     }
 
-    zip<S>(xs: Collection<S>): Collection<readonly [T, S]> {
+    chunk(size: number): Collection<T[]> {
+        return Collection.range(0, this.xs.length, size).map(index =>
+            this.xs.slice(index, index + size)
+        );
+    }
+
+    // cartesian
+    // orderBy([[x => x+1, "asc"], [x => 2*x, "desc"]])
+    // forEach(fn: (value: T) => void): void
+
+    zipLongest<S>(xs: Collection<S>): Collection<[T | undefined, S | undefined]> {
+        const max = Math.max(this.size, xs.size);
+        const pairs = Collection.range(0, max)
+            .map(i => [this.xs[i], xs.xs[i]] as [T | undefined, S | undefined])
+            .value();
+        return _c(pairs);
+    }
+
+    zip<S>(xs: Collection<S>): Collection<[T, S]> {
         const min = Math.min(this.size, xs.size);
         const pairs = Collection.range(0, min)
             .map(i => [this.xs[i], xs.xs[i]] as [T, S])
             .value();
-        return build(pairs);
+        return _c(pairs);
     }
 
-    /* Methods that return: HashMap */
+    /* Methods that return HashMap */
 
-    // keyBy / indexBy
+    indexBy<U>(grouperFn: (x: T) => U): HashMap<U, T> {
+        const initialValue = HashMap.empty<U, T>();
+
+        return this.reduce((acc, x) => {
+            const key = grouperFn(x);
+            return acc.set(key, x);
+        }, initialValue);
+    }
+
+    keyBy = this.indexBy;
 
     groupBy<U>(grouperFn: (x: T) => U): HashMap<U, Collection<T>> {
         const initialValue = HashMap.empty<U, Collection<T>>();
 
-        return this.xs.reduce((hashMapAcc, x) => {
+        return this.reduce((acc, x) => {
             const key = grouperFn(x);
-            const valuesForKey = hashMapAcc.get(key) || new Collection([]);
-            return hashMapAcc.set(key, valuesForKey.append(x));
+            const valuesForKey = acc.get(key) || _c([]);
+            return acc.set(key, valuesForKey.append(x));
+        }, initialValue);
+    }
+
+    groupFromMap<U, W>(grouperFn: (x: T) => [U, W]): HashMap<U, Collection<W>> {
+        const initialValue = HashMap.empty<U, Collection<W>>();
+
+        return this.reduce((acc, x) => {
+            const [key, value] = grouperFn(x);
+            const valuesForKey = acc.get(key) || _c([]);
+            return acc.set(key, valuesForKey.append(value));
         }, initialValue);
     }
 
@@ -237,10 +262,6 @@ export class Collection<T> {
         const pairs = this.map(toPairFn).toArray();
         return HashMap.fromPairs(pairs);
     }
-}
-
-function build<T>(xs: T[]): Collection<T> {
-    return Collection.from(xs);
 }
 
 type CompareRes = -1 | 0 | 1;
