@@ -1,6 +1,5 @@
-import { multiply } from "lodash";
 import React, { useContext } from "react";
-import create, { createStore, StoreApi, useStore } from "zustand";
+import { createStore, StoreApi, useStore } from "zustand";
 import { CompositionRoot } from "../compositionRoot";
 import { AppState, Feedback } from "../domain/entities/AppState";
 import { Async } from "../domain/entities/Async";
@@ -123,7 +122,7 @@ type State = { x: number };
 type Store = { get: () => State; set: (state: State) => void };
 
 class Actions {
-    constructor(private store: Store, private compositionRoot: CompositionRoot) {}
+    constructor(private store: Store, private _compositionRoot: CompositionRoot) {}
 
     private get state() {
         return this.store.get();
@@ -140,10 +139,7 @@ class Actions {
 
 const initialState: State = { x: 1 };
 
-type ZustandStore = StoreApi<{
-    state: State;
-    actions: Actions;
-}>;
+type ZustandStore = StoreApi<{ state: State; actions: Actions }>;
 
 export function getStore(compositionRoot: CompositionRoot) {
     return createStore<{ state: State; actions: Actions }>((set, get) => ({
