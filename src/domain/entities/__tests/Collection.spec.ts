@@ -225,6 +225,7 @@ describe("Collection", () => {
 
     test("cartesian", () => {
         expect(_c([[]]).cartesian().toArray()).toEqual([]);
+
         expect(
             _c([[1, 2]])
                 .cartesian()
@@ -255,6 +256,31 @@ describe("Collection", () => {
             [2, 3, 5],
             [2, 4, 5],
         ]);
+    });
+
+    test("orderBy", () => {
+        const unsortedObjects = [
+            { id: 1, value: 10 },
+            { id: 2, value: 5 },
+            { id: 3, value: 10 },
+            { id: 4, value: 5 },
+        ];
+
+        const sortedObjects = [
+            { id: 4, value: 5 },
+            { id: 2, value: 5 },
+            { id: 3, value: 10 },
+            { id: 1, value: 10 },
+        ];
+
+        expect(
+            _c(unsortedObjects)
+                .orderBy([
+                    [obj => obj.value, "asc"],
+                    [obj => obj.id, "desc"],
+                ])
+                .toArray()
+        ).toEqual(sortedObjects);
     });
 
     test("zipLongest", () => {

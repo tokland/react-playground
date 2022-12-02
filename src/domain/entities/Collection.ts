@@ -96,17 +96,23 @@ export class Collection<T> {
     }
 
     sort(): Collection<T> {
-        return _c(this.xs.slice().sort(defaultCompareFn));
+        return this.sortWith(defaultCompareFn);
+    }
+
+    sortWith(compareFn: CompareFn<T>): Collection<T> {
+        return _c(this.xs.slice().sort(compareFn));
     }
 
     sortBy<U>(fn: (x: T) => U, options: { compareFn?: CompareFn<U> } = {}): Collection<T> {
         const compareFn = options.compareFn || defaultCompareFn;
         // TODO: Schwartzian transform: decorate + sort tuple + undecorate
-        return _c(this.xs.slice().sort((a, b) => compareFn(fn(a), fn(b))));
+        return this.sortWith((a, b) => compareFn(fn(a), fn(b)));
     }
 
-    sortWith(compareFn: CompareFn<T>): Collection<T> {
-        return _c(this.xs.slice().sort(compareFn));
+    orderBy(items: OrderItem<T>[]): Collection<T> {
+        return this.sortWith((a, b) => {
+            return compareArray(a, b, items);
+        });
     }
 
     first(): T | undefined {
@@ -219,7 +225,6 @@ export class Collection<T> {
         }
     }
 
-    // orderBy([[x => x+1, "asc"], [x => 2*x, "desc"]])
     // forEach(fn: (value: T) => void): void
 
     zipLongest<S>(xs: Collection<S>): Collection<[T | undefined, S | undefined]> {
@@ -286,6 +291,20 @@ type CompareRes = -1 | 0 | 1;
 
 export type CompareFn<T> = (a: T, b: T) => CompareRes;
 
-function defaultCompareFn<T>(a: T, b: T): CompareRes {
-    return a > b ? 1 : a === b ? 0 : -1;
+type Direction = "asc" | "desc";
+
+function defaultCompareFn<T>(a: T, b: T, direction: Direction = "asc"): CompareRes {
+    const [value1, value2] =
+        direction === "asc" ? [1 as const, -1 as const] : [-1 as const, 1 as const];
+    return a > b ? value1 : b > a ? value2 : 0;
 }
+
+function compareArray<T>(a: T, b: T, items: OrderItem<T>[]): CompareRes {
+    const item = items[0];
+    if (!item) return 0;
+    const [mapper, direction] = item;
+    const res = defaultCompareFn(mapper(a), mapper(b), direction);
+    return res !== 0 ? res : compareArray(a, b, items.slice(1));
+}
+
+type OrderItem<T> = [(o: T) => unknown, "asc" | "desc"];

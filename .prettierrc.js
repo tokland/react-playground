@@ -2,6 +2,7 @@
 
 module.exports = {
     printWidth: 100,
+    arrayExpand: false,
     tabWidth: 4,
     useTabs: false,
     semi: true,
