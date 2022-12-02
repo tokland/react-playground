@@ -263,6 +263,7 @@ export class Collection<T> {
             const key = grouperFn(value);
             const valuesForKey = acc.get(key) || [];
             valuesForKey.push(value);
+            acc.set(key, valuesForKey);
             return acc;
         }, new Map<U, T[]>());
 
@@ -274,6 +275,7 @@ export class Collection<T> {
             const [key, value] = grouperFn(x);
             const valuesForKey = acc.get(key) || [];
             valuesForKey.push(value);
+            acc.set(key, valuesForKey);
             return acc;
         }, new Map<U, W[]>());
 

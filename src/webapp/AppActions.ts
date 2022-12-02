@@ -133,7 +133,7 @@ const StoreContext = React.createContext<ZustandStore | null>(null);
 
 export const StoreWrapper = StoreContext.Provider;
 
-function useZustandStore<S>() {
+function useZustandStore() {
     const store = useContext(StoreContext);
     if (!store) throw new Error();
     return store;

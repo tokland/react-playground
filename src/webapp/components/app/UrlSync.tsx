@@ -5,22 +5,24 @@ import {
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
-import { useActions } from "../../AppActions";
+import { useActions, useAppState } from "../../AppActions";
+import { AppState } from "../../../domain/entities/AppState";
 
-interface UrlSyncProps<State, Routes extends GenericRoutes> {
+type State = AppState;
+
+interface UrlSyncProps<Routes extends GenericRoutes> {
     routes: Routes;
     isReady: boolean;
     setIsReady: React.Dispatch<React.SetStateAction<boolean>>;
-    store: Store<State>;
     routeFromState(state: State): RouteSelector<Routes>;
 }
 
-function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State, Routes>) {
-    const { routes, store, routeFromState, isReady, setIsReady } = props;
-    const [state, setState] = React.useState(store.state);
+function UrlSync<Routes extends GenericRoutes>(props: UrlSyncProps<Routes>) {
+    const { routes, routeFromState, isReady, setIsReady } = props;
+    const state = useAppState(state => state);
     const actions = useActions();
 
-    React.useEffect(() => store.subscribe(setState), [store]);
+    //React.useEffect(() => store.subscribe(setState), [store]);
 
     // Set state from initial URL
     React.useEffect(() => {
@@ -29,7 +31,7 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
             setIsReady(true);
         }
         if (!isReady) run();
-    }, [actions, routes, isReady, setIsReady, store]);
+    }, [actions, routes, isReady, setIsReady]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -54,13 +56,12 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
 }
 
 export function useUrlSync<State, Routes extends GenericRoutes>(
-    store: Store<State>,
     routes: Routes,
     routeFromState: (state: State) => RouteSelector<Routes>
 ) {
     const [isReady, setIsReady] = React.useState(false);
 
-    return { routes, isReady, setIsReady, store, routeFromState };
+    return { routes, isReady, setIsReady, routeFromState };
 }
 
 export default UrlSync;

@@ -11,7 +11,7 @@ const Session: React.FC = () => {
         return form.handleSubmit(formState => {
             actions.session.login(formState.values.username);
         });
-    }, [form]);
+    }, [form, actions]);
 
     return (
         <div>

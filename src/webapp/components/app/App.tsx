@@ -4,7 +4,6 @@ import { getStore, StoreWrapper, useActions, useAppState } from "../../AppAction
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
-import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import Feedback from "../Feedback";
@@ -17,8 +16,8 @@ const initialAppState = new AppState({
 });
 
 const App: React.FC = () => {
-    const actions = useActions();
-    const urlSync = useUrlSync(actions.store, routes, routeFromState);
+    const _actions = useActions();
+    const urlSync = useUrlSync(routes, routeFromState);
     const compositionRoot = getCompositionRoot();
     const storeValue = getStore(compositionRoot, initialAppState);
 
