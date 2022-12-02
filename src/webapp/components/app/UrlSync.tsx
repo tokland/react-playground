@@ -1,12 +1,12 @@
 import React from "react";
 import {
     getPathFromRoute,
-    runRouteOnEnterForPath as getActionOnEnterForPath,
+    runRouteOnEnterForPath,
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
 import { Store } from "../../hooks/useStoreState";
-import { dispatch } from "./App";
+import { useActions } from "../../AppActions";
 
 interface UrlSyncProps<State, Routes extends GenericRoutes> {
     routes: Routes;
@@ -19,18 +19,18 @@ interface UrlSyncProps<State, Routes extends GenericRoutes> {
 function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State, Routes>) {
     const { routes, store, routeFromState, isReady, setIsReady } = props;
     const [state, setState] = React.useState(store.state);
+    const actions = useActions();
 
     React.useEffect(() => store.subscribe(setState), [store]);
 
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {
-            const action = getActionOnEnterForPath(routes, window.location);
-            if (action) await dispatch(action);
+            runRouteOnEnterForPath(routes, window.location, actions);
             setIsReady(true);
         }
         if (!isReady) run();
-    }, [routes, isReady, setIsReady, store]);
+    }, [actions, routes, isReady, setIsReady, store]);
 
     // Update URL from state changes
     React.useEffect(() => {
@@ -45,12 +45,11 @@ function UrlSync<State, Routes extends GenericRoutes>(props: UrlSyncProps<State,
     // Update state on popstate (browser back/forward)
     React.useEffect(() => {
         const handler = () => {
-            const action = getActionOnEnterForPath(routes, window.location);
-            if (action) dispatch(action);
+            runRouteOnEnterForPath(routes, window.location, actions);
         };
         window.addEventListener("popstate", handler);
         return () => window.removeEventListener("popstate", handler);
-    }, [routes]);
+    }, [routes, actions]);
 
     return null;
 }

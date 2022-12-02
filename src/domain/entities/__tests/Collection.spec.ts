@@ -321,24 +321,24 @@ describe("Collection", () => {
         const values = _c(["a", "ab", "x", "y", "xy"]).groupBy(s => s.length);
 
         expect(values.size).toEqual(2);
-        expect(values.get(1)?.toArray()).toEqual(["a", "x", "y"]);
-        expect(values.get(2)?.toArray()).toEqual(["ab", "xy"]);
+        expect(values.get(1)).toEqual(["a", "x", "y"]);
+        expect(values.get(2)).toEqual(["ab", "xy"]);
     });
 
     test("groupBy", () => {
         const values = _c(["a", "ab", "x", "y", "xy"]).groupBy(s => s.length);
 
         expect(values.size).toEqual(2);
-        expect(values.get(1)?.toArray()).toEqual(["a", "x", "y"]);
-        expect(values.get(2)?.toArray()).toEqual(["ab", "xy"]);
+        expect(values.get(1)).toEqual(["a", "x", "y"]);
+        expect(values.get(2)).toEqual(["ab", "xy"]);
     });
 
     test("groupAndMap", () => {
         const values = _c(["1", "12", "9", "89"]).groupFromMap(s => [s.length, parseInt(s)]);
 
         expect(values.size).toEqual(2);
-        expect(values.get(1)?.toArray()).toEqual([1, 9]);
-        expect(values.get(2)?.toArray()).toEqual([12, 89]);
+        expect(values.get(1)).toEqual([1, 9]);
+        expect(values.get(2)).toEqual([12, 89]);
     });
 
     test("toHashMap from pairs", () => {

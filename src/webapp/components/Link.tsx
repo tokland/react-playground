@@ -1,6 +1,6 @@
 import React from "react";
 import { getPathFromRoute, RouteSelector } from "../utils/router";
-import { goTo, routes } from "./Router";
+import { routes, useGoTo } from "./Router";
 
 interface LinkProps {
     to: RouteSelector<typeof routes>;
@@ -10,13 +10,14 @@ interface LinkProps {
 const Link: React.FC<LinkProps> = props => {
     const { to, children } = props;
     const href = React.useMemo(() => getPathFromRoute(routes, to), [to]);
+    const goTo = useGoTo();
 
     const goToHref = React.useCallback<React.MouseEventHandler<HTMLAnchorElement>>(
         ev => {
             ev.preventDefault();
             goTo(to);
         },
-        [to]
+        [goTo, to]
     );
 
     return (

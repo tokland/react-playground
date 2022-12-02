@@ -78,16 +78,14 @@ export class HashMap<K, V> {
     }
 
     invertMulti(): HashMap<V, K[]> {
-        return this.toCollection()
-            .groupFromMap(([key, value]) => [value, key])
-            .mapValues(([_value, keysC]) => keysC.toArray());
+        return this.toCollection().groupFromMap(([key, value]) => [value, key]);
     }
 
     /* To implement / test */
 
-    _forEach(fn: (pair: [K, V]) => void): void {}
+    _forEach(_fn: (pair: [K, V]) => void): void {}
 
-    _mapKeys<K2>(mapper: (pair: [K, V]) => K2): HashMap<K2, V> {
+    _mapKeys<K2>(_mapper: (pair: [K, V]) => K2): HashMap<K2, V> {
         return HashMap.empty();
     }
 
@@ -95,11 +93,14 @@ export class HashMap<K, V> {
         return new HashMap(this._map.mapValues((value, key) => mapper([key, value])));
     }
 
-    _merge(other: HashMap<K, V>): HashMap<K, V> {
+    _merge(_other: HashMap<K, V>): HashMap<K, V> {
         return this;
     }
 
-    _mergeWith(other: HashMap<K, V>, merger: (pair1: [K, V], pair2: [K, V]) => V): HashMap<K, V> {
+    _mergeWith(
+        _other: HashMap<K, V>,
+        _mergeFn: (pair1: [K, V], pair2: [K, V]) => V
+    ): HashMap<K, V> {
         return this;
     }
 }

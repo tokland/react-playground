@@ -1,6 +1,7 @@
 import React from "react";
 import { Counter as CounterE } from "../../domain/entities/Counter";
-import { actions, dispatch, useAppStateOrFail } from "../components/app/App";
+import { useActions } from "../AppActions";
+import { useAppStateOrFail } from "../components/app/App";
 import Counter from "../components/Counter";
 import Link from "../components/Link";
 import { AppRoute } from "../components/Router";
@@ -21,11 +22,10 @@ const homePageRoute: AppRoute = { key: "home" };
 
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
+    const actions = useActions();
 
-    const [save, cancelSave] = useCancellableEffect(
-        React.useCallback((counter: CounterE) => actions.counter.save(counter), []),
-        { cancelOnComponentUnmount: false }
-    );
+    const saveCb = React.useCallback((counter: CounterE) => actions.counter.save(counter), []);
+    const [save, cancelSave] = useCancellableEffect(saveCb, { cancelOnComponentUnmount: false });
 
     if (loader.status === "loading") {
         return <div>Loading...</div>;
@@ -36,7 +36,7 @@ const CurrentCounter_: React.FC = () => {
             <>
                 <Counter
                     counter={loader.value}
-                    onChange={counter => dispatch(actions.counter.setCounter(counter))}
+                    onChange={counter => actions.counter.setCounter(counter)}
                     isSaving={loader.isUpdating}
                     onSave={save}
                     onCancel={cancelSave}

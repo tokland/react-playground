@@ -1,5 +1,5 @@
 import { Expand } from "../../libs/ts-utils";
-import { ActionGenerator } from "../AppActions";
+import { AppActions } from "../AppActions";
 
 export function route<Path extends string, Params extends readonly string[] = []>(
     path: Path,
@@ -30,14 +30,18 @@ export function getPathFromRoute<Routes extends GenericRoutes>(
     return pathname + (search ? "?" : "") + search;
 }
 
-export function runRouteOnEnterForPath(routes: GenericRoutes, location: Location) {
+export function runRouteOnEnterForPath(
+    routes: GenericRoutes,
+    location: Location,
+    actions: AppActions
+) {
     for (const route of Object.values(routes)) {
         const match = location.pathname.match(route.pathRegExp);
 
         if (match) {
             const args = match.groups as Parameters<typeof route.onEnter>[0]["args"];
             const params = Object.fromEntries(new URLSearchParams(window.location.search));
-            const action = route.onEnter({ args, params });
+            const action = route.onEnter({ actions, args, params });
             return action;
         }
     }
@@ -49,9 +53,10 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
     path: Path;
     pathRegExp: RegExp;
     onEnter: (options: {
+        actions: AppActions;
         args: ArgsFromPath<Path>;
         params: Partial<Record<Params[number], string>>;
-    }) => ActionGenerator;
+    }) => void;
     params?: Params;
 }
 

@@ -1,9 +1,11 @@
 import React from "react";
-import { actions, dispatch, useAppState, useAppStateOrFail } from "../components/app/App";
+import { useActions } from "../AppActions";
+import { useAppState, useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
 
 const HomePage: React.FC = () => {
+    const actions = useActions();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "loggedIn";
 
@@ -14,15 +16,11 @@ const HomePage: React.FC = () => {
                 <>
                     <CounterButton
                         index={1}
-                        onClick={index =>
-                            dispatch(actions.counter.loadCounterAndSetAsCurrentPage(index))
-                        }
+                        onClick={index => actions.counter.loadCounterAndSetAsCurrentPage(index)}
                     />
                     <CounterButton
                         index={2}
-                        onClick={index =>
-                            dispatch(actions.counter.loadCounterAndSetAsCurrentPage(index))
-                        }
+                        onClick={index => actions.counter.loadCounterAndSetAsCurrentPage(index)}
                     />
                 </>
             )}
@@ -37,7 +35,9 @@ interface CounterButtonProps {
 
 const CounterButton: React.FC<CounterButtonProps> = props => {
     const { onClick, index } = props;
-    const id = useAppStateOrFail(state => state.counterIdFromIndex(index));
+    const id = useAppStateOrFail(state => {
+        return state.counterIdFromIndex(index);
+    });
     const clickWithId = React.useCallback(() => onClick(id), [onClick, id]);
     const loader = useAppState(state => state.counters.get(id));
     const counter = loader?.status === "loaded" ? loader.value : undefined;

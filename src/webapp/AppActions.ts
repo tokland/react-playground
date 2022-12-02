@@ -6,21 +6,12 @@ import { Async } from "../domain/entities/Async";
 import { Id } from "../domain/entities/Base";
 import { Counter } from "../domain/entities/Counter";
 import { buildReducer } from "../libs/reducer";
-import { EffectResult } from "./components/app/App";
 
 const state$ = buildReducer(AppState);
 
-export type ActionCommand =
-    | { type: "getState" }
-    | { type: "setStateFn"; fn: (state: AppState) => AppState }
-    | { type: "effect"; value$: Async<unknown> };
-
-export type ActionGenerator = Generator<ActionCommand, void, unknown>;
-
-export type BaseActionGenerator<T> = Generator<ActionCommand, T, T>;
-
 interface Options {
     compositionRoot: CompositionRoot;
+    store: Store;
 }
 
 class BaseActions {
@@ -34,18 +25,17 @@ class BaseActions {
         return (...args: Args) => this.set(state => fn(...args)(state));
     }
 
-    protected *get(): BaseActionGenerator<AppState> {
-        return yield { type: "getState" };
+    protected get() {
+        return this.options.store.get();
     }
 
-    protected *set(setter: (state: AppState) => AppState): BaseActionGenerator<void> {
-        yield { type: "setStateFn", fn: setter };
+    protected set(setter: (state: AppState) => AppState) {
+        const newState = setter(this.get());
+        console.log({ newState });
+        return this.options.store.set(newState);
     }
 
-    protected *effect<T>(value$: Async<T>): BaseActionGenerator<EffectResult<T>> {
-        return yield { type: "effect", value$ };
-    }
-
+    /*
     protected *setFeedbackFromEffectResult(
         res: EffectResult<unknown>,
         options?: { successMessage: string }
@@ -62,17 +52,17 @@ class BaseActions {
                 break;
         }
     }
+    */
 
-    protected *effectWithFeedback<T>(
-        value$: Async<T>
-    ): Generator<ActionCommand, EffectResult<T>, any> {
-        const res = yield* this.effect(value$);
-        yield* this.setFeedbackFromEffectResult(res);
-        return res;
+    protected effectWithFeedback<T>(value$: Async<T>) {
+        return value$.run(
+            () => {},
+            () => {}
+        );
     }
 
-    protected *feedback(value: Feedback): BaseActionGenerator<void> {
-        yield* this.set(state$.setFeedback(value));
+    protected feedback(value: Feedback) {
+        return this.set(state$.setFeedback(value));
     }
 }
 
@@ -88,26 +78,26 @@ class RouterActions extends BaseActions {
 class CounterActions extends BaseActions {
     setCounter = this.setFrom(state$.setCounter);
 
-    *save(counter: Counter) {
-        yield* this.set(state$.setCounter(counter, { isUpdating: true }));
-        const res = yield* this.effect(this.compositionRoot.counters.save(counter));
-        yield* this.setFeedbackFromEffectResult(res, { successMessage: "saved" });
-        yield* this.set(state$.setCounter(counter, { isUpdating: false }));
+    save(counter: Counter) {
+        return this.effectWithFeedback(this.compositionRoot.counters.save(counter));
     }
 
-    *loadCounterAndSetAsCurrentPage(id: Id) {
-        yield* this.set(state$.goToCounter(id));
-        yield* this.load(id);
+    loadCounterAndSetAsCurrentPage(id: Id) {
+        this.set(state$.goToCounter(id));
+        return this.load(id);
     }
 
-    private *load(id: Id) {
-        const state = yield* this.get();
+    private load(id: Id) {
+        const state = this.get();
         const status = state.counters.get(id)?.status;
         if (status === "loading" || status === "loaded") return;
 
-        yield* this.set(state$.setCounterAsLoading(id));
-        const res = yield* this.effectWithFeedback(this.compositionRoot.counters.get(id));
-        if (res.type === "success") yield* this.set(state$.setCounter(res.value));
+        this.set(state$.setCounterAsLoading(id));
+
+        return this.compositionRoot.counters.get(id).run(
+            counter => this.set(state$.setCounter(counter)),
+            _err => {}
+        );
     }
 }
 
@@ -117,40 +107,23 @@ export class AppActions extends BaseActions {
     counter = new CounterActions(this.options);
 }
 
-type State = { x: number };
+type Store = { get(): State; set(state: State): void };
 
-type Store = { get: () => State; set: (state: State) => void };
-
-class Actions {
-    constructor(private store: Store, private _compositionRoot: CompositionRoot) {}
-
-    private get state() {
-        return this.store.get();
-    }
-
-    private set(state: State) {
-        this.store.set(state);
-    }
-
-    add(n: number) {
-        this.set({ ...this.state, x: this.state.x + n });
-    }
-}
-
-const initialState: State = { x: 1 };
+type State = AppState;
+type Actions = AppActions;
 
 type ZustandStore = StoreApi<{ state: State; actions: Actions }>;
 
-export function getStore(compositionRoot: CompositionRoot) {
+export function getStore(compositionRoot: CompositionRoot, initialState: State) {
     return createStore<{ state: State; actions: Actions }>((set, get) => ({
         state: initialState,
-        actions: new Actions(
-            {
+        actions: new AppActions({
+            compositionRoot,
+            store: {
                 set: state => set({ state }),
                 get: () => get().state,
             },
-            compositionRoot
-        ),
+        }),
     }));
 }
 

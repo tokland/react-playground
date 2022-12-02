@@ -64,11 +64,13 @@ export class Collection<T> {
     }
 
     compact(): Collection<NonNullable<T>> {
-        return this.reject(x => x === undefined || x === null) as Collection<NonNullable<T>>;
+        return this.reject(x => x === undefined || x === null) as unknown as Collection<
+            NonNullable<T>
+        >;
     }
 
     compactMap<U>(fn: (x: T) => U | undefined | null): Collection<U> {
-        return this.map(fn).compact();
+        return this.map(fn).compact() as unknown as Collection<U>;
     }
 
     append(x: T): Collection<T> {
@@ -256,24 +258,26 @@ export class Collection<T> {
 
     keyBy = this.indexBy;
 
-    groupBy<U>(grouperFn: (x: T) => U): HashMap<U, Collection<T>> {
-        const initialValue = HashMap.empty<U, Collection<T>>();
+    groupBy<U>(grouperFn: (x: T) => U): HashMap<U, T[]> {
+        const pairs = this.reduce((acc, value) => {
+            const key = grouperFn(value);
+            const valuesForKey = acc.get(key) || [];
+            valuesForKey.push(value);
+            return acc;
+        }, new Map<U, T[]>());
 
-        return this.reduce((acc, x) => {
-            const key = grouperFn(x);
-            const valuesForKey = acc.get(key) || _c([]);
-            return acc.set(key, valuesForKey.append(x));
-        }, initialValue);
+        return HashMap.fromPairs(Array.from(pairs.entries()));
     }
 
-    groupFromMap<U, W>(grouperFn: (x: T) => [U, W]): HashMap<U, Collection<W>> {
-        const initialValue = HashMap.empty<U, Collection<W>>();
-
-        return this.reduce((acc, x) => {
+    groupFromMap<U, W>(grouperFn: (x: T) => [U, W]): HashMap<U, W[]> {
+        const pairs = this.reduce((acc, x) => {
             const [key, value] = grouperFn(x);
-            const valuesForKey = acc.get(key) || _c([]);
-            return acc.set(key, valuesForKey.append(value));
-        }, initialValue);
+            const valuesForKey = acc.get(key) || [];
+            valuesForKey.push(value);
+            return acc;
+        }, new Map<U, W[]>());
+
+        return HashMap.fromPairs(Array.from(pairs.entries()));
     }
 
     toHashMap<K, V>(toPairFn: (x: T) => [K, V]): HashMap<K, V> {
@@ -282,11 +286,14 @@ export class Collection<T> {
     }
 }
 
+/*
 export class FlattenableCollection<T extends U[], U> extends Collection<T> {
     flatten_(): Collection<U> {
         return _c(this.xs.flat());
     }
 }
+*/
+
 type CompareRes = -1 | 0 | 1;
 
 export type CompareFn<T> = (a: T, b: T) => CompareRes;
