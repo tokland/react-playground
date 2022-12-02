@@ -1,6 +1,6 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { getStore, StoreWrapper, useActions, useAppState } from "../../AppActions";
+import { getStore, StoreWrapper, useAppState } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
@@ -16,7 +16,6 @@ const initialAppState = new AppState({
 });
 
 const App: React.FC = () => {
-    const _actions = useActions();
     const urlSync = useUrlSync(routes, routeFromState);
     const compositionRoot = getCompositionRoot();
     const storeValue = getStore(compositionRoot, initialAppState);

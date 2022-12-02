@@ -33,28 +33,8 @@ class BaseActions {
 
     protected set(setter: (state: AppState) => AppState) {
         const newState = setter(this.get());
-        console.log({ newState });
         return this.options.store.set(newState);
     }
-
-    /*
-    protected *setFeedbackFromEffectResult(
-        res: EffectResult<unknown>,
-        options?: { successMessage: string }
-    ) {
-        switch (res.type) {
-            case "success":
-                if (options?.successMessage)
-                    yield* this.feedback({ success: { message: options?.successMessage } });
-                break;
-            case "error":
-                yield* this.feedback({ error: { message: res.error.message } });
-                break;
-            case "cancelled":
-                break;
-        }
-    }
-    */
 
     protected effectWithFeedback<T>(value$: Async<T>) {
         return value$.run(
