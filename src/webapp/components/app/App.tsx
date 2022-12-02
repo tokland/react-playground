@@ -1,10 +1,9 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { getStore, StoreWrapper, useStoreState } from "../../AppActions";
+import { getStore, StoreWrapper, useActions, useAppState } from "../../AppActions";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
-import { getStoreHooks } from "../../StoreHooks";
 import { Selector } from "../../hooks/useStoreState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
@@ -18,7 +17,8 @@ const initialAppState = new AppState({
 });
 
 const App: React.FC = () => {
-    const urlSync = useUrlSync(store, routes, routeFromState);
+    const actions = useActions();
+    const urlSync = useUrlSync(actions.store, routes, routeFromState);
     const compositionRoot = getCompositionRoot();
     const storeValue = getStore(compositionRoot, initialAppState);
 
@@ -31,14 +31,12 @@ const App: React.FC = () => {
     );
 };
 
-const [store, useAppState] = getStoreHooks(initialAppState);
-
-export { useAppState };
+type Selector<State, SelectedState> = (state: State) => SelectedState;
 
 export function useAppStateOrFail<SelectedState>(
     selector: Selector<AppState, SelectedState | undefined>
 ): SelectedState {
-    const value = useStoreState(selector);
+    const value = useAppState(selector);
     if (value === undefined) throw new Error("[useAppStateOrFail] No value");
     return value;
 }

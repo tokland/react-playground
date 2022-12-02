@@ -5,7 +5,6 @@ import {
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
-import { Store } from "../../hooks/useStoreState";
 import { useActions } from "../../AppActions";
 
 interface UrlSyncProps<State, Routes extends GenericRoutes> {

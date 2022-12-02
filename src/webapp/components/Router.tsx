@@ -1,12 +1,11 @@
 import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
-import { useAppState } from "./app/App";
 import { getPathFromRoute, RouteSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
-import { useActions } from "../AppActions";
+import { useActions, useAppState } from "../AppActions";
 
 export const routes = {
     home: route("/home", {

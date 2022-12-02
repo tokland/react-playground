@@ -16,9 +16,11 @@ interface Options {
 
 class BaseActions {
     protected compositionRoot: CompositionRoot;
+    public store: Store;
 
     constructor(protected options: Options) {
         this.compositionRoot = options.compositionRoot;
+        this.store = options.store;
     }
 
     setFrom<Args extends any[]>(fn: (...args: Args) => (state: AppState) => AppState) {
@@ -107,7 +109,7 @@ export class AppActions extends BaseActions {
     counter = new CounterActions(this.options);
 }
 
-type Store = { get(): State; set(state: State): void };
+export type Store = { get(): State; set(state: State): void };
 
 type State = AppState;
 type Actions = AppActions;
@@ -131,12 +133,18 @@ const StoreContext = React.createContext<ZustandStore | null>(null);
 
 export const StoreWrapper = StoreContext.Provider;
 
-export function useStoreState<S>(selector: (state: State) => S) {
-    const store = useContext(StoreContext)!;
+function useZustandStore<S>() {
+    const store = useContext(StoreContext);
+    if (!store) throw new Error();
+    return store;
+}
+
+export function useAppState<S>(selector: (state: State) => S) {
+    const store = useZustandStore();
     return useStore(store, obj => selector(obj.state));
 }
 
 export function useActions(): Actions {
-    const store = useContext(StoreContext)!;
+    const store = useZustandStore();
     return useStore(store).actions;
 }
