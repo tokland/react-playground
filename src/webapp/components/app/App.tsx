@@ -19,11 +19,8 @@ const App: React.FC = () => {
     const urlSync = useUrlSync(routes, routeFromState);
     const storeValue = React.useMemo(() => {
         const compositionRoot = getCompositionRoot();
-        console.log("store");
         return getStore(compositionRoot, initialAppState);
     }, []);
-
-    console.log("render:App");
 
     return (
         <StoreWrapper value={storeValue}>

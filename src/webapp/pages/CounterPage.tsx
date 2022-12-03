@@ -24,8 +24,13 @@ const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
     const actions = useActions();
 
-    const saveCb = React.useCallback((counter: CounterE) => actions.counter.save(counter), []);
-    const [save, cancelSave] = useCancellableEffect(saveCb, { cancelOnComponentUnmount: false });
+    const saveCb = React.useCallback(
+        (counter: CounterE) => actions.counter.save(counter),
+        [actions]
+    );
+    const [save, cancelSave] = useCancellableEffect(saveCb, {
+        cancelOnComponentUnmount: false,
+    });
 
     if (loader.status === "loading") {
         return <div>Loading...</div>;

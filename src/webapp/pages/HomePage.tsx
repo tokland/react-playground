@@ -8,7 +8,6 @@ const HomePage: React.FC = () => {
     const actions = useActions();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "loggedIn";
-    console.log("render:HomePage");
 
     return (
         <>

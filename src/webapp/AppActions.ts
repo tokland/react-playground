@@ -36,11 +36,8 @@ class BaseActions {
         return this.options.store.set(newState);
     }
 
-    protected effectWithFeedback<T>(value$: Async<T>) {
-        return value$.run(
-            () => {},
-            () => {}
-        );
+    protected runEffectWithFeedback<T>(value$: Async<T>, onSuccess: (value: T) => void) {
+        return value$.run(onSuccess, error => this.feedback({ error }));
     }
 
     protected feedback(value: Feedback) {
@@ -61,7 +58,12 @@ class CounterActions extends BaseActions {
     setCounter = this.setFrom(state$.setCounter);
 
     save(counter: Counter) {
-        return this.effectWithFeedback(this.compositionRoot.counters.save(counter));
+        this.set(state$.setCounter(counter, { isUpdating: true }));
+        const save$ = this.compositionRoot.counters.save(counter);
+
+        return this.runEffectWithFeedback(save$, counter => {
+            return this.set(state$.setCounter(counter));
+        });
     }
 
     loadCounterAndSetAsCurrentPage(id: Id) {
@@ -76,10 +78,9 @@ class CounterActions extends BaseActions {
 
         this.set(state$.setCounterAsLoading(id));
 
-        return this.compositionRoot.counters.get(id).run(
-            counter => this.set(state$.setCounter(counter)),
-            _err => {}
-        );
+        return this.runEffectWithFeedback(this.compositionRoot.counters.get(id), counter => {
+            return this.set(state$.setCounter(counter));
+        });
     }
 }
 
@@ -89,12 +90,22 @@ export class AppActions extends BaseActions {
     counter = new CounterActions(this.options);
 }
 
-export type Store = { get(): State; set(state: State): void };
+/* Store */
+
+type Store = { get(): State; set(state: State): void };
 
 type State = AppState;
 type Actions = AppActions;
 
 type ZustandStore = StoreApi<{ state: State; actions: Actions }>;
+
+const StoreContext = React.createContext<ZustandStore | null>(null);
+
+function useZustandStore() {
+    const zstore = useContext(StoreContext);
+    if (!zstore) throw new Error();
+    return zstore;
+}
 
 export function getStore(compositionRoot: CompositionRoot, initialState: State) {
     return createStore<{ state: State; actions: Actions }>((set, get) => ({
@@ -109,22 +120,14 @@ export function getStore(compositionRoot: CompositionRoot, initialState: State) 
     }));
 }
 
-const StoreContext = React.createContext<ZustandStore | null>(null);
-
 export const StoreWrapper = StoreContext.Provider;
 
-function useZustandStore() {
-    const zstore = useContext(StoreContext);
-    if (!zstore) throw new Error();
-    return zstore;
-}
-
 export function useAppState<SelectedState>(selector: (state: State) => SelectedState) {
-    const store = useZustandStore();
-    return useStore(store, obj => selector(obj.state));
+    const zstore = useZustandStore();
+    return useStore(zstore, obj => selector(obj.state));
 }
 
 export function useActions(): Actions {
     const zstore = useZustandStore();
-    return useStore(zstore, zstore => zstore.actions);
+    return useStore(zstore, obj => obj.actions);
 }
