@@ -22,8 +22,6 @@ function UrlSync<Routes extends GenericRoutes>(props: UrlSyncProps<Routes>) {
     const state = useAppState(state => state);
     const actions = useActions();
 
-    //React.useEffect(() => store.subscribe(setState), [store]);
-
     // Set state from initial URL
     React.useEffect(() => {
         async function run() {

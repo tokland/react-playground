@@ -6,6 +6,7 @@ const Session: React.FC = () => {
     const actions = useActions();
     const session = useAppState(state => state.session);
     const form = useForm({ username: "" });
+    console.log("render:Session");
 
     const login = React.useMemo(() => {
         return form.handleSubmit(formState => {

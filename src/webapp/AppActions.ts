@@ -114,17 +114,17 @@ const StoreContext = React.createContext<ZustandStore | null>(null);
 export const StoreWrapper = StoreContext.Provider;
 
 function useZustandStore() {
-    const store = useContext(StoreContext);
-    if (!store) throw new Error();
-    return store;
+    const zstore = useContext(StoreContext);
+    if (!zstore) throw new Error();
+    return zstore;
 }
 
-export function useAppState<S>(selector: (state: State) => S) {
+export function useAppState<SelectedState>(selector: (state: State) => SelectedState) {
     const store = useZustandStore();
     return useStore(store, obj => selector(obj.state));
 }
 
 export function useActions(): Actions {
-    const store = useZustandStore();
-    return useStore(store).actions;
+    const zstore = useZustandStore();
+    return useStore(zstore, zstore => zstore.actions);
 }
