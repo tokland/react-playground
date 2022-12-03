@@ -15,10 +15,10 @@ interface Options {
 }
 
 class BaseActions {
-    store: Store;
-    compositionRoot: CompositionRoot;
+    private store: Store;
+    protected compositionRoot: CompositionRoot;
 
-    constructor(options: Options) {
+    constructor(protected options: Options) {
         this.compositionRoot = options.compositionRoot;
         this.store = options.store;
     }
@@ -85,9 +85,9 @@ class CounterActions extends BaseActions {
 }
 
 export class AppActions extends BaseActions {
-    session = new SessionActions(this);
-    routes = new RouterActions(this);
-    counter = new CounterActions(this);
+    session = new SessionActions(this.options);
+    routes = new RouterActions(this.options);
+    counter = new CounterActions(this.options);
 }
 
 /* Store */
