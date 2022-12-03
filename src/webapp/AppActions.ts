@@ -15,10 +15,10 @@ interface Options {
 }
 
 class BaseActions {
-    protected compositionRoot: CompositionRoot;
-    public store: Store;
+    store: Store;
+    compositionRoot: CompositionRoot;
 
-    constructor(protected options: Options) {
+    constructor(options: Options) {
         this.compositionRoot = options.compositionRoot;
         this.store = options.store;
     }
@@ -28,12 +28,12 @@ class BaseActions {
     }
 
     protected get() {
-        return this.options.store.get();
+        return this.store.get();
     }
 
     protected set(setter: (state: AppState) => AppState) {
         const newState = setter(this.get());
-        return this.options.store.set(newState);
+        return this.store.set(newState);
     }
 
     protected runEffectWithFeedback<T>(value$: Async<T>, onSuccess: (value: T) => void) {
@@ -85,9 +85,9 @@ class CounterActions extends BaseActions {
 }
 
 export class AppActions extends BaseActions {
-    session = new SessionActions(this.options);
-    routes = new RouterActions(this.options);
-    counter = new CounterActions(this.options);
+    session = new SessionActions(this);
+    routes = new RouterActions(this);
+    counter = new CounterActions(this);
 }
 
 /* Store */
