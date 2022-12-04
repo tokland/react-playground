@@ -42,14 +42,17 @@ const Router: React.FC = () => {
 };
 
 export function useGoTo() {
-    const    = useActions();
+    const actions = useActions();
 
-    function goTo<Selector extends RouteSelector<typeof routes>>(to: Selector) {
-        const href = getPathFromRoute(routes, to);
-        window.history.pushState({}, "", href);
-        const route = routes[to.key];
-        route.onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
-    }
+    const goTo = React.useCallback(
+        function <Selector extends RouteSelector<typeof routes>>(to: Selector) {
+            const href = getPathFromRoute(routes, to);
+            window.history.pushState({}, "", href);
+            const route = routes[to.key];
+            route.onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
+        },
+        [actions]
+    );
 
     return goTo;
 }
