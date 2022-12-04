@@ -42,7 +42,7 @@ const Router: React.FC = () => {
 };
 
 export function useGoTo() {
-    const actions = useActions();
+    const    = useActions();
 
     function goTo<Selector extends RouteSelector<typeof routes>>(to: Selector) {
         const href = getPathFromRoute(routes, to);
