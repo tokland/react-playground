@@ -15,6 +15,10 @@ export class HashMap<K, V> {
         return new HashMap(RimbuHashMap.from(pairs));
     }
 
+    static fromObject<K extends string, V>(obj: Record<K, V>) {
+        return HashMap.fromPairs(Object.entries(obj));
+    }
+
     /* Methods */
 
     get(key: K): Maybe<V> {

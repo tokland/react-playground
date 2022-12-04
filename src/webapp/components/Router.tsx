@@ -5,7 +5,7 @@ import { getPathFromRoute, RouteSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
-import { useActions, useAppState } from "../AppActions";
+import { useActions, useAppState } from "../Store";
 
 export const routes = {
     home: route("/home", {

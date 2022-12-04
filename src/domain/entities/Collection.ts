@@ -259,27 +259,25 @@ export class Collection<T> {
     keyBy = this.indexBy;
 
     groupBy<U>(grouperFn: (x: T) => U): HashMap<U, T[]> {
-        const pairs = this.reduce((acc, value) => {
+        const map = this.reduce((acc, value) => {
             const key = grouperFn(value);
             const valuesForKey = acc.get(key) || [];
             valuesForKey.push(value);
-            acc.set(key, valuesForKey);
-            return acc;
+            return acc.set(key, valuesForKey);
         }, new Map<U, T[]>());
 
-        return HashMap.fromPairs(Array.from(pairs.entries()));
+        return HashMap.fromPairs(Array.from(map.entries()));
     }
 
-    groupFromMap<U, W>(grouperFn: (x: T) => [U, W]): HashMap<U, W[]> {
-        const pairs = this.reduce((acc, x) => {
-            const [key, value] = grouperFn(x);
+    groupFromMap<U, W>(pairGrouperFn: (x: T) => [U, W]): HashMap<U, W[]> {
+        const map = this.reduce((acc, x) => {
+            const [key, value] = pairGrouperFn(x);
             const valuesForKey = acc.get(key) || [];
             valuesForKey.push(value);
-            acc.set(key, valuesForKey);
-            return acc;
+            return acc.set(key, valuesForKey);
         }, new Map<U, W[]>());
 
-        return HashMap.fromPairs(Array.from(pairs.entries()));
+        return HashMap.fromPairs(Array.from(map.entries()));
     }
 
     toHashMap<K, V>(toPairFn: (x: T) => [K, V]): HashMap<K, V> {

@@ -5,7 +5,7 @@ import {
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
-import { useActions, useAppState } from "../../AppActions";
+import { useActions, useAppState } from "../../Store";
 import { AppState } from "../../../domain/entities/AppState";
 
 type State = AppState;

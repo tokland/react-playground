@@ -25,6 +25,14 @@ describe("constructors", () => {
             ["b", 2],
         ]);
     });
+
+    test("fromObject", () => {
+        const map = HashMap.fromObject({ a: 1, b: 2 });
+
+        expect(map.size).toEqual(2);
+        expect(map.get("a")).toEqual(1);
+        expect(map.get("b")).toEqual(2);
+    });
 });
 
 describe("conversors", () => {
@@ -55,7 +63,7 @@ describe("get", () => {
     });
 });
 
-describe("transforms", () => {
+describe("transformations", () => {
     test("invert", () => {
         expect(mapAbc123.invert().toPairs()).toEqual([
             [1, "a"],

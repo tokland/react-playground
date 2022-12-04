@@ -1,6 +1,6 @@
 import React from "react";
 import { Field, useForm } from "typed-react-form";
-import { useActions, useAppState } from "../AppActions";
+import { useActions, useAppState } from "../Store";
 
 const Session: React.FC = () => {
     const actions = useActions();

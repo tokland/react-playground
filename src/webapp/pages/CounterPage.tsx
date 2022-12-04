@@ -1,6 +1,6 @@
 import React from "react";
 import { Counter as CounterE } from "../../domain/entities/Counter";
-import { useActions } from "../AppActions";
+import { useActions } from "../Store";
 import { useAppStateOrFail } from "../components/app/App";
 import Counter from "../components/Counter";
 import Link from "../components/Link";

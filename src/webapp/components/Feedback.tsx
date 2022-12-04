@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppState } from "../AppActions";
+import { useAppState } from "../Store";
 
 const Feedback: React.FC = () => {
     const feedback = useAppState(state => state.feedback);
