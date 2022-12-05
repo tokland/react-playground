@@ -1,12 +1,13 @@
 import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
-import { getStore, StoreWrapper, useAppState } from "../../Store";
+import { StoreContext, useAppState, useStoreContext } from "../../Store";
 import UrlSync, { useUrlSync } from "./UrlSync";
 import Router, { routeFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
 import Feedback from "../Feedback";
+import { AppActions } from "../../AppActions";
 
 const initialAppState = new AppState({
     page: { type: "home" },
@@ -17,17 +18,19 @@ const initialAppState = new AppState({
 
 const App: React.FC = () => {
     const urlSync = useUrlSync(routes, routeFromState);
-    const storeValue = React.useMemo(() => {
+
+    const contextValue = useStoreContext<AppState, AppActions>(store => {
         const compositionRoot = getCompositionRoot();
-        return getStore(compositionRoot, initialAppState);
-    }, []);
+        const actions = new AppActions({ compositionRoot, store });
+        return { initialState: initialAppState, actions };
+    });
 
     return (
-        <StoreWrapper value={storeValue}>
+        <StoreContext value={contextValue}>
             <UrlSync {...urlSync} />
             {urlSync.isReady && <Router />}
             <Feedback />
-        </StoreWrapper>
+        </StoreContext>
     );
 };
 

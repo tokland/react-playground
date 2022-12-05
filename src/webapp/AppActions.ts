@@ -10,16 +10,14 @@ const state$ = buildReducer(AppState);
 
 interface Options {
     compositionRoot: CompositionRoot;
-    store: Store;
+    store: Store<AppState>;
 }
 
 class BaseActions {
-    private store: Store;
     protected compositionRoot: CompositionRoot;
 
     constructor(protected options: Options) {
         this.compositionRoot = options.compositionRoot;
-        this.store = options.store;
     }
 
     setFrom<Args extends any[]>(fn: (...args: Args) => (state: AppState) => AppState) {
@@ -27,12 +25,12 @@ class BaseActions {
     }
 
     protected get() {
-        return this.store.get();
+        return this.options.store.get();
     }
 
     protected set(setter: (state: AppState) => AppState) {
         const newState = setter(this.get());
-        return this.store.set(newState);
+        return this.options.store.set(newState);
     }
 
     protected runEffectWithFeedback<T>(value$: Async<T>, onSuccess: (value: T) => void) {
