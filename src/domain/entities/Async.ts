@@ -4,7 +4,15 @@ import {
     Cancellation,
 } from "real-cancellable-promise";
 
-export class AsyncError extends Error {}
+export class AsyncError extends Error {
+    __type = "asyncError";
+}
+
+export class AsyncCancel extends Error {
+    __type = "asyncCancel";
+}
+
+export type Cancel = () => void;
 
 export class Async<T> {
     private constructor(private _promise: () => CancellablePromise<T>) {}
@@ -35,7 +43,7 @@ export class Async<T> {
     run(onSuccess: (data: T) => void, onError: (error: AsyncError) => void): Cancel {
         return this._promise().then(onSuccess, err => {
             if (err instanceof Cancellation) {
-                // noop
+                onError(new AsyncCancel());
             } else if (err instanceof AsyncError) {
                 onError(err);
             } else {
@@ -87,5 +95,3 @@ interface CaptureAsync {
     <T>(async: Async<T>): Promise<T>;
     error: <T>(message: string) => Promise<T>;
 }
-
-type Cancel = () => void;

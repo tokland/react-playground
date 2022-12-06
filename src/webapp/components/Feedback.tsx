@@ -19,10 +19,15 @@ const Feedback: React.FC = () => {
 
     return (
         <>
-            {success && <div style={{ color: "green" }}>{success.message}</div>}
-            {error && <div style={{ color: "red" }}>{error.message}</div>}
+            {success && <div style={styles.success}>{success.message}</div>}
+            {error && <div style={styles.error}>{error.message}</div>}
         </>
     );
+};
+
+const styles = {
+    success: { color: "green" },
+    error: { color: "red" },
 };
 
 export default React.memo(Feedback);

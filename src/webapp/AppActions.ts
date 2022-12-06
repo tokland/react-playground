@@ -33,8 +33,25 @@ class BaseActions {
         return this.options.store.set(newState);
     }
 
-    protected runEffectWithFeedback<T>(value$: Async<T>, onSuccess: (value: T) => void) {
-        return value$.run(onSuccess, error => this.feedback({ error }));
+    protected runEffectWithFeedback<T>(
+        value$: Async<T>,
+        options: {
+            onSuccess?: (value: T) => void;
+            onError?: (err: Error) => void;
+            always?: () => void;
+        }
+    ) {
+        return value$.run(
+            value => {
+                options.onSuccess?.(value);
+                options.always?.();
+            },
+            error => {
+                this.feedback({ error });
+                options.onError?.(error);
+                options.always?.();
+            }
+        );
     }
 
     protected feedback(value: Feedback) {
@@ -58,8 +75,8 @@ class CounterActions extends BaseActions {
         this.set(state$.setCounter(counter, { isUpdating: true }));
         const save$ = this.compositionRoot.counters.save(counter);
 
-        return this.runEffectWithFeedback(save$, counter => {
-            return this.set(state$.setCounter(counter));
+        return this.runEffectWithFeedback(save$, {
+            always: () => this.set(state$.setCounter(counter)),
         });
     }
 
@@ -75,8 +92,10 @@ class CounterActions extends BaseActions {
 
         this.set(state$.setCounterAsLoading(id));
 
-        return this.runEffectWithFeedback(this.compositionRoot.counters.get(id), counter => {
-            return this.set(state$.setCounter(counter));
+        return this.runEffectWithFeedback(this.compositionRoot.counters.get(id), {
+            onSuccess: counter => {
+                return this.set(state$.setCounter(counter));
+            },
         });
     }
 }

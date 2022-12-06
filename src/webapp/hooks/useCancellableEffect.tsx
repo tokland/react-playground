@@ -13,7 +13,9 @@ export function useCancellableEffect<Args extends any[]>(
     const { cancelOnComponentUnmount = false } = options;
     const [args, setArgs] = React.useState<Args>();
     const isMounted = useIsMounted();
-    const cancelRef = React.useRef<Cancel>(() => {});
+    const cancelRef = React.useRef<Cancel>(() => {
+        clearArgs();
+    });
 
     const run = React.useCallback((...args: Args) => {
         setArgs(args);
@@ -28,14 +30,15 @@ export function useCancellableEffect<Args extends any[]>(
     React.useEffect(() => {
         if (!args) return;
 
-        const cancel = runEffect(...args);
+        const cancelEffect = runEffect(...args);
 
         cancelRef.current = () => {
+            console.log("cancel");
             clearArgs();
-            cancel();
+            cancelEffect();
         };
 
-        return cancelOnComponentUnmount ? cancel : undefined;
+        return cancelOnComponentUnmount ? cancelEffect : undefined;
     }, [args, runEffect, cancelOnComponentUnmount, clearArgs]);
 
     return [run, cancel];

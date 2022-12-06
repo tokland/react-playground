@@ -1,5 +1,5 @@
 import { CancellablePromise } from "real-cancellable-promise";
-import { Async, AsyncError } from "../Async";
+import { Async, AsyncCancel, AsyncError } from "../Async";
 
 describe("Basic builders", () => {
     test("Async.success", async () => {
@@ -141,7 +141,7 @@ describe("fromComputation", () => {
 });
 
 describe("cancel", () => {
-    it("cancels the async and the success/error branches are not called", async () => {
+    it("cancels the async and the error branch is called", async () => {
         const success = jest.fn();
         const reject = jest.fn();
 
@@ -150,7 +150,8 @@ describe("cancel", () => {
         await new Promise(resolve => setTimeout(resolve, 10));
 
         expect(success).not.toHaveBeenCalled();
-        expect(reject).not.toHaveBeenCalled();
+        expect(reject).toHaveBeenCalledTimes(1);
+        expect(reject.mock.calls[0]).toEqual([new AsyncCancel()]);
     });
 });
 
