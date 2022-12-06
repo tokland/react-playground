@@ -1,6 +1,6 @@
 import React from "react";
 import { Counter as CounterE } from "../../domain/entities/Counter";
-import { useActions } from "../Store";
+import { useAppActions } from "../Store";
 import { useAppStateOrFail } from "../components/app/App";
 import Counter from "../components/Counter";
 import Link from "../components/Link";
@@ -22,7 +22,7 @@ const homePageRoute: AppRoute = { key: "home" };
 
 const CurrentCounter_: React.FC = () => {
     const loader = useAppStateOrFail(state => state.currentCounter?.loader);
-    const actions = useActions();
+    const actions = useAppActions();
 
     const saveCb = React.useCallback(
         (counter: CounterE) => actions.counter.save(counter),

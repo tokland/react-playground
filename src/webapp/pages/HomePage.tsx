@@ -1,11 +1,11 @@
 import React from "react";
-import { useActions, useAppState } from "../Store";
+import { useAppActions, useAppState } from "../Store";
 import { useAppStateOrFail } from "../components/app/App";
 import Button from "../components/Button";
 import Session from "../components/Session";
 
 const HomePage: React.FC = () => {
-    const actions = useActions();
+    const actions = useAppActions();
     const session = useAppState(state => state.session);
     const userLoggedIn = session.type === "loggedIn";
 

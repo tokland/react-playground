@@ -5,7 +5,7 @@ import {
     GenericRoutes,
     RouteSelector,
 } from "../../utils/router";
-import { useActions, useAppState } from "../../Store";
+import { useAppActions, useAppState } from "../../Store";
 import { AppState } from "../../../domain/entities/AppState";
 
 type State = AppState;
@@ -20,7 +20,7 @@ interface UrlSyncProps<Routes extends GenericRoutes> {
 function UrlSync<Routes extends GenericRoutes>(props: UrlSyncProps<Routes>) {
     const { routes, routeFromState, isReady, setIsReady } = props;
     const state = useAppState(state => state);
-    const actions = useActions();
+    const actions = useAppActions();
 
     // Set state from initial URL
     React.useEffect(() => {

@@ -1,31 +1,31 @@
 import React, { useContext } from "react";
-import { createStore, StoreApi, useStore } from "zustand";
+import { createStore, StoreApi, useStore as useStoreZustand } from "zustand";
 import { AppState } from "../domain/entities/AppState";
 import { AppActions } from "./AppActions";
 
-export type Store<State> = { get(): State; set(state: State): void };
+export interface Store<State> {
+    get(): State;
+    set(state: State): void;
+}
 
-export function buildStore<State>() {
-    const Actions = AppActions;
-    type Actions = AppActions;
-
+export function buildStore<State, Actions>() {
     const StoreProviderValue = React.createContext<ZustandStore | null>(null);
     type ZustandStore = StoreApi<{ state: State; actions: Actions }>;
 
-    function useZustandStore() {
+    function useCompositeStore() {
         const zstore = useContext(StoreProviderValue);
         if (!zstore) throw new Error();
         return zstore;
     }
 
-    function useAppState<SelectedState>(selector: (state: State) => SelectedState) {
-        const zstore = useZustandStore();
-        return useStore(zstore, obj => selector(obj.state));
+    function useStoreState<SelectedState>(selector: (state: State) => SelectedState) {
+        const zstore = useCompositeStore();
+        return useStoreZustand(zstore, obj => selector(obj.state));
     }
 
-    function useActions(): Actions {
-        const zstore = useZustandStore();
-        return useStore(zstore, obj => obj.actions);
+    function useStoreActions(): Actions {
+        const zstore = useCompositeStore();
+        return useStoreZustand(zstore, obj => obj.actions);
     }
 
     type Builder = (store: Store<State>) => {
@@ -41,7 +41,7 @@ export function buildStore<State>() {
         });
     }
 
-    function useAppStore(builder: Builder) {
+    function useStore(builder: Builder) {
         const builderRef = React.useRef(builder);
         const value = React.useMemo(() => getContextValue(builderRef.current), []);
 
@@ -59,8 +59,17 @@ export function buildStore<State>() {
         return StoreProvider;
     }
 
-    return { useAppStore, useAppState, useActions };
+    return {
+        useStore,
+        useStoreState,
+        useStoreActions,
+    };
 }
 
-const { useAppStore, useAppState, useActions } = buildStore<AppState>();
-export { useAppStore, useAppState, useActions };
+const {
+    useStore: useAppStore,
+    useStoreState: useAppState,
+    useStoreActions: useAppActions,
+} = buildStore<AppState, AppActions>();
+
+export { useAppStore, useAppState, useAppActions };

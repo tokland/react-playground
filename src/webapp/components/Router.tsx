@@ -5,7 +5,7 @@ import { getPathFromRoute, RouteSelector, route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
-import { useActions, useAppState } from "../Store";
+import { useAppActions, useAppState } from "../Store";
 
 export const routes = {
     home: route("/home", {
@@ -42,7 +42,7 @@ const Router: React.FC = () => {
 };
 
 export function useGoTo() {
-    const actions = useActions();
+    const actions = useAppActions();
 
     const goTo = React.useCallback(
         function <Selector extends RouteSelector<typeof routes>>(to: Selector) {

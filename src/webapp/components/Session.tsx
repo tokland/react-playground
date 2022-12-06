@@ -1,9 +1,9 @@
 import React from "react";
 import { Field, useForm } from "typed-react-form";
-import { useActions, useAppState } from "../Store";
+import { useAppActions, useAppState } from "../Store";
 
 const Session: React.FC = () => {
-    const actions = useActions();
+    const actions = useAppActions();
     const session = useAppState(state => state.session);
     const form = useForm({ username: "" });
 
