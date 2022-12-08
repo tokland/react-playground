@@ -1,14 +1,14 @@
 import React from "react";
 
 import { AppState } from "../../domain/entities/AppState";
-import { getPathFromRoute, RouteSelector, route } from "../utils/router";
+import { route } from "../utils/router";
 
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
-import { useAppActions, useAppState } from "../Store";
+import { useAppState } from "../Store";
 
 export const routes = {
-    home: route("/home", {
+    home: route("/", {
         onEnter: ({ actions }) => actions.routes.goToHome(),
     }),
 
@@ -17,16 +17,14 @@ export const routes = {
     }),
 };
 
-export type AppRoute = RouteSelector<typeof routes>;
-
-export function routeFromState(state: AppState): RouteSelector<typeof routes> {
+export function routeFromState(state: AppState): string {
     const { page } = state;
 
     switch (page.type) {
         case "home":
-            return { key: "home" };
+            return routes.home.build({}, {});
         case "counter":
-            return { key: "counterForm", args: { id: page.id } };
+            return routes.counterForm.build({ id: page.id }, {});
     }
 }
 
@@ -40,21 +38,5 @@ const Router: React.FC = () => {
             return <CounterPage />;
     }
 };
-
-export function useGoTo() {
-    const actions = useAppActions();
-
-    const goTo = React.useCallback(
-        function <Selector extends RouteSelector<typeof routes>>(to: Selector) {
-            const href = getPathFromRoute(routes, to);
-            window.history.pushState({}, "", href);
-            const route = routes[to.key];
-            route.onEnter({ actions, args: (to.args || {}) as any, params: to.params || {} });
-        },
-        [actions]
-    );
-
-    return goTo;
-}
 
 export default React.memo(Router);

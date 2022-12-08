@@ -1,27 +1,24 @@
 import React from "react";
-import { getPathFromRoute, RouteSelector } from "../utils/router";
-import { routes, useGoTo } from "./Router";
+import { goTo } from "../utils/router";
 
 interface LinkProps {
-    to: RouteSelector<typeof routes>;
+    to: string;
     children: React.ReactNode;
 }
 
 const Link: React.FC<LinkProps> = props => {
     const { to, children } = props;
-    const href = React.useMemo(() => getPathFromRoute(routes, to), [to]);
-    const goTo = useGoTo();
 
-    const goToHref = React.useCallback<React.MouseEventHandler<HTMLAnchorElement>>(
+    const goToFromEvent = React.useCallback<React.MouseEventHandler<HTMLAnchorElement>>(
         ev => {
             ev.preventDefault();
             goTo(to);
         },
-        [goTo, to]
+        [to]
     );
 
     return (
-        <a href={href} onClick={goToHref}>
+        <a href={to} onClick={goToFromEvent}>
             {children}
         </a>
     );
