@@ -5,14 +5,14 @@ import {
 } from "real-cancellable-promise";
 
 export class AsyncError extends Error {
-    __type = "asyncError";
+    type = "asyncError";
 }
 
 export class AsyncCancel extends Error {
-    __type = "asyncCancel";
+    type = "asyncCancel";
 }
 
-export type Cancel = () => void;
+type Cancel = () => void;
 
 export class Async<T> {
     private constructor(private _promise: () => CancellablePromise<T>) {}

@@ -16,11 +16,10 @@ export function route<Path extends string, Params extends readonly string[] = []
         params: Partial<Record<Params[number], string>>
     ): string {
         const pathname = path.replace(/\[(\w+)\]/g, (_match, name: string) => {
-            return (args as any)[name] || "";
+            return (args as Record<string, string | undefined>)[name] || "";
         });
 
         const search = new URLSearchParams(params as any).toString();
-
         return pathname + (search ? "?" : "") + search;
     }
     return { path, pathRegExp, build, ...options };
@@ -57,7 +56,7 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
     build: (args: ArgsFromPath<Path>, params: Partial<Record<Params[number], string>>) => string;
 }
 
-export type GenericRoute = TypedRoute<string, readonly string[]>;
+type GenericRoute = TypedRoute<string, readonly string[]>;
 
 type ArgsFromPath<Path extends string> = ExtractArgsFromPathRec<Path, {}>;
 

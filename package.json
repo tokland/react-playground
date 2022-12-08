@@ -30,10 +30,10 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "lint": "ts-prune -s playground && eslint src --fix",
+        "lint": "ts-prune -s playground -i src/libs/ts-utils.ts && eslint src --fix",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "node-ts": "npx -s sh ts-node -P tsconfig-cli.json"
+        "run-ts": "npx -s sh ts-node -P tsconfig-cli.json"
     },
     "eslintConfig": {
         "extends": [

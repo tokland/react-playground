@@ -1,4 +1,3 @@
-import { CancellablePromise } from "real-cancellable-promise";
 import { Async, AsyncCancel, AsyncError } from "../Async";
 
 describe("Basic builders", () => {
@@ -117,7 +116,7 @@ describe("Async.block", () => {
 });
 
 describe("fromComputation", () => {
-    describe("for a success computation", () => {
+    describe("for a successful computation", () => {
         it("return a success async", async () => {
             const value$ = Async.fromComputation((resolve, _reject) => {
                 resolve(1);
@@ -128,7 +127,7 @@ describe("fromComputation", () => {
         });
     });
 
-    describe("for an error computation", () => {
+    describe("for an unsuccessful computation", () => {
         it("return an error async", async () => {
             const value$ = Async.fromComputation((_resolve, reject) => {
                 reject("message");
@@ -141,7 +140,7 @@ describe("fromComputation", () => {
 });
 
 describe("cancel", () => {
-    it("cancels the async and the error branch is called", async () => {
+    it("cancels the async and the error branch is called with AsyncCancel", async () => {
         const success = jest.fn();
         const reject = jest.fn();
 

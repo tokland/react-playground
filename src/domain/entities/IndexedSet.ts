@@ -3,10 +3,10 @@ import { HashMap as RimbuHashMap } from "@rimbu/hashed";
 
 type Hash = string | number;
 
-type GetHask<T> = (set: IndexedSet<T>) => Hash;
+type getHash<T> = (set: IndexedSet<T>) => Hash;
 
 export class IndexedSet<T> {
-    private constructor(private hashMap: RimbuHashMap<Hash, T>, private getKey: GetHask<T>) {}
+    private constructor(private hashMap: RimbuHashMap<Hash, T>, private getKey: getHash<T>) {}
 
     get(hash: Hash): Maybe<T> {
         return this.hashMap.get(hash);
@@ -22,7 +22,7 @@ export class IndexedSet<T> {
         return this.hashMap.size;
     }
 
-    static empty<V>(getHash: GetHask<V>): IndexedSet<V> {
+    static empty<V>(getHash: getHash<V>): IndexedSet<V> {
         return new IndexedSet(RimbuHashMap.empty(), getHash);
     }
 }

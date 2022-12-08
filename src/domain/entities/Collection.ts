@@ -296,7 +296,7 @@ export class FlattenableCollection<T extends U[], U> extends Collection<T> {
 
 type CompareRes = -1 | 0 | 1;
 
-export type CompareFn<T> = (a: T, b: T) => CompareRes;
+type CompareFn<T> = (a: T, b: T) => CompareRes;
 
 type Direction = "asc" | "desc";
 

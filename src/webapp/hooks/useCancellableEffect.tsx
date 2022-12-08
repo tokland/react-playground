@@ -2,10 +2,6 @@ import React from "react";
 
 type Cancel = () => void;
 
-export interface Effect<Data> {
-    run(success: (data: Data) => void, reject: (msg: string) => void): Cancel;
-}
-
 export function useCancellableEffect<Args extends any[]>(
     runEffect: (...args: Args) => Cancel,
     options: { cancelOnComponentUnmount?: boolean } = {}

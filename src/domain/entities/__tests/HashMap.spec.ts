@@ -103,6 +103,6 @@ describe("filtering by key or value", () => {
     });
 
     test("omitBy", () => {
-        expect(mapAbc123.omitBy(([k, v]) => k == "b" || v === 1).toPairs()).toEqual([["c", 3]]);
+        expect(mapAbc123.omitBy(([k, v]) => k === "b" || v === 1).toPairs()).toEqual([["c", 3]]);
     });
 });

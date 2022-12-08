@@ -8,7 +8,7 @@ export interface Store<State> {
     set(state: State): void;
 }
 
-export function buildStore<State, Actions>() {
+function buildStore<State, Actions>() {
     const StoreProviderValue = React.createContext<ZustandStore | null>(null);
     type ZustandStore = StoreApi<{ state: State; actions: Actions }>;
 
