@@ -28,9 +28,8 @@ const CurrentCounter_: React.FC = () => {
         (counter: CounterE) => actions.counter.save(counter),
         [actions]
     );
-    const [save, cancelSave] = useCancellableEffect(saveCb, {
-        cancelOnComponentUnmount: false,
-    });
+
+    const [save, cancelSave] = useCancellableEffect(saveCb);
 
     if (loader.status === "loading") {
         return <div>Loading...</div>;
