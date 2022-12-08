@@ -44,6 +44,7 @@ export function runRouteOnEnterForPath(
 
     return;
 }
+
 interface TypedRoute<Path extends string, Params extends readonly string[]> {
     path: Path;
     pathRegExp: RegExp;

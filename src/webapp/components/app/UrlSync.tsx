@@ -19,14 +19,13 @@ function UrlSync<Routes extends GenericRoutes>(props: UrlSyncProps<Routes>) {
     const actions = useAppActions();
     const location = useLocation();
 
-    // Set state from URL
+    // URL -> State
     React.useEffect(() => {
-        console.log("change");
         runRouteOnEnterForPath(routes, window.location, actions);
         setIsReady(true);
     }, [location, actions, routes, isReady, setIsReady]);
 
-    // Update URL from state changes
+    // State -> URL
     React.useEffect(() => {
         const currentPath = window.location.pathname;
         const pathFromState = routeFromState(state);
