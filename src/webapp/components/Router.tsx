@@ -1,8 +1,6 @@
 import React from "react";
-
 import { AppState } from "../../domain/entities/AppState";
 import { route } from "../utils/router";
-
 import CounterPage from "../pages/CounterPage";
 import HomePage from "../pages/HomePage";
 import { useAppState } from "../Store";
@@ -17,7 +15,7 @@ export const routes = {
     }),
 };
 
-export function routeFromState(state: AppState): string {
+export function urlFromState(state: AppState): string {
     const { page } = state;
 
     switch (page.type) {

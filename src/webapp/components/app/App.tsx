@@ -2,7 +2,7 @@ import React from "react";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { useAppState, useAppStore } from "../../Store";
 import UrlSync, { useUrlSync } from "./UrlSync";
-import Router, { routeFromState, routes } from "../Router";
+import Router, { urlFromState, routes } from "../Router";
 import { AppState } from "../../../domain/entities/AppState";
 import { HashMap } from "../../../domain/entities/HashMap";
 import "./App.css";
@@ -17,7 +17,7 @@ const initialAppState = new AppState({
 });
 
 const App: React.FC = () => {
-    const urlSync = useUrlSync(routes, routeFromState);
+    const urlSync = useUrlSync(routes, urlFromState);
 
     const StoreProvider = useAppStore(store => {
         const compositionRoot = getCompositionRoot();
