@@ -9,7 +9,7 @@ import { useCancellableEffect } from "../hooks/useCancellableEffect";
 import { routes } from "../components/Router";
 
 const CounterPage: React.FC = () => {
-    const homePageRoute = routes.home.build({}, {});
+    const homePageRoute = routes.home.build({});
 
     return (
         <>

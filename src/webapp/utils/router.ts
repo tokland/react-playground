@@ -11,17 +11,17 @@ export function route<Path extends string, Params extends readonly string[] = []
     // Converts "/some/path/[id]/[value]" to Regexp /some/path/(?<id>[\w-_]+)/(?<value>[\w-_]+)
     const pathRegExp = new RegExp(path.replace(/\[(\w+)\]/, "(?<$1>[\\w-_]+)"));
 
-    function build(
+    const build: TypedRoute<Path, Params>["build"] = (
         args: ArgsFromPath<Path>,
-        params: Partial<Record<Params[number], string>>
-    ): string {
+        params?: Partial<Record<Params[number], string>>
+    ) => {
         const pathname = path.replace(/\[(\w+)\]/g, (_match, name: string) => {
             return (args as Record<string, string | undefined>)[name] || "";
         });
 
-        const search = new URLSearchParams(params as any).toString();
+        const search = params ? new URLSearchParams(params as any).toString() : undefined;
         return pathname + (search ? "?" : "") + search;
-    }
+    };
     return { path, pathRegExp, build, ...options };
 }
 
@@ -54,7 +54,7 @@ interface TypedRoute<Path extends string, Params extends readonly string[]> {
         params: Partial<Record<Params[number], string>>;
     }) => void;
     params?: Params;
-    build: (args: ArgsFromPath<Path>, params: Partial<Record<Params[number], string>>) => string;
+    build: (args: ArgsFromPath<Path>, params?: Partial<Record<Params[number], string>>) => string;
 }
 
 type GenericRoute = TypedRoute<string, readonly string[]>;

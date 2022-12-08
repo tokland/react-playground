@@ -20,9 +20,9 @@ export function urlFromState(state: AppState): string {
 
     switch (page.type) {
         case "home":
-            return routes.home.build({}, {});
+            return routes.home.build({});
         case "counter":
-            return routes.counterForm.build({ id: page.id }, {});
+            return routes.counterForm.build({ id: page.id });
     }
 }
 
