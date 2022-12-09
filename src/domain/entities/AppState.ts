@@ -4,7 +4,6 @@ import { Id } from "./Base";
 import { Counter } from "./Counter";
 import { HashMap } from "./HashMap";
 
-// Implementation details, can be hidden
 export interface AppStateAttrs {
     page: Page;
     session: Session;

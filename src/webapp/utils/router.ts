@@ -20,7 +20,7 @@ export function route<Path extends string, Params extends readonly string[] = []
         });
 
         const search = params ? new URLSearchParams(params as any).toString() : undefined;
-        return pathname + (search ? "?" : "") + search;
+        return pathname + (search ? `?${search}` : "");
     };
     return { path, pathRegExp, build, ...options };
 }
