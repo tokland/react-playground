@@ -13,6 +13,7 @@ export interface AppStateAttrs {
 
 export type Feedback = Partial<Record<"success" | "error", { message: string }>>;
 
+// Change AppStateAttrs to initialState, so the structure is internal
 export class AppState extends Struct<AppStateAttrs>() {
     update(attrs: Partial<AppStateAttrs>): AppState {
         return this._update(attrs);
